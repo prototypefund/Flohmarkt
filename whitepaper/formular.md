@@ -9,9 +9,14 @@ Flohmarkt (arbeitstitel)
 Beschreibe dein Projekt kurz
 ----------------------------
 
+In der Vergangenheit haben die Projekte Mastodon und Peertube eindrucksvoll gezeigt, dass
+es möglich ist, über das webbasierte Föderationsprotokoll ActivityPub ansprechende
+Alternativen für proprietäre Soziale Medienangebote wie respektive Twitter oder Youtube
+aufzubauen. Wir sind der Überzeugung, dass es möglich ist, über dieselbe Technologie
+auch eine Kleinanzeigenplattform zu realisieren.
 Flohmarkt möchte eine dezentrale Plattform für Kleinanzeigen werden. Dazu wollen wir eine
 selbst hostbare Webanwendung schreiben, die einerseits ihren Nutzern und Nutzerinnen ein
-aehnliches Erlebnis bietet, wie andere etablierte Inseratplattformen, auf der anderen seite
+aehnliches Erlebnis bietet, wie andere etablierte Inseratplattformen, auf der anderen Seite
 aber auch in der Lage ist, Inserate mit anderen Instanzen derselben Software auszutauschen.
 
 Welchem Themenfeld ordnest du dein Projekt zu?
@@ -22,7 +27,7 @@ Civic Tech
 Welche gesellschaftlichen Herausforderungen willst du mit deinem Projekt angehen
 --------------------------------------------------------------------------------
 
-Wir sehen drei Kernpunkte, in denen Flohmarkt hilft, die Welt zu verbessern:
+Wir sehen drei Kernpunkte, in denen Flohmarkt hilft, Ressourcen einzusparen:
 1. Einerseits fördert es den Re-Use-Gedanken, nach dem ein in zweiter Hand genutzter Gegenstand
 immer besser ist als ein entsorgter Gegenstand. Weiternutzung spart Ressourcen und senkt die
 Notwendigkeit der Nachproduktion.
@@ -35,15 +40,16 @@ unmittelbaren geographischen Umgebung befinden und so, organisch, ein Netz der k
 entsteht.
 3. Wir halten Monopole für schädlich für die Gesamtgesellschaft, da sie Innovation ausbremsen
 und Selbstbestimmung der Nutzer und Nutzerinnen untergraben. Deswegen wollen wir eine 
-nutzenswerte Alternative zum gegenwärtigen Marktführer aufbauen.
+attraktive und resiliente Alternative zum gegenwärtigen Marktführer aufbauen.
 
 Wie willst du dein Projekt technisch umsetzen?
 ----------------------------------------------
 
-Wir beabsichtigen, ein Backend in den Programmiersprache Go zu entwickeln. Go ist derzeit recht
+Wir beabsichtigen, ein Backend in der Programmiersprache Go zu entwickeln. Go ist derzeit recht
 so hoffen wir, eine stabile Community an mitentwicklern zu bekommen. Zur Föderation Nutzen wir
 das bereits erfolgreich erprobte W3C-Protokol ActivityPub, welches auch von z.B. Mastodon und
-Peertube eingesetzt wird. Wir beabsichtigen, auch mit anderen Fediverse- [ActivityPub-nutzenden]
+Peertube eingesetzt wird. In go gibt es bereits eine Implementierung der ActivityPub-Spezifikation,
+was den Entwicklungsprozess beschleunigt. Wir beabsichtigen, auch mit anderen Fediverse- [ActivityPub-nutzenden]
 Softwares kompatibel zu werden, sodass man bspw. als reiner Mastodon-Nutzer einen Artikel
 auf Flohmarkt kaufen kann. Datenbankseitig werden wir auf eine Collection-Dokumentenbasierte
 NoSQL-Datenbank setzen.
@@ -71,7 +77,7 @@ betrieben und implementieren kein Föderationsprotokoll, sind also nicht dezentr
 Wer ist die Zielgruppe und wie soll dein Projekt sie erreichen?
 ---------------------------------------------------------------
 
-Die Zielgruppe für das Projekt sind alle Menschen, die Gegenstände aus zweiter Hand erwerben
+Die Zielgruppe des Projekts sind alle Menschen, die Gegenstände aus zweiter Hand erwerben
 oder anbieten wollen.
 Wir beabsichtigen auf Konferenzen über die Existenz des Projektes zu sprechen. Wir erhoffen
 uns, dass durch den geographischen Bezug der einzelnen Instanzen einfacher Mund-zu-Mund-
@@ -116,12 +122,30 @@ Skizziere kurz die wichtigsten Meilensteiene, die im Förderzeitraum umgesetzt w
   * Wir schreiben einen CRUD-Cyclus für das Zentrale Objekt im System, das Inserat
   * Wir schaffen eine Möglichkeit, im Bezug auf Inserate, Nachrichten und Kaufinteressensbekundungen
     austauschen zu können
+  * Wir schaffen ein Meldesystem um fragwürdige Inhalte an die Instanzmoderation zu melden.
   * Wir stellen Interoperabilität mit anderen Flohmarkt-Instanzen her
   * Wir stellen Interoperabilität mit anderen ActivityPub-Basierten softwares her, mindestens
-  * jedoch Mastodon.
+    jedoch Mastodon.
 
 Checkliste
 ----------
+
+Bassd scho
+
+Wohnsitz
+--------
+
+Bassd au
+
+Datenschutzvereinbarung
+-----------------------
+
+Les mer no.
+
+OpenSource-Lizenz
+-----------------
+
+Ja, AGPL-3.0
 
 
 
