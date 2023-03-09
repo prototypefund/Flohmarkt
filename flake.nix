@@ -32,9 +32,7 @@
     nixosModule.default = { config, lib, ... }:
       {
         options = {
-
           services.flohmarkt = {
-
             enable = lib.mkOption {
               default = false;
               type = lib.types.bool;
@@ -42,7 +40,6 @@
                 Enable flohmarkt service.
               '';
             };
-
           };
         };
 
@@ -54,10 +51,8 @@
             script = ''
               cd ${./.}
               ${nixpkgs.legacyPackages.x86_64-linux.python3.withPackages (p: depfun p ++ [packages.x86_64-linux.default ])}/bin/uvicorn flohmarkt:app --host 0.0.0.0 --port 8080
-
             '';
           };
-
         };
       };
   };
