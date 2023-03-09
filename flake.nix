@@ -1,6 +1,14 @@
 {
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.11";
-  outputs = { self, nixpkgs } : rec
+  outputs = { self, nixpkgs } : 
+  let 
+    depfun = p: [
+      p.uvicorn
+      p.fastapi
+      p.motor
+    ];
+  in
+  rec
   {
     system = "x86_64-linux";
     packages.x86_64-linux.default = 
@@ -9,16 +17,9 @@
         pname = "flohmarkt";
         name = "flohmarkt";
         src = ./.;
-        nativeBuildInputs = [
-          python3
-          python3Packages.fastapi
-          python3Packages.uvicorn
-        ];
         propagatedBuildInputs = [
           python3
-          python3Packages.fastapi
-          python3Packages.uvicorn
-        ];
+        ] ++ depfun python3Packages;
       };
     devShell.x86_64-linux =
       with import nixpkgs {inherit system;};
@@ -26,43 +27,37 @@
         name = "flohmarkt devshell";
         buildInputs = [
           python3
-          python3Packages.fastapi
-          python3Packages.uvicorn
-        ];
+        ] ++ depfun python3Packages;
     };
     nixosModule.default = { config, lib, ... }:
       {
         options = {
 
-          services.devflake = {
+          services.flohmarkt = {
 
             enable = lib.mkOption {
               default = false;
               type = lib.types.bool;
               description = ''
-                Enable agent service. Use this to disable but still install the service at packer time.
+                Enable flohmarkt service.
               '';
             };
 
           };
         };
 
-        config = lib.mkIf config.services.devflake.enable {
+        config = lib.mkIf config.services.flohmarkt.enable {
           systemd.services.devflake = {
-            description = "flek runner";
+            description = "Flohmarkt Webservice";
             wantedBy = [ "multi-user.target" ];
             after = [ "network.target" ];
             script = ''
               cd ${./.}
-              ${nixpkgs.legacyPackages.x86_64-linux.python3Packages.uvicorn}/bin/uvicorn devflake:app
+              ${nixpkgs.legacyPackages.x86_64-linux.python3.withPackages (p: depfun p ++ [packages.x86_64-linux.default ])}/bin/uvicorn flohmarkt:app --host 0.0.0.0 --port 8080
+
             '';
           };
 
-          environment.systemPackages = [ packages.x86_64-linux.default ] ++ [
-                nixpkgs.legacyPackages.x86_64-linux.python3
-                nixpkgs.legacyPackages.x86_64-linux.python3Packages.fastapi
-                nixpkgs.legacyPackages.x86_64-linux.python3Packages.uvicorn
-          ];
         };
       };
   };
