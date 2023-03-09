@@ -47,7 +47,7 @@
         };
 
         config = lib.mkIf config.services.flohmarkt.enable {
-          systemd.services.devflake = {
+          systemd.services.flohmarkt = {
             description = "Flohmarkt Webservice";
             wantedBy = [ "multi-user.target" ];
             after = [ "network.target" ];
