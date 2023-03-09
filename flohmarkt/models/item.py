@@ -28,11 +28,8 @@ class ItemSchema(BaseModel):
 
     @staticmethod
     async def add(data: dict)->dict:
-        print("EE")
         ins = await item_collection.insert_one(data)
-        print("OO")
         new = await item_collection.find_one({"_id":ins.inserted_id})
-        print("WIII")
         return rename_id(new)
 
     @staticmethod
