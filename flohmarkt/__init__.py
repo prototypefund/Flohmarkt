@@ -2,9 +2,11 @@
 from fastapi import FastAPI
 
 from flohmarkt.routes.item import router as item_router
+from flohmarkt.routes.user import router as user_router
 
 app = FastAPI()
 app.include_router(item_router, tags=["Item"], prefix="/item")
+app.include_router(user_router, tags=["User"], prefix="/user")
 
 @app.on_event("startup")
 async def ini():
