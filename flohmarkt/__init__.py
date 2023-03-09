@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from  motor import motor_asyncio
 from pydantic import BaseModel
 
-import models
+from flohmarkt import models
 
 app = FastAPI()
 client = motor_asyncio.AsyncIOMotorClient("192.168.1.52:27017")
