@@ -1,13 +1,10 @@
 
 from fastapi import FastAPI
-from  motor import motor_asyncio
-from pydantic import BaseModel
 
-from flohmarkt import models
+from flohmarkt.routes.item import router as item_router
 
 app = FastAPI()
-client = motor_asyncio.AsyncIOMotorClient("192.168.1.52:27017")
-db = client.flohmarkt
+app.include_router(item_router, tags=["Item"], prefix="/item")
 
 @app.on_event("startup")
 async def ini():
