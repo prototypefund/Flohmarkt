@@ -1,0 +1,13 @@
+{
+    "id": "1",
+    "user": "Fred",
+    "instance": "floh.markt",
+    "name": "Item1",
+    "price": "10",
+    "currency": "€",
+    "image": {
+        "src": "item1.jpg",
+        "alt": "Item1"
+    },
+    "description": "foo"
+}

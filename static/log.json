@@ -1,0 +1,20 @@
+[
+    {
+        "from": {
+            "name": "George",
+            "instance": "floh.markt"
+        },
+        "message": "Yo, nice mower!"
+    },
+    {
+        "from": {
+            "name": "George",
+            "instance": "floh.markt"
+        },
+        "message": "Can I pick it up at 2100 tomorrow?"
+    },
+    {
+        "from": {},
+        "message": "Yes, sure. Come to me."
+    }
+]

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Flohmarkt</title>
+    <link rel="stylesheet" href="/app.css">
+    <link rel="stylesheet" href="/columns.css">
+    <link rel="stylesheet" href="/grid.css">
+    <link rel="stylesheet" href="/item.css">
+    <script defer type="module" src="/fetch-items.js"></script>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" aria-label="Go to home page"><img src="logo.svg" alt="Logo Flohmarkt"></a>
+            <button>Register</button>
+            <button>Sign in</button>
+        </nav>
+    </header>
+    <main>
+        <div class="row">
+            <div class="col-sm-6">
+                <h1>Flohmarkt</h1>
+                <h2>Newest articles</h2>
+                <div class="grid grid__newest"></div>
+                <h2>Most contested</h2>
+                <div class="grid grid__contested"></div>
+            </div>
+            <div class="col-sm-6 col__about">
+                <h2>About this instance</h2>
+                <p>foo</p>
+                <h3>Rules</h3>
+                <p>foo</p>
+                <h3>Administration</h3>
+                <p>by Admin</p>
+            </div>
+        </div>
+    </main>
+    <footer><a href="/article.html">static article page</a></footer>
+</body>
+</html>

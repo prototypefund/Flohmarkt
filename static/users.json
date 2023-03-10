@@ -1,0 +1,20 @@
+[
+    {
+        "name": "George",
+        "instance": "floh.markt",
+        "joined": "2023-03-10",
+        "src": "george.jpg"
+    },
+    {
+        "name": "Feli",
+        "instance": "floh.markt",
+        "joined": "2023-03-10",
+        "src": "feli.jpg"
+    },
+    {
+        "name": "Bernd",
+        "instance": "floh.markt",
+        "joined": "2023-03-10",
+        "src": "bernd.jpg"
+    }
+]
