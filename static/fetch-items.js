@@ -2,7 +2,7 @@ import { fetchJSON } from "./utils.js";
 
 const itemsFragment = document.createDocumentFragment();
 
-const items = await fetchJSON('/items.json');
+const items = await fetchJSON('/static/items.json');
 items.forEach(item => {
     const element = document.createElement('div');
     element.className = 'item';

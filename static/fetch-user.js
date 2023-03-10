@@ -3,7 +3,7 @@ import { fetchJSON } from "./utils.js";
 const itemsFragment = document.createDocumentFragment();
 const userFragment = document.createDocumentFragment();
 
-const items = await fetchJSON('/items.json');
+const items = await fetchJSON('/static/items.json');
 items.forEach(item => {
     const element = document.createElement('div');
     element.className = 'item';
@@ -26,7 +26,7 @@ items.forEach(item => {
     itemsFragment.appendChild(element);
 });
 
-const user = await fetchJSON('/user.json');
+const user = await fetchJSON('/static/user.json');
 const joined = document.createElement('p');
 joined.textContent = user.joined;
 userFragment.appendChild(joined);
