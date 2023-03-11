@@ -1,4 +1,5 @@
 import { fetchJSON } from "./utils.js";
+import { createItem } from "./item/create.js";
 
 const [items, user] = await Promise.all([
     fetchJSON('items'),
@@ -9,25 +10,7 @@ const itemsFragment = document.createDocumentFragment();
 const userFragment = document.createDocumentFragment();
 
 items.forEach(item => {
-    const element = document.createElement('div');
-    element.className = 'item';
-    
-    const image = document.createElement('img');
-    image.src = item.image.src;
-    image.alt = item.image.alt;
-    element.appendChild(image);
-
-    const link = document.createElement('a');
-    link.className = 'stretched-link';
-    link.href = '/~' + item.user + '/' + item.id;
-    link.textContent = item.name;
-    element.appendChild(link);
-
-    const price = document.createElement('div');
-    price.textContent = item.price + item.currency;
-    element.appendChild(price);
-
-    itemsFragment.appendChild(element);
+    itemsFragment.appendChild(createItem(item));
 });
 
 const userJoined = document.createElement('p');
@@ -35,6 +18,6 @@ userJoined.textContent = user.joined;
 userFragment.appendChild(userJoined);
 
 window.requestAnimationFrame(() => {
-    document.querySelector('.grid__my-articles').appendChild(itemsFragment);
-    document.querySelector('.grid__about').appendChild(userFragment);
+    document.querySelector('.grid__my-items').appendChild(itemsFragment);
+    document.querySelector('.col__about').appendChild(userFragment);
 });
