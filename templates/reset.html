@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+<script defer type="module" src="{{ url_for('static', path='/reset.js') }}"></script>
+{% endblock %}
+
+{% block main %}
+<section>
+    <header>
+        <h1>Reset your password</h1>
+    </header>
+    <form action="/password_reset" method="post" type="multipart/form-data">
+        <label for="email">Your E-Mail</label>
+        <input type="text" id="email" name="email">
+        <button type="submit" class="w-100" id="reset-btn">Send password reset E-Mail</button>
+    </form>
+</section>
+{% endblock %}

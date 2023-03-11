@@ -31,3 +31,7 @@
     z-index: 1;
     content: "";
 }
+
+.w-100 {
+    width: 100%;
+}
