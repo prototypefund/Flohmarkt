@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
 {% block scripts %}
-    <script defer type="module" src="{{ url_for('static', path='/fetch-item.js') }}"></script>
+<script defer type="module" src="{{ url_for('static', path='/fetch-item.js') }}"></script>
 {% endblock %}
 
-{% block content %}
-        <h1>{{ user }}'s item #{{ item }}</h1>        
-        <div class="row">
-            <div class="col-sm-6 col__item"></div>
-            <div class="col-sm-6 col__chat"></div>
-        </div>
+{% block main %}
+<h1>{{ user }}'s item #{{ item }}</h1>
+<div class="row">
+    <div class="col-sm-6 col__item"></div>
+    <div class="col-sm-6 col__chat"></div>
+</div>
 {% endblock %}

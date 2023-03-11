@@ -1,19 +1,15 @@
 {% extends "base.html" %}
-{% block content %}
+
+{% block main %}
 <h1>Login</h1>
-        <form action="/login" method="post" type="multipart/form-data">
-        <div class="row">
-            <div class="col-sm-12">
-                <h2>Username</h2>
-                <div class="grid grid__newest">
-                    <input type="text" name="username"></input>
-                </div>
-                <h2>Password</h2>
-                <div class="grid grid__newest">
-                    <input type="password" name="password"></input>
-                </div>
-                <button type="submit">
-            </div>
-        </div>
-        </form>
+{% include 'description.html' %}
+<section>
+    <form action="/login" method="post" type="multipart/form-data">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username"></input>
+        <label for="password">Password</label>    
+        <input type="password" name="password"></input>    
+        <button type="submit">Login</button>
+    </form>
+</section>
 {% endblock %}

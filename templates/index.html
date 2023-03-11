@@ -1,24 +1,26 @@
 {% extends "base.html" %}
+
 {% block scripts %}
-    <script defer type="module" src="{{ url_for('static', path='/fetch-items.js') }}"></script>
+<script defer type="module" src="{{ url_for('static', path='/fetch-items.js') }}"></script>
 {% endblock %}
-{% block content %}
+
+{% block main %}
 <h1>Flohmarkt</h1>
-        <p>A decentral federated small trade platform</p>
-        <div class="row">
-            <div class="col-sm-6">
-                <h2>Newest items</h2>
-                <div class="grid grid__newest"></div>
-                <h2>Most contested</h2>
-                <div class="grid grid__contested"></div>
-            </div>
-            <div class="col-sm-6 col__about">
-                <h2>About this instance</h2>
-                <p>foo</p>
-                <h3>Rules</h3>
-                <p>foo</p>
-                <h3>Administration</h3>
-                <p>by Admin</p>
-            </div>
-        </div>
+{% include 'description.html' %}
+<div class="row">
+    <div class="col-sm-6">
+        <h2>Newest items</h2>
+        <div class="grid grid__newest"></div>
+        <h2>Most contested</h2>
+        <div class="grid grid__contested"></div>
+    </div>
+    <div class="col-sm-6 col__about">
+        <h2>About this instance</h2>
+        <p>foo</p>
+        <h3>Rules</h3>
+        <p>foo</p>
+        <h3>Administration</h3>
+        <p>by Admin</p>
+    </div>
+</div>
 {% endblock %}
