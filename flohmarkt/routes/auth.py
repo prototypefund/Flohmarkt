@@ -1,4 +1,9 @@
-from fastapi import APIRouter, Body, Request, Form
+import datetime
+import jwt
+import crypt
+import email_validator
+
+from fastapi import APIRouter, Body, Request, Form, HTTPException
 from fastapi.templating import Jinja2Templates
 from fastapi.encoders import jsonable_encoder
 
@@ -15,33 +20,52 @@ async def other(request: Request):
 async def other(request: Request,
                 email:str=Form(),
                 username:str=Form(),
-                password1:str=Form(),
-                password2:str=Form()
+                password:str=Form(),
                 ):
-    print(email, username, password1, password2)
-    if password1 != password2 or password1 == "" and password2 == "":
-        return templates.TemplateResponse("register.html", {"request":request})
-    if username == "":
-        return templates.TemplateResponse("register.html", {"request":request})
+
+    email = email.replace(" ","+")
+
+    if username == "" or password == "":
+        return {"error": "username or password empty"}
     try:
         email_validator.validate_email(email)
-    except:
-        return templates.TemplateResponse("register.html", {"request":request})
+    except email_validator.EmailNotValidError as e:
+        return {"error": "email invalid "+str(e)+"'"+email+"'"}
 
-    # TODO: check for 
-    found_for_email = UserSchema.retrieve_single_email(email)
-    found_for_name = UserSchema.retrieve_single_email(username)
+    found_for_email = await UserSchema.retrieve_single_email(email)
+    found_for_name = await UserSchema.retrieve_single_email(username)
 
     if found_for_name is not None or found_for_email is not None:
-        return templates.TemplateResponse("register.html", {"request":request})
+        return {"error": "user already exists"}
 
-    return templates.TemplateResponse("registered.html", {"request":request})
+    pwhash = crypt.crypt(password, crypt.mksalt(method=crypt.METHOD_SHA512,rounds=10000))
+
+    new_user = {
+        "email":email,
+        "name":username,
+        "pwhash":pwhash,
+        "avatar":None,
+        "role":"User"
+    }
+
+    new_user_foo = await UserSchema.add(new_user)
+
+    return {"result": True}
 
 #Login
 @router.post("/token")
 async def other(username: str = Form(), password: str = Form()):
-    if username != "reyna" or password != "skye":
+    found_user = await UserSchema.retrieve_single_name(username)
+    if found_user is None:
+        print("kein user")
         raise HTTPException(status_code=403, detail="Not a valid name-password-pair")
+
+    current_pwhash = crypt.crypt(password, found_user["pwhash"])
+    
+    if current_pwhash != found_user["pwhash"]:
+        print("pw is kacke")
+        raise HTTPException(status_code=403, detail="Not a valid name-password-pair")
+
     return jwt.encode(
             {"exp": datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(days=1)},
             "yolosecret"

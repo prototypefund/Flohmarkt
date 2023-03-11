@@ -15,6 +15,8 @@ class UserSchema(BaseModel):
     email : str = Field(...)
     pwhash : str = Field(...)
     avatar : str = Field(...)
+    active : bool = Field(...)
+    role : str = Field(...)
     
     
     class Config: 
@@ -36,6 +38,7 @@ class UserSchema(BaseModel):
     async def add(data: dict)->dict:
         ins = await user_collection.insert_one(data)
         new = await user_collection.find_one({"_id":ins.inserted_id})
+        print(new)
         return rename_id(new)
 
     @staticmethod
@@ -47,14 +50,12 @@ class UserSchema(BaseModel):
 
     @staticmethod
     async def retrieve_single_name(name: str)->dict:
-        print(ident)
         user = await user_collection.find_one({"name":name})
         if user is not None:
             return rename_id(user)
 
     @staticmethod
     async def retrieve_single_email(email: str)->dict:
-        print(ident)
         user = await user_collection.find_one({"email":email})
         if user is not None:
             return rename_id(user)
