@@ -1,6 +1,6 @@
 # flohmarkt
 
-A decentral federated small ad platform
+A decentral federated small trade platform
 
 ## Dependencies
 
