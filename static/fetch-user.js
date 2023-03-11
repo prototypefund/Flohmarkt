@@ -1,5 +1,6 @@
 import { fetchJSON } from "./utils.js";
-import { createItem } from "./item/create.js";
+import { createItem } from "./create/item.js";
+import { createElement } from "./create/element.js";
 
 const [items, user] = await Promise.all([
     fetchJSON('items'),
@@ -7,15 +8,12 @@ const [items, user] = await Promise.all([
 ]);
 
 const itemsFragment = document.createDocumentFragment();
-const userFragment = document.createDocumentFragment();
-
 items.forEach(item => {
     itemsFragment.appendChild(createItem(item));
 });
 
-const userJoined = document.createElement('p');
-userJoined.textContent = user.joined;
-userFragment.appendChild(userJoined);
+const userFragment = document.createDocumentFragment();
+userFragment.appendChild(createElement('p', null, user.joined));
 
 window.requestAnimationFrame(() => {
     document.querySelector('.grid__my-items').appendChild(itemsFragment);

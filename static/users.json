@@ -3,18 +3,18 @@
         "name": "George",
         "instance": "floh.markt",
         "joined": "2023-03-10",
-        "src": "george.jpg"
+        "src": "user.svg"
     },
     {
         "name": "Feli",
         "instance": "floh.markt",
         "joined": "2023-03-10",
-        "src": "feli.jpg"
+        "src": "user.svg"
     },
     {
         "name": "Bernd",
         "instance": "floh.markt",
         "joined": "2023-03-10",
-        "src": "bernd.jpg"
+        "src": "user.svg"
     }
 ]

@@ -7,21 +7,21 @@
         "price": "10",
         "currency": "€",
         "image": {
-            "src": "item1.jpg",
+            "src": "photo.svg",
             "alt": "Item1"
         },
         "description": "foo"
     },
     {
-        "id": "2",
+        "id": "1",
         "user": "Bernd",
         "instance": "floh.markt",
-        "name": "Item2",
+        "name": "Item1",
         "price": "10",
         "currency": "€",
         "image": {
-            "src": "item2.jpg",
-            "alt": "Item2"
+            "src": "photo.svg",
+            "alt": "Item1"
         },
         "description": "bar"
     }

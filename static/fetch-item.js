@@ -1,4 +1,7 @@
 import { fetchJSON } from "./utils.js";
+import { createItem } from "./create/item.js";
+import { createElement } from "./create/element.js";
+import { createImg } from "./create/img.js";
 
 const [item, users, log] = await Promise.all([
     fetchJSON('item'),
@@ -7,38 +10,21 @@ const [item, users, log] = await Promise.all([
 ]);
 
 const itemFragment = document.createDocumentFragment();
+const element = createItem(item);
+element.appendChild(createElement('p', null, item.description));
+itemFragment.appendChild(element);
+
 const usersFragment = document.createDocumentFragment();
-const logFragment = document.createDocumentFragment();
-
-const image = document.createElement('img');
-image.src = item.image.src;
-image.alt = item.image.alt;
-itemFragment.appendChild(image);
-
-const price = document.createElement('div');
-price.textContent = item.price + item.currency;
-itemFragment.appendChild(price);
-
-const description = document.createElement('p');
-description.textContent = item.description;
-itemFragment.appendChild(description);
-
-const usersContainer = document.createElement('div');
-usersContainer.className = 'd-flex';
+const usersContainer = createElement('div', 'd-flex');
 users.forEach(user => {
-    const image = document.createElement('img');
-    image.src = user.src;
-    image.alt = user.name;
-    usersContainer.appendChild(image);
+    usersContainer.appendChild(createImg(user.src, user.alt));
 });
 usersFragment.appendChild(usersContainer);
 
+const logFragment = document.createDocumentFragment();
 const logContainer = document.createElement('div');
 log.forEach(element =>{
-    const message = document.createElement('p');
-    const from = element.from.name || 'Me'; 
-    message.textContent = from + ': ' + element.message;
-    logContainer.appendChild(message);
+    logContainer.appendChild(createElement('p', null, element.from.name || 'Me' + ': ' + element.message));
 });
 logFragment.appendChild(logContainer);
 

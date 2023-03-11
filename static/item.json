@@ -6,7 +6,7 @@
     "price": "10",
     "currency": "€",
     "image": {
-        "src": "item1.jpg",
+        "src": "photo.svg",
         "alt": "Item1"
     },
     "description": "foo"
