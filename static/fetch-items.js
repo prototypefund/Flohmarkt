@@ -10,7 +10,7 @@ items.forEach(item => {
 
     const link = document.createElement('a');
     link.className = 'stretched-link';
-    link.href = '/' + item.user + '@' + item.instance + '/' + item.id;
+    link.href = '/~' + item.user + '/' + item.id;
     link.textContent = item.name;
 
     const image = document.createElement('img');
