@@ -38,12 +38,10 @@ class UserSchema(BaseModel):
     async def add(data: dict)->dict:
         ins = await user_collection.insert_one(data)
         new = await user_collection.find_one({"_id":ins.inserted_id})
-        print(new)
         return rename_id(new)
 
     @staticmethod
     async def retrieve_single_id(ident: str)->dict:
-        print(ident)
         user = await user_collection.find_one({"_id":ObjectId(ident)})
         if user is not None:
             return rename_id(user)

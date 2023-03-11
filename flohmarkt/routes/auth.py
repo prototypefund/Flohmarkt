@@ -57,13 +57,11 @@ async def other(request: Request,
 async def other(username: str = Form(), password: str = Form()):
     found_user = await UserSchema.retrieve_single_name(username)
     if found_user is None:
-        print("kein user")
         raise HTTPException(status_code=403, detail="Not a valid name-password-pair")
 
     current_pwhash = crypt.crypt(password, found_user["pwhash"])
     
     if current_pwhash != found_user["pwhash"]:
-        print("pw is kacke")
         raise HTTPException(status_code=403, detail="Not a valid name-password-pair")
 
     return jwt.encode(
