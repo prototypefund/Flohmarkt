@@ -30,9 +30,9 @@ items.forEach(item => {
     itemsFragment.appendChild(element);
 });
 
-const joined = document.createElement('p');
-joined.textContent = user.joined;
-userFragment.appendChild(joined);
+const userJoined = document.createElement('p');
+userJoined.textContent = user.joined;
+userFragment.appendChild(userJoined);
 
 window.requestAnimationFrame(() => {
     document.querySelector('.grid__my-articles').appendChild(itemsFragment);
