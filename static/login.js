@@ -2,7 +2,7 @@ document.getElementById('login-btn').addEventListener('click', async event => {
     event.preventDefault();
 
     try {
-        const response = await window.fetch ('/token', {
+        const response = await window.fetch('/token', {
             headers: {
                 "Content-type":"application/x-www-form-urlencoded",
             },
@@ -13,7 +13,7 @@ document.getElementById('login-btn').addEventListener('click', async event => {
         });
         const data = await response.json();
         window.sessionStorage.token = data;
-    } catch(error) {
+    } catch (error) {
         console.log(error);
     }
 });
