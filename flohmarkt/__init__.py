@@ -1,7 +1,7 @@
 import jwt
 import datetime
 
-from fastapi import FastAPI, Request, Depends, Form
+from fastapi import FastAPI, Request, Depends, Form, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.security import OAuth2PasswordBearer
@@ -50,7 +50,7 @@ async def other(request: Request):
 @app.post("/token")
 async def other(username: str = Form(), password: str = Form()):
     if username != "reyna" or password != "skye":
-        return {"yo":403}
+        raise HTTPException(status_code=403, detail="Not a valid name-password-pair")
     return jwt.encode(
             {"exp": datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(days=1)},
             "yolosecret"
