@@ -6,6 +6,6 @@ setup(
     description='a decentral federated small ad platform',
     author='grindhold',
     author_email='grindhold+floh@skarphed.org',
-    url='http://codeberg.org/grindhold/flohmarkt',
+    url='https://codeberg.org/grindhold/flohmarkt',
     packages=['flohmarkt'],
 )
