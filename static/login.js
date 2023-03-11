@@ -7,9 +7,9 @@ document.getElementById('login-btn').addEventListener('click', async event => {
                 "Content-type":"application/x-www-form-urlencoded",
             },
             method: "POST",
-            body: 'username=' + document.getElementById('password').value
+            body: 'username=' + document.getElementById('username').value
                   + '&' +
-                  'password=' + document.getElementById('username').value
+                  'password=' + document.getElementById('password').value
         });
         const data = await response.json();
         window.sessionStorage.token = data;
