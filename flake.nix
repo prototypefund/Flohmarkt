@@ -7,6 +7,7 @@
       p.fastapi
       p.motor
       p.pyjwt
+      p.email-validator
     ];
   in
   rec

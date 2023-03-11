@@ -14,6 +14,8 @@ class UserSchema(BaseModel):
     name : str = Field(...)
     email : str = Field(...)
     pwhash : str = Field(...)
+    avatar : str = Field(...)
+    
     
     class Config: 
         schema_extra = {
@@ -37,9 +39,23 @@ class UserSchema(BaseModel):
         return rename_id(new)
 
     @staticmethod
-    async def retrieve_single(ident: str)->dict:
+    async def retrieve_single_id(ident: str)->dict:
         print(ident)
         user = await user_collection.find_one({"_id":ObjectId(ident)})
+        if user is not None:
+            return rename_id(user)
+
+    @staticmethod
+    async def retrieve_single_name(name: str)->dict:
+        print(ident)
+        user = await user_collection.find_one({"name":name})
+        if user is not None:
+            return rename_id(user)
+
+    @staticmethod
+    async def retrieve_single_email(email: str)->dict:
+        print(ident)
+        user = await user_collection.find_one({"email":email})
         if user is not None:
             return rename_id(user)
 
