@@ -1,10 +1,15 @@
 import { fetchJSON } from "./utils.js";
 
+const [item, users, log] = await Promise.all([
+    fetchJSON('item'),
+    fetchJSON('users'),
+    fetchJSON('log')
+]);
+
 const itemFragment = document.createDocumentFragment();
 const usersFragment = document.createDocumentFragment();
 const logFragment = document.createDocumentFragment();
 
-const item = await fetchJSON('/static/item.json');
 const image = document.createElement('img');
 image.src = item.image.src;
 image.alt = item.image.alt;
@@ -18,7 +23,6 @@ const description = document.createElement('p');
 description.textContent = item.description;
 itemFragment.appendChild(description);
 
-const users = await fetchJSON('/static/users.json');
 const usersContainer = document.createElement('div');
 usersContainer.className = 'd-flex';
 users.forEach(user => {
@@ -29,7 +33,6 @@ users.forEach(user => {
 });
 usersFragment.appendChild(usersContainer);
 
-const log = await fetchJSON('/static/log.json');
 const logContainer = document.createElement('div');
 log.forEach(element =>{
     const message = document.createElement('p');

@@ -1,8 +1,9 @@
 import { fetchJSON } from "./utils.js";
 
+const items = await fetchJSON('items');
+
 const itemsFragment = document.createDocumentFragment();
 
-const items = await fetchJSON('/static/items.json');
 items.forEach(item => {
     const element = document.createElement('div');
     element.className = 'item';
@@ -28,7 +29,9 @@ items.forEach(item => {
     element.appendChild(link);
     itemsFragment.appendChild(element);
 });
+
 const secondFragment = itemsFragment.cloneNode(true);
+
 window.requestAnimationFrame(() => {
     document.querySelector('.grid__newest').appendChild(itemsFragment);
     document.querySelector('.grid__contested').appendChild(secondFragment);
