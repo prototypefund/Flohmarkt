@@ -1,5 +1,11 @@
 from  motor import motor_asyncio
-client = motor_asyncio.AsyncIOMotorClient("mongodb://192.168.0.52:27017")
+
+from flohmarkt.config import cfg
+
+db_server = cfg["Database"]["Server"]
+db_port = cfg["Database"]["Port"]
+
+client = motor_asyncio.AsyncIOMotorClient(f"mongodb://{db_server}:{db_port}")
 db = client.flohmarkt
 
 def rename_id(d: dict) -> dict:
