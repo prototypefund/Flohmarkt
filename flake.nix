@@ -6,6 +6,7 @@
       p.uvicorn
       p.fastapi
       p.motor
+      p.pyjwt
     ];
   in
   rec

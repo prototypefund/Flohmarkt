@@ -1,19 +1,25 @@
+import jwt
+import datetime
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Depends, Form
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from fastapi.security import OAuth2PasswordBearer
 
 from flohmarkt.routes.item import router as item_router
 from flohmarkt.routes.user import router as user_router
 
 templates = Jinja2Templates(directory="templates")
 
+oauth2 = OAuth2PasswordBearer(tokenUrl="token")
+
 app = FastAPI()
+
 app.mount("/static", StaticFiles(directory="static"), name="static")
 api_prefix = "/api/v1"
+
 app.include_router(item_router, tags=["Item"], prefix=api_prefix+"/item")
 app.include_router(user_router, tags=["User"], prefix=api_prefix+"/user")
-
 
 @app.on_event("startup")
 async def ini():
@@ -31,14 +37,30 @@ async def other(request: Request, user: str, item: str):
 async def other(request: Request, user: str):
     return templates.TemplateResponse("user.html", {"request": request, "user": user})
 
-@app.get("/u/{toast_id}")
-async def other(toast_id:int):
-    return {"message": "1 toast"}
-
+#Registration
 @app.get("/register")
 async def other(toast_id:int):
-    return {"message": "1 toast"}
+    return templates.TemplateResponse("register.html", {"request":{}})
 
-@app.get("/signin")
+@app.post("/register")
+async def other(toast_id:int):
+    return templates.TemplateResponse("registered.html", {"request":{}})
+
+#Login
+@app.post("/token")
+async def other(username: str = Form(), password: str = Form()):
+    if username != "reyna" or password != "skye":
+        return {"yo":403}
+    return jwt.encode(
+            {"exp": datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(days=1)},
+            "yolosecret"
+        )
+
+@app.post("/register")
+async def other(toast_id:int):
+    return templates.TemplateResponse("registered.html", {"request":{}})
+
+#Logout
+@app.get("/logout")
 async def other(toast_id:int):
     return {"message": "1 toast"}
