@@ -56,6 +56,11 @@ async def other(username: str = Form(), password: str = Form()):
             "yolosecret"
         )
 
+#Login
+@app.get("/login")
+async def other(request: Request):
+    return templates.TemplateResponse("login.html", {"request":request})
+
 #Logout
 @app.get("/logout")
 async def other(toast_id:int):
