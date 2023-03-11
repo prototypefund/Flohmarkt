@@ -1,5 +1,5 @@
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -20,12 +20,16 @@ async def ini():
     print ("Flohmarkt booting!")
 
 @app.get("/")
-async def root():
-    return templates.TemplateResponse("index.html", {"request":{}})
+async def root(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
 
-@app.get("/u/{user_id}/{item_id}")
-async def other(user_id: str, item_id: str):
-    return templates.TemplateResponse("article.html", {"request":{}})
+@app.get("/~{user}/{item}")
+async def other(request: Request, user: str, item: str):
+    return templates.TemplateResponse("item.html", {"request": request, "user": user, "item": item})
+
+@app.get("/~{user}")
+async def other(request: Request, user: str):
+    return templates.TemplateResponse("user.html", {"request": request, "user": user})
 
 @app.get("/u/{toast_id}")
 async def other(toast_id:int):

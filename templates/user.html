@@ -5,11 +5,11 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Flohmarkt</title>
-    <link rel="stylesheet" href="/app.css">
-    <link rel="stylesheet" href="/columns.css">
-    <link rel="stylesheet" href="/grid.css">
-    <link rel="stylesheet" href="/item.css">
-    <script defer type="module" src="/fetch-user.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', path='/app.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='/columns.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='/grid.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='/item.css') }}">
+    <script defer type="module" src="{{ url_for('static', path='/fetch-user.js') }}"></script>
 </head>
 <body>
     <header>
@@ -22,13 +22,13 @@
     <main>
         <div class="row">
             <div class="col-sm-6">
-                <h1>foo@foo.com</h1>
+                <h1>{{ user }}</h1>
                 <h2>My articles</h2>
                 <div class="grid grid__my-articles"></div>
             </div>
             <div class="col-sm-6 col__about"></div>
         </div>
     </main>
-    <footer><a href="/article.html">static article page</a></footer>
+    <footer>Footer</footer>
 </body>
 </html>
