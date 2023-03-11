@@ -39,12 +39,12 @@ async def other(request: Request, user: str):
 
 #Registration
 @app.get("/register")
-async def other(toast_id:int):
-    return templates.TemplateResponse("register.html", {"request":{}})
+async def other(request: Request):
+    return templates.TemplateResponse("register.html", {"request":request})
 
 @app.post("/register")
-async def other(toast_id:int):
-    return templates.TemplateResponse("registered.html", {"request":{}})
+async def other(request: Request):
+    return templates.TemplateResponse("registered.html", {"request":request})
 
 #Login
 @app.post("/token")
@@ -55,10 +55,6 @@ async def other(username: str = Form(), password: str = Form()):
             {"exp": datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(days=1)},
             "yolosecret"
         )
-
-@app.post("/register")
-async def other(toast_id:int):
-    return templates.TemplateResponse("registered.html", {"request":{}})
 
 #Logout
 @app.get("/logout")

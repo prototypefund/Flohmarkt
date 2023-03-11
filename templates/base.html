@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% include 'head.html' %}
+    {% block scripts %}
+    {% endblock %}
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" aria-label="Go to home page"><img src="{{ url_for('static', path='/logo.svg') }}" width="42" height="42" alt="Logo Flohmarkt"></a>
+            <a href="/register"><button>Register</button></a>
+            <button>Sign in</button>
+        </nav>
+    </header>
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+    <footer>{% include "footer.html" %}</footer>
+</body>
+</html>
