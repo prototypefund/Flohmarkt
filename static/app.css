@@ -68,7 +68,7 @@ header,
 main {
     margin: 0 auto;
     max-width: var(--width-content);
-    padding: 3rem 1rem;
+    padding: /* 3rem */ 1rem;
 }
 
 hr {
@@ -145,7 +145,7 @@ nav {
     display: flex;
     font-weight: bold;
     justify-content: space-between;
-    margin-bottom: 7rem;
+    /* margin-bottom: 7rem; */
 }
 
 nav ul {
