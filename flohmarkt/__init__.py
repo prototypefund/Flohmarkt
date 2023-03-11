@@ -65,3 +65,12 @@ async def other(request: Request):
 @app.get("/logout")
 async def other(toast_id:int):
     return {"message": "1 toast"}
+
+#Password reset
+@app.get("/password_reset")
+async def other(request: Request):
+    return templates.TemplateResponse("reset.html", {"request": request})
+
+@app.post("/password_reset")
+async def other(request: Request):
+    return templates.TemplateResponse("reseted.html", {"request": request})
