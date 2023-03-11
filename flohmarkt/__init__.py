@@ -40,11 +40,11 @@ async def other(request: Request, user: str):
 #Registration
 @app.get("/register")
 async def other(request: Request):
-    return templates.TemplateResponse("register.html", {"request":request})
+    return templates.TemplateResponse("register.html", {"request": request})
 
 @app.post("/register")
 async def other(request: Request):
-    return templates.TemplateResponse("registered.html", {"request":request})
+    return templates.TemplateResponse("registered.html", {"request": request})
 
 #Login
 @app.post("/token")
@@ -59,7 +59,7 @@ async def other(username: str = Form(), password: str = Form()):
 #Login
 @app.get("/login")
 async def other(request: Request):
-    return templates.TemplateResponse("login.html", {"request":request})
+    return templates.TemplateResponse("login.html", {"request": request})
 
 #Logout
 @app.get("/logout")
