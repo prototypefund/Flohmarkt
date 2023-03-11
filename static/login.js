@@ -1,17 +1,19 @@
+document.getElementById('login-btn').addEventListener('click', async event => {
+    event.preventDefault();
 
-function getToken() {
-    var pw = document.querySelector('#password').value;
-    var user = document.querySelector('#username').value;
-    fetch ('/token', {
-        headers: {
-            "Content-type":"application/x-www-form-urlencoded",
-        },
-        method: "POST",
-        body: 'username='+user+'&password='+pw
-    })
-    .then(response=>{return response.json();})
-    .then(data=>{sessionStorage.token = data;})
-    .catch(function(res){console.log(res)});
-}
-
-document.querySelector('.login_button').addEventListener("click", getToken);
+    try {
+        const response = await window.fetch ('/token', {
+            headers: {
+                "Content-type":"application/x-www-form-urlencoded",
+            },
+            method: "POST",
+            body: 'username=' + document.getElementById('password').value
+                  + '&' +
+                  'password=' + document.getElementById('username').value
+        });
+        const data = await response.json();
+        window.sessionStorage.token = data;
+    } catch(error) {
+        console.log(error);
+    }
+});

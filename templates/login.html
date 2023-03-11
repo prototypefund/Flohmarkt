@@ -1,21 +1,23 @@
 {% extends "base.html" %}
 
 {% block scripts %}
-    <script defer type="module" src="{{ url_for('static', path='/login.js') }}"></script>
+<script defer type="module" src="{{ url_for('static', path='/login.js') }}"></script>
 {% endblock %}
 
 {% block main %}
-<h1>Login</h1>
-{% include 'description.html' %}
 <section>
-    <!--<form action="" method="post" type="multipart/form-data">-->
-    <div class="loginform">
+    <header>
+        <h1>Sign in</h1>
+    </header>
+    <form action="/token" method="post" type="multipart/form-data">
         <label for="username">Username</label>
-        <input type="text" id="username" name="username"></input>
-        <label for="password">Password</label>    
-        <input type="password" id="password" name="password"></input>    
-        <button class="login_button">Login</button>
-    </div>
-    <!--</form>-->
+        <input type="text" id="username" name="username" autocomplete="username">
+        <div class="position-relative">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" autocomplete="current-password">
+            <button id="login-btn">Sign in</button>
+            <a class="position-absolute top-0 right-0" href="/password_reset" tabindex="0">Forgot password?</a>
+        </div>
+    </form>
 </section>
 {% endblock %}
