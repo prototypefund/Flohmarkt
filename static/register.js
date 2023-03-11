@@ -12,7 +12,7 @@ registerBtn.addEventListener('click', async event => {
             method: "POST",
             body: 'username=' + document.getElementById('username').value
                   + '&' +
-                  'password=' + document.getElementById('password').value
+                  'password=' + document.getElementById('password1').value
                   + '&' +
                   'email=' + document.getElementById('email').value
         });
