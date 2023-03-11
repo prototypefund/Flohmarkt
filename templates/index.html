@@ -6,11 +6,7 @@
 </head>
 <body>
     <header>
-        <nav>
-            <a href="/" aria-label="Go to home page"><img src="{{ url_for('static', path='/logo.svg') }}" width="42" height="42" alt="Logo Flohmarkt"></a>
-            <button>Register</button>
-            <button>Sign in</button>
-        </nav>
+        {% include 'header.html' %}
     </header>
     <main>
         <h1>Flohmarkt</h1>
