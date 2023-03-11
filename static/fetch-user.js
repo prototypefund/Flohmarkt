@@ -16,6 +16,6 @@ const userFragment = document.createDocumentFragment();
 userFragment.appendChild(createElement('p', null, user.joined));
 
 window.requestAnimationFrame(() => {
-    document.querySelector('.grid__my-items').appendChild(itemsFragment);
+    document.querySelector('.grid__user-items').appendChild(itemsFragment);
     document.querySelector('.col__about').appendChild(userFragment);
 });
