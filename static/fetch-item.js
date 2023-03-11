@@ -24,7 +24,7 @@ usersFragment.appendChild(usersContainer);
 const logFragment = document.createDocumentFragment();
 const logContainer = document.createElement('div');
 log.forEach(element =>{
-    logContainer.appendChild(createElement('p', null, element.from.name || 'Me' + ': ' + element.message));
+    logContainer.appendChild(createElement('p', null, (element.from.name || 'Me') + ': ' + element.message));
 });
 logFragment.appendChild(logContainer);
 
