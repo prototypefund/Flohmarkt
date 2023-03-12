@@ -47,7 +47,7 @@
           };
         };
 
-        environment.etc."flohmarkt.conf" = {
+        config.environment.etc."flohmarkt.conf" = {
           text = ''
             [General]
             InstanceName = Fluffys Flohmarkt
