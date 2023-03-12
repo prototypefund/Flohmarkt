@@ -67,7 +67,9 @@
               Server = mail.foo.org
               Port = 587
               User = user@foobar.org
+              From = user@example.org
               Password = S0op3rs3cr3t
+              CAFile = foo.pem
             '';
           };
           systemd.services.flohmarkt = {
