@@ -1,5 +1,14 @@
 .grid {
     display: grid;
+}
+
+.grid__newest,
+.grid__contested,
+.grid__user-items {
     grid-gap: 1rem;
     grid-template-columns: repeat(3, 1fr);
+}
+
+.grid__admin {
+    grid-template-columns: repeat(4, 1fr);
 }

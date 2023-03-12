@@ -3,18 +3,30 @@
         "name": "George",
         "instance": "floh.markt",
         "joined": "2023-03-10",
-        "src": "user.svg"
+        "src": "user.svg",
+        "role": {
+            "admin": true,
+            "mod": true
+        }
     },
     {
         "name": "Feli",
         "instance": "floh.markt",
         "joined": "2023-03-10",
-        "src": "user.svg"
+        "src": "user.svg",
+        "role": {
+            "admin": false,
+            "mod": true
+        }
     },
     {
         "name": "Bernd",
         "instance": "floh.markt",
         "joined": "2023-03-10",
-        "src": "user.svg"
+        "src": "user.svg",
+        "role": {
+            "admin": false,
+            "mod": false
+        }
     }
 ]

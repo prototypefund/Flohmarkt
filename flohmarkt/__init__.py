@@ -35,3 +35,8 @@ async def other(request: Request, user: str, item: str):
 @app.get("/~{user}")
 async def other(request: Request, user: str):
     return templates.TemplateResponse("user.html", {"request": request, "user": user})
+
+#Admin
+@app.get("/admin")
+async def other(request: Request):
+    return templates.TemplateResponse("admin.html", {"request": request})
