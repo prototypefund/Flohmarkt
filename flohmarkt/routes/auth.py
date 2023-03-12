@@ -130,6 +130,7 @@ async def _(username: str = Form(), password: str = Form()):
             {
                 "exp": datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(days=1),
                 "username": found_user["name"],
+                "avatar": found_user["avatar"],
             },
             cfg["General"]["JwtSecret"]
         )
