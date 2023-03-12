@@ -45,6 +45,28 @@
           };
         };
 
+        environment.etc."flohmarkt.conf" = {
+          text = ''
+            [General]
+            InstanceName = Fluffys Flohmarkt
+            ExternalURL = http://fluffy.cat
+            DebugMode = 0
+            JwtSecret = S0op3rs3cr3t
+
+            [Database]
+            Server = 192.168.0.52
+            Port = 27017
+            User = foo
+            Password = bar
+
+            [SMTP]
+            Server = mail.foo.org
+            Port = 587
+            User = user@foobar.org
+            Password = S0op3rs3cr3t
+          '';
+        };
+
         config = lib.mkIf config.services.flohmarkt.enable {
           systemd.services.flohmarkt = {
             description = "Flohmarkt Webservice";
