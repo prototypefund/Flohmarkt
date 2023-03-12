@@ -8,7 +8,7 @@ CONFIGPATH = [
 CONFIGNAME = "flohmarkt.conf"
 
 cfg = configparser.ConfigParser()
-found = True
+found = False
 for path in CONFIGPATH:
     cfgfile = os.path.join(path, CONFIGNAME)
     if os.path.exists(cfgfile):
