@@ -140,7 +140,7 @@
                   type = lib.types.str;
                   description = ''
                     The email adress which is displayed as From-address
-                    in outgoing email.
+                    in outgoing email. (If mailserver allows this).
                   '';
                 };
                 password = lib.mkOption {
