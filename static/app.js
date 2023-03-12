@@ -10,10 +10,14 @@ function parse_jwt (token) {
 const showElements = [];
 const token = window.sessionStorage.getItem('token');
 if (token != undefined && token != null && typeof(token) === 'string') {
-    const username = parse_jwt(token).username;
+    const parsedToken = parse_jwt(token);
+    const username = parsedToken.username;
     const detailsListItem = document.getElementById('details-list-item');
     detailsListItem.querySelector('.details-menu span').append(username);
     detailsListItem.querySelector('.details-menu a').href = '/~' + username;
+    const avatar = detailsListItem.querySelector('img');
+    avatar.src = parsedToken.avatar;
+    avatar.alt = username;
 
     showElements.push(detailsListItem);
 }
