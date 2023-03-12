@@ -170,18 +170,18 @@
               [General]
               InstanceName = ${config.services.flohmarkt.settings.general.instanceName}
               ExternalURL = ${config.services.flohmarkt.settings.general.externalUrl}
-              DebugMode = ${config.services.flohmarkt.settings.general.debugMode}
+              DebugMode = ${toString config.services.flohmarkt.settings.general.debugMode}
               JwtSecret =  ${config.services.flohmarkt.settings.general.jwtSecret}
 
               [Database]
               Server = ${config.services.flohmarkt.settings.database.server}
-              Port = ${config.services.flohmarkt.settings.database.port}
+              Port = ${toString config.services.flohmarkt.settings.database.port}
               User = ${config.services.flohmarkt.settings.database.user}
               Password = ${config.services.flohmarkt.settings.database.password}
 
               [SMTP]
               Server = ${config.services.flohmarkt.settings.smtp.server}
-              Port = ${config.services.flohmarkt.settings.smtp.port}
+              Port = ${toString config.services.flohmarkt.settings.smtp.port}
               User = ${config.services.flohmarkt.settings.smtp.user}
               From = ${config.services.flohmarkt.settings.smtp.from}
               Password = ${config.services.flohmarkt.settings.smtp.password}
