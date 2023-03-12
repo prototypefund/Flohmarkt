@@ -78,7 +78,7 @@ async def _(request: Request,
         "pwhash":pwhash,
         "active": False,
         "activation_code": str(uuid.uuid4()),
-        "avatar":None,
+        "avatar":"/static/noavatar.svg",
         "role":"User"
     }
 
@@ -130,7 +130,7 @@ async def _(username: str = Form(), password: str = Form()):
             {
                 "exp": datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(days=1),
                 "username": found_user["name"],
-                "avatar": found_user["avatar"],
+                "avatar": found_user["avatar"] if found_user["avatar"] != "" else "/static/noavatar.svg",
             },
             cfg["General"]["JwtSecret"]
         )
