@@ -5,7 +5,7 @@ document.getElementById('login-btn').addEventListener('click', async event => {
           password = document.getElementById('password').value;
 
     try {
-        const response = await window.fetch('/token', {
+        fetch('/token', {
             headers: {
                 "Content-type":"application/x-www-form-urlencoded",
             },
@@ -13,10 +13,13 @@ document.getElementById('login-btn').addEventListener('click', async event => {
             body: 'username=' + username
                   + '&' +
                   'password=' + password
-        });
-        const data = await response.json();
-        window.sessionStorage.setItem('token', data);
-        window.location.pathname = '/~' + username;
+        }).then(response => { return response.json();
+        }).then(data=> {
+            console.log(typeof(data));
+            if (typeof(data) !== "string" ) {console.log("no valid login"); return;}
+            window.sessionStorage.setItem('token', data);
+            window.location.pathname = '/~' + username;
+        }).catch(()=>{});
     } catch (error) {
         console.log(error);
     }
