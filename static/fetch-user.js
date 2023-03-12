@@ -15,7 +15,9 @@ items.forEach(item => {
 const userFragment = document.createDocumentFragment();
 userFragment.appendChild(createElement('p', null, user.joined));
 
+const gridUserItems = document.querySelector('.grid__user-items'),
+      colAbout = document.querySelector('.col__about');
 window.requestAnimationFrame(() => {
-    document.querySelector('.grid__user-items').appendChild(itemsFragment);
-    document.querySelector('.col__about').appendChild(userFragment);
+    gridUserItems.appendChild(itemsFragment);
+    colAbout.appendChild(userFragment);
 });

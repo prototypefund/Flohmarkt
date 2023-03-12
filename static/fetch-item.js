@@ -28,8 +28,11 @@ log.forEach(element =>{
 });
 logFragment.appendChild(logContainer);
 
+
+const colItem = document.querySelector('.col__item'),
+      colChat = document.querySelector('.col__chat');
 window.requestAnimationFrame(() => {
-    document.querySelector('.col__item').appendChild(itemFragment);
-    document.querySelector('.col__chat').appendChild(usersFragment);
-    document.querySelector('.col__chat').appendChild(logFragment);
+    colItem.appendChild(itemFragment);
+    colChat.appendChild(usersFragment);
+    colChat.appendChild(logFragment);
 });

@@ -10,7 +10,9 @@ items.forEach(item => {
 
 const secondFragment = itemsFragment.cloneNode(true);
 
+const gridNewest = document.querySelector('.grid__newest'),
+      gridContested = document.querySelector('.grid__contested');
 window.requestAnimationFrame(() => {
-    document.querySelector('.grid__newest').appendChild(itemsFragment);
-    document.querySelector('.grid__contested').appendChild(secondFragment);
+    gridNewest.appendChild(itemsFragment);
+    gridContested.appendChild(secondFragment);
 });
