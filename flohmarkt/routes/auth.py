@@ -46,7 +46,7 @@ Yours, {}
 #Registration
 @router.get("/register")
 async def _(request: Request):
-    return templates.TemplateResponse("register.html", {"request":request})
+    return templates.TemplateResponse("register.html", {"request": request})
 
 @router.post("/register")
 async def _(request: Request,
@@ -110,7 +110,7 @@ async def _(request: Request,
 @router.get("/activation/{activation_code}")
 async def _(request : Request, activation_code : str):
     if await UserSchema.activate(activation_code):
-        return templates.TemplateResponse("login.html", {"request":request})
+        return templates.TemplateResponse("login.html", {"request": request})
     else:
         raise HTTPException(status_code=403, detail="That did not taste very well.")
 
@@ -137,4 +137,4 @@ async def _(username: str = Form(), password: str = Form()):
 #Login
 @router.get("/login")
 async def _(request: Request):
-    return templates.TemplateResponse("login.html", {"request":request})
+    return templates.TemplateResponse("login.html", {"request": request})
