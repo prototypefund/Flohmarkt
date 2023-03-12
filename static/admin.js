@@ -17,7 +17,7 @@ usersFragment.appendChild(menuControls);
 
 users.forEach(user => {
     const userContainer = createElement('div', 'd-flex');
-    userContainer.appendChild(createImg(user.src, user.name));
+    userContainer.appendChild(createImg(user.src, user.name, 'avatar circle'));
     userContainer.appendChild(createElement('div', null, user.name));
     usersFragment.appendChild(userContainer);
     
