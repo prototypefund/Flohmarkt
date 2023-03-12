@@ -2,6 +2,7 @@
 InstanceName = Fluffys Flohmarkt
 ExternalURL = http://fluffy.cat
 DebugMode = 0
+JwtSecret = S0op3rs3cr3t
 
 [Database]
 Server = 192.168.0.52
