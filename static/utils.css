@@ -6,6 +6,37 @@
     display: flex;
 }
 
+.input-group {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    width: 100%;
+}
+
+.input-group > input {
+    position: relative;
+    flex: 1 1 auto;
+    width: 1%;
+    min-width: 0;
+}
+
+.input-group > button {
+    position: relative;
+    z-index: 2;
+}
+
+.input-group > :first-child {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.input-group > :last-child {
+    margin-left: calc(1px * -1);
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
 .position-relative {
     position: relative;
 }
