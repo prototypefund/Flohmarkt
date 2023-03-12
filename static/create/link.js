@@ -1,6 +1,6 @@
 import { createElement } from "./element.js";
 
-export function createLink(className, href, textContent) {
+export function createLink(href, className=null, textContent=null) {
     const link = createElement('a', className, textContent);
     link.href = href;
 
