@@ -12,7 +12,7 @@ registerBtn.addEventListener('click', async event => {
             method: "POST",
             body: 'username=' + document.getElementById('username').value
                   + '&' +
-                  'password=' + document.getElementById('password1').value
+                  'password=' + document.getElementById('password').value
                   + '&' +
                   'email=' + document.getElementById('email').value
         });
@@ -23,11 +23,28 @@ registerBtn.addEventListener('click', async event => {
     }
 });
 
-let inputValid = 0;
+let inputValid = 0,
+    password;
 query('input').forEach((input, index) => {
     input.addEventListener('input', function() {
-        const power = Math.pow(2, index);
-        inputValid = this.value ? inputValid | power : inputValid ^ power;
+        let valid;
+        switch (this.id) {
+            case 'username':
+                valid = this.value !== '';
+                break;
+            case 'email':
+                valid = /^\S+@\S+\.\S+$/.test(this.value); // https://stackoverflow.com/a/9204568/5764676
+                break;
+            case 'password':
+                valid = this.value !== '';
+                password = this.value;
+                break;
+            case 'password-repeat':
+                valid = this.value === password;
+                break;
+        }
+        const mask = 1 << index;
+        inputValid = valid ? inputValid | mask : inputValid & ~mask;
         registerBtn.disabled = inputValid !== 15; // 1111
     });
 });
