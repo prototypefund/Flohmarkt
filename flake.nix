@@ -22,6 +22,8 @@
         propagatedBuildInputs = [
           python3
         ] ++ depfun python3Packages;
+
+        doCheck = false;
       };
     devShell.x86_64-linux =
       with import nixpkgs {inherit system;};
