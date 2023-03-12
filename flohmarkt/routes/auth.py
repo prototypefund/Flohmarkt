@@ -2,22 +2,41 @@ import datetime
 import jwt
 import crypt
 import email_validator
+import smtplib
+import ssl
+import uuid
 
 from fastapi import APIRouter, Body, Request, Form, HTTPException
 from fastapi.templating import Jinja2Templates
 from fastapi.encoders import jsonable_encoder
 
+from flohmarkt.config import cfg
 from flohmarkt.models.user import UserSchema, UpdateUserModel
 templates = Jinja2Templates(directory="templates")
 router = APIRouter()
 
+ssl_context = ssl.create_default_context(cafile=cfg["SMTP"]["CAFile"])
+if int(cfg["General"]["DebugMode"]) > 0:
+    ssl_context.check_hostname = False
+    ssl_context.verify_mode = ssl.CERT_NONE
+
+ACTIVATION_MAIL = """\
+Heyho thanks for registering with {}.
+
+Please click the following link to complete the registration!
+
+{}/activation/{}
+
+Yours, Flohmarkt
+"""
+
 #Registration
 @router.get("/register")
-async def other(request: Request):
+async def _(request: Request):
     return templates.TemplateResponse("register.html", {"request":request})
 
 @router.post("/register")
-async def other(request: Request,
+async def _(request: Request,
                 email:str=Form(),
                 username:str=Form(),
                 password:str=Form(),
@@ -44,19 +63,43 @@ async def other(request: Request,
         "email":email,
         "name":username,
         "pwhash":pwhash,
+        "active": False,
+        "activation_code": str(uuid.uuid4()),
         "avatar":None,
         "role":"User"
     }
 
-    new_user_foo = await UserSchema.add(new_user)
+    new_user = await UserSchema.add(new_user)
+
+    server = smtplib.SMTP(cfg["SMTP"]["Server"], int(cfg["SMTP"]["Port"]))
+
+    server.ehlo()
+    server.starttls(context=ssl_context)
+    server.ehlo()
+    server.login(cfg["SMTP"]["User"], cfg["SMTP"]["Password"])
+    server.sendmail(
+        cfg["SMTP"]["From"], 
+        email, 
+        ACTIVATION_MAIL.format(
+            cfg["General"]["InstanceName"],
+            cfg["General"]["ExternalURL"],
+            new_user["activation_code"])
+    )
 
     return {"result": True}
 
+@router.get("/activation/{activation_code}")
+async def _(request : Request, activation_code : str):
+    if await UserSchema.activate(activation_code):
+        return templates.TemplateResponse("login.html", {"request":request})
+    else:
+        raise HTTPException(status_code=403, detail="That did not taste very well.")
+
 #Login
 @router.post("/token")
-async def other(username: str = Form(), password: str = Form()):
+async def _(username: str = Form(), password: str = Form()):
     found_user = await UserSchema.retrieve_single_name(username)
-    if found_user is None:
+    if found_user is None or not found_user["active"]:
         raise HTTPException(status_code=403, detail="Not a valid name-password-pair")
 
     current_pwhash = crypt.crypt(password, found_user["pwhash"])
@@ -71,10 +114,10 @@ async def other(username: str = Form(), password: str = Form()):
 
 #Login
 @router.get("/login")
-async def other(request: Request):
+async def _(request: Request):
     return templates.TemplateResponse("login.html", {"request":request})
 
 #Logout
 @router.get("/logout")
-async def other(toast_id:int):
+async def _(toast_id:int):
     return {"message": "1 toast"}

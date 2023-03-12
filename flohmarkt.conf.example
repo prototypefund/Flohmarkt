@@ -1,3 +1,8 @@
+[General]
+InstanceName = Fluffys Flohmarkt
+ExternalURL = http://fluffy.cat
+DebugMode = 0
+
 [Database]
 Server = 192.168.0.52
 Port = 27017

@@ -16,6 +16,7 @@ class UserSchema(BaseModel):
     pwhash : str = Field(...)
     avatar : str = Field(...)
     active : bool = Field(...)
+    activation_code : str = Field(...)
     role : str = Field(...)
     
     
@@ -39,6 +40,17 @@ class UserSchema(BaseModel):
         ins = await user_collection.insert_one(data)
         new = await user_collection.find_one({"_id":ins.inserted_id})
         return rename_id(new)
+
+    @staticmethod
+    async def activate(code: str)->dict:
+        user_to_activate = await user_collection.find_one({"activation_code":code})
+        if user_to_activate is None:
+            return False
+
+        updated = await user_collection.update_one(
+                {"_id":ObjectId(user_to_activate["_id"])}, {"$set": {"active":True}}
+        )
+        return True
 
     @staticmethod
     async def retrieve_single_id(ident: str)->dict:
