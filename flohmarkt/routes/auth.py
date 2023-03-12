@@ -20,14 +20,20 @@ if int(cfg["General"]["DebugMode"]) > 0:
     ssl_context.check_hostname = False
     ssl_context.verify_mode = ssl.CERT_NONE
 
-ACTIVATION_MAIL = """\
-Heyho thanks for registering with {}.
+ACTIVATION_MAIL = """Subject: Registration with {}
 
-Please click the following link to complete the registration!
+Heyho {},
+
+thanks for registering with {}.
+
+Please click the following link to complete the registration.
 
 {}/activation/{}
 
-Yours, Flohmarkt
+We wish you a pleasant stay on our backyard sale.
+
+
+Yours, {}
 """
 
 #Registration
@@ -82,8 +88,12 @@ async def _(request: Request,
         email, 
         ACTIVATION_MAIL.format(
             cfg["General"]["InstanceName"],
+            new_user["name"],
+            cfg["General"]["InstanceName"],
             cfg["General"]["ExternalURL"],
-            new_user["activation_code"])
+            new_user["activation_code"],
+            cfg["General"]["InstanceName"]
+        )
     )
 
     return {"result": True}
@@ -108,16 +118,14 @@ async def _(username: str = Form(), password: str = Form()):
         raise HTTPException(status_code=403, detail="Not a valid name-password-pair")
 
     return jwt.encode(
-            {"exp": datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(days=1)},
-            "yolosecret"
+            {
+                "exp": datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(days=1),
+                "username": found_user["name"],
+            },
+            cfg["General"]["JwtSecret"]
         )
 
 #Login
 @router.get("/login")
 async def _(request: Request):
     return templates.TemplateResponse("login.html", {"request":request})
-
-#Logout
-@router.get("/logout")
-async def _(toast_id:int):
-    return {"message": "1 toast"}
