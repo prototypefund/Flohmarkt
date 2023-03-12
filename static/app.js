@@ -1,6 +1,3 @@
-import { createElement } from './create/element.js';
-import { createLink } from './create/link.js';
-
 function parse_jwt (token) {
     var base64Url = token.split('.')[1];
     var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -10,23 +7,21 @@ function parse_jwt (token) {
     return JSON.parse(jsonPayload);
 }
 
+const showElements = [];
 const token = window.sessionStorage.getItem('token');
-if (token != undefined && token != null && typeof(token) === "string" ) {
-    var parsed_token = parse_jwt(token);
-    const listItem = createElement('li', null, parsed_token.username);
-    const dropDown = createElement('ul');
-    const dropItem = createElement('li');
-    const dropLink = createLink('/logout', null, 'Logout');
+if (token != undefined && token != null && typeof(token) === 'string') {
+    const username = parse_jwt(token).username;
+    const detailsListItem = document.getElementById('details-list-item');
+    detailsListItem.querySelector('.details-menu span').append(username);
+    detailsListItem.querySelector('.details-menu a').href = '/~' + username;
 
-    dropItem.appendChild(dropLink);
-    dropDown.appendChild(dropItem);
-    listItem.appendChild(dropDown);
-
-    const menu = document.querySelector('nav ul');
-    window.requestAnimationFrame(() => {
-        while (menu.firstChild) {
-            menu.firstChild.remove();
-        }                
-        menu.appendChild(listItem);
-    });
+    showElements.push(detailsListItem);
 }
+else {
+    showElements.push(document.getElementById('register-list-item'));
+    showElements.push(document.getElementById('login-list-item'));
+}
+
+window.requestAnimationFrame(() => {
+    showElements.forEach(element => element.hidden = false )
+});

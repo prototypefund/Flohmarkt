@@ -130,9 +130,9 @@ header a strong {
     margin-right: 0.5rem;
 }
 
-header nav img {
+/*header nav img {
     margin: 1rem 0;
-}
+}*/
 
 section header {
     padding-top: 0;
@@ -161,10 +161,12 @@ nav ul li {
 }
 
 /* Nav Dropdown */
+details[open] .details-menu,
 nav ul li:hover ul {
     display: block;
 }
 
+details .details-menu,
 nav ul li ul {
     background: var(--color-bg);
     border: 1px solid var(--color-bg-secondary);
@@ -172,10 +174,10 @@ nav ul li ul {
     box-shadow: var(--box-shadow) var(--color-shadow);
     display: none;
     height: auto;
-    left: -2px;
+    right: 0; /* left: -2px; */
     padding: .5rem 1rem;
     position: absolute;
-    top: 1.7rem;
+    /* top: 1.7rem; */
     white-space: nowrap;
     width: auto;
     z-index: 1;
@@ -194,6 +196,10 @@ nav ul li ul::before {
 nav ul li ul li,
 nav ul li ul li a {
     display: block;
+}
+
+nav hr {
+    margin: revert;
 }
 
 /* Typography */
