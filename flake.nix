@@ -169,9 +169,9 @@
             text = ''
               [General]
               InstanceName = ${config.services.flohmarkt.settings.general.instanceName}
-              ExternalURL = ${config.services.flohmarkt.settings.database.externalUrl}
-              DebugMode = ${config.services.flohmarkt.settings.database.debugMode}
-              JwtSecret =  ${config.services.flohmarkt.settings.database.jwtSecret}
+              ExternalURL = ${config.services.flohmarkt.settings.general.externalUrl}
+              DebugMode = ${config.services.flohmarkt.settings.general.debugMode}
+              JwtSecret =  ${config.services.flohmarkt.settings.general.jwtSecret}
 
               [Database]
               Server = ${config.services.flohmarkt.settings.database.server}
