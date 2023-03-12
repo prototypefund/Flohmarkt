@@ -7,6 +7,8 @@ import smtplib
 import ssl
 import uuid
 
+from email.mime.text import MIMEText
+
 from fastapi import APIRouter, Body, Request, Form, HTTPException
 from fastapi.templating import Jinja2Templates
 from fastapi.encoders import jsonable_encoder
@@ -25,7 +27,7 @@ if int(cfg["General"]["DebugMode"]) > 0:
     ssl_context.check_hostname = False
     ssl_context.verify_mode = ssl.CERT_NONE
 
-ACTIVATION_MAIL = """Subject: Registration with {}
+ACTIVATION_MAIL = """
 
 Heyho {},
 
@@ -88,17 +90,19 @@ async def _(request: Request,
     server.starttls(context=ssl_context)
     server.ehlo()
     server.login(cfg["SMTP"]["User"], cfg["SMTP"]["Password"])
-    server.sendmail(
-        cfg["SMTP"]["From"], 
-        email, 
-        ACTIVATION_MAIL.format(
-            cfg["General"]["InstanceName"],
+    text = ACTIVATION_MAIL.format(
             new_user["name"],
             cfg["General"]["InstanceName"],
             cfg["General"]["ExternalURL"],
             new_user["activation_code"],
             cfg["General"]["InstanceName"]
         )
+    message = MIMEText(text.encode('utf-8'), _charset='utf-8')
+    message["Subject"] = "Registration with {}".format(cfg["General"]["InstanceName"])
+    server.sendmail(
+        cfg["SMTP"]["From"], 
+        email, 
+        message.as_string()
     )
 
     return {"result": True}
