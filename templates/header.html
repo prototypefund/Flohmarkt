@@ -2,13 +2,7 @@
     <a href="/">
         <img src="{{ url_for('static', path='/logo.svg') }}" alt="Logo Flohmarkt" width="42" height="42">
     </a>
-    <form action="/search" role="search">
-        <div class="input-group">
-            <input type="text" class="m-0" name="q" placeholder="Search Flohmarkt" aria-label="Search Flohmarkt">
-            <button class="m-0">Go</button>
-        </div>
-    </form>
-    <ul>
+    <ul class="order-sm-1">
         <li hidden id="register-list-item"><a href="/register"><i>Register</i></a></li>
         <li hidden id="login-list-item"><a href="/login"><i>Sign in</i></a></li>
         <li hidden id="details-list-item">
@@ -26,4 +20,10 @@
             </details>
         </li>
     </ul>
+    <form action="/search" role="search">
+        <div class="input-group">
+            <input type="text" class="m-0" name="q" placeholder="Search Flohmarkt" aria-label="Search Flohmarkt">
+            <button class="m-0">Go</button>
+        </div>
+    </form>
 </nav>

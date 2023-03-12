@@ -36,6 +36,10 @@
         flex: 0 0 auto;
         width: 50%;
     }
+
+    .order-sm-1 {
+        order: 1 !important;
+    }
 }
 
 @media (min-width: 768px) {

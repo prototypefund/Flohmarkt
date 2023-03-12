@@ -68,7 +68,7 @@ header,
 main {
     margin: 0 auto;
     max-width: var(--width-content);
-    padding: /* 3rem */ 1rem;
+    padding: 1rem 0.5rem;
 }
 
 hr {
@@ -143,6 +143,7 @@ section header {
 nav {
     align-items: center;
     display: flex;
+    flex-wrap: wrap;
     font-weight: bold;
     justify-content: space-between;
     /* margin-bottom: 7rem; */
