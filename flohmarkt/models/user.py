@@ -1,16 +1,16 @@
 from typing import Optional
 from pydantic import BaseModel, Field
-from bson.objectid import ObjectId
 
-from flohmarkt.db import db, rename_id
-
-user_collection = db.get_collection("users")
+from flohmarkt.db import Database
+import uuid
 
 class ModeEnum:
     SELL = 0
     GIVEAWAY = 1
 
 class UserSchema(BaseModel):
+    id : str = Field(...)
+    type : str = Field(...)
     name : str = Field(...)
     email : str = Field(...)
     pwhash : str = Field(...)
@@ -31,53 +31,58 @@ class UserSchema(BaseModel):
     @staticmethod
     async def retrieve():
         users = []
-        async for user in user_collection.find():
-            users.append(rename_id(user))
+        async for user in Database.find({"type":"user"}):
+            users.append(user)
         return users
 
     @staticmethod
     async def add(data: dict)->dict:
-        ins = await user_collection.insert_one(data)
-        new = await user_collection.find_one({"_id":ins.inserted_id})
-        return rename_id(new)
+        data["type"] = "user"
+        ins = await Database.create(data)
+        new = await Database.find_one({"id":ins})
+        return new
 
     @staticmethod
     async def activate(code: str)->dict:
-        user_to_activate = await user_collection.find_one({"activation_code":code})
+        user_to_activate = await Database.find_one({"type":"user","activation_code":code})
         if user_to_activate is None:
             return False
 
-        updated = await user_collection.update_one(
-                {"_id":ObjectId(user_to_activate["_id"])}, {"$set": {"active":True}}
+        user_to_activate["active"] = True
+
+        updated = await Database.update(
+            user_to_activate["id"], user_to_activate
         )
         return True
 
     @staticmethod
     async def retrieve_single_id(ident: str)->dict:
-        user = await user_collection.find_one({"_id":ObjectId(ident)})
+        user = await Database.find_one({"id":ident})
         if user is not None:
-            return rename_id(user)
+            return user
 
     @staticmethod
     async def retrieve_single_name(name: str)->dict:
-        user = await user_collection.find_one({"name":name})
+        user = await Database.find_one({"type":"user", "name":name})
         if user is not None:
-            return rename_id(user)
+            return user
 
     @staticmethod
     async def retrieve_single_email(email: str)->dict:
-        user = await user_collection.find_one({"email":email})
+        user = await Database.find_one({"type":"user", "email":email})
         if user is not None:
-            return rename_id(user)
+            return user
 
     @staticmethod
     async def update(ident: str, data: dict):
         if len(data) < 1:
             return False
-        user = await user_collection.find_one({"_id":ObjectId(ident)})
+
+        user = await Database.find_one({"id":ident})
+        user.update(data)
         if user is not None:
-            updated = await user_collection.update_one(
-                    {"_id":ObjectId(ident)}, {"$set": data}
+            updated = await Database.update(
+                    ident, data
             )
             if updated is not None:
                 return True
@@ -85,9 +90,9 @@ class UserSchema(BaseModel):
 
     @staticmethod
     async def delete(ident : str):
-        user = await user_collection.find_one({"_id":ObjectId(ident)})
+        user = await Database.find_one({"id":ident})
         if user is not None:
-            await user_collection.delete_one({"_id":ObjectId(ident)})
+            await Database.delete_one({"id":ident})
             return True
 
 

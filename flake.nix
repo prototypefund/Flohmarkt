@@ -5,7 +5,7 @@
     depfun = p: [
       p.uvicorn
       p.fastapi
-      p.motor
+      p.aiohttp
       p.pyjwt
       p.email-validator
     ];

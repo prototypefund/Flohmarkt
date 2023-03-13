@@ -6,6 +6,7 @@ from fastapi.security import OAuth2PasswordBearer
 from flohmarkt.routes.item import router as item_router
 from flohmarkt.routes.user import router as user_router
 from flohmarkt.routes.auth import router as auth_router
+from flohmarkt.db import Database
 
 templates = Jinja2Templates(directory="templates")
 
@@ -23,6 +24,12 @@ app.include_router(auth_router, tags=["User"], prefix="")
 @app.on_event("startup")
 async def ini():
     print ("Flohmarkt booting!")
+    await Database.initialize()
+    
+@app.on_event("shutdown")
+async def ini():
+    print ("Tearing down Flohmarkt!")
+    await Database.shutdown()
 
 @app.get("/")
 async def root(request: Request):

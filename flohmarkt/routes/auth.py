@@ -66,7 +66,7 @@ async def _(request: Request,
 
     found_for_email = await UserSchema.retrieve_single_email(email)
     found_for_name = await UserSchema.retrieve_single_email(username)
-
+    
     if found_for_name is not None or found_for_email is not None:
         return {"error": "user already exists"}
 

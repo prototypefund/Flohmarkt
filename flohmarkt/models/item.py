@@ -1,10 +1,7 @@
 from typing import Optional
 from pydantic import BaseModel, Field
-from bson.objectid import ObjectId
 
-from flohmarkt.db import db, rename_id
-
-item_collection = db.get_collection("items")
+from flohmarkt.db import Database
 
 class ModeEnum:
     SELL = 0
@@ -12,6 +9,7 @@ class ModeEnum:
 
 class ItemSchema(BaseModel):
     name : str = Field(...)
+    type : str = Field(...)
     
     class Config: 
         schema_extra = {
@@ -22,31 +20,32 @@ class ItemSchema(BaseModel):
     @staticmethod
     async def retrieve():
         items = []
-        async for item in item_collection.find():
+        async for item in Database.find({"type":"item"}):
             items.append(rename_id(item))
         return items
 
     @staticmethod
     async def add(data: dict)->dict:
-        ins = await item_collection.insert_one(data)
-        new = await item_collection.find_one({"_id":ins.inserted_id})
-        return rename_id(new)
+        data["type"] = "item"
+        ins = await Database.insert_one(data)
+        new = await Database.find_one({"id":ins})
+        return new
 
     @staticmethod
-    async def retrieve_single(ident: str)->dict:
-        print(ident)
-        item = await item_collection.find_one({"_id":ObjectId(ident)})
+    async def retrieve_single_id(ident: str)->dict:
+        item = await Database.find_one({"id":ident})
         if item is not None:
-            return rename_id(item)
+            return item
 
     @staticmethod
     async def update(ident: str, data: dict):
         if len(data) < 1:
             return False
-        item = await item_collection.find_one({"_id":ObjectId(ident)})
+        item = await Database.find_one({"id":ident})
+        item.update(data)
         if item is not None:
-            updated = await item_collection.update_one(
-                    {"_id":ObjectId(ident)}, {"$set": data}
+            updated = await Database.update(
+                    ident, data
             )
             if updated is not None:
                 return True
@@ -54,9 +53,9 @@ class ItemSchema(BaseModel):
 
     @staticmethod
     async def delete(ident : str):
-        item = await item_collection.find_one({"_id":ObjectId(ident)})
+        item = await Database.find_one({"id":ident})
         if item is not None:
-            await item_collection.delete_one({"_id":ObjectId(ident)})
+            await Database.delete_one({"id":ident})
             return True
 
 
