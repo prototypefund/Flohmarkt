@@ -89,28 +89,6 @@
                     to for persistent storage
                   '';
                 };
-                port = lib.mkOption {
-                  default = 27017;
-                  type = lib.types.int;
-                  description = ''
-                    The Port MongoDB Server we are going to connect
-                    to for persistent storage
-                  '';
-                };
-                user = lib.mkOption {
-                  default = "user";
-                  type = lib.types.str;
-                  description = ''
-                    The Username used to authenticate with MongoDB
-                  '';
-                };
-                password = lib.mkOption {
-                  default = "S0op3rs3cr3t";
-                  type = lib.types.str;
-                  description = ''
-                    The password used to authenticate with MongoDB
-                  '';
-                };
               };
               smtp = {
                 server = lib.mkOption {
@@ -175,9 +153,6 @@
 
               [Database]
               Server = ${config.services.flohmarkt.settings.database.server}
-              Port = ${toString config.services.flohmarkt.settings.database.port}
-              User = ${config.services.flohmarkt.settings.database.user}
-              Password = ${config.services.flohmarkt.settings.database.password}
 
               [SMTP]
               Server = ${config.services.flohmarkt.settings.smtp.server}
