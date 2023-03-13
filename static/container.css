@@ -31,20 +31,20 @@
     .container {
         max-width: 540px;
     }
-    
-    .col-sm-6 {
-        flex: 0 0 auto;
-        width: 50%;
-    }
-
-    .order-sm-1 {
-        order: 1 !important;
-    }
 }
 
 @media (min-width: 768px) {
     .container {
         max-width: 720px;
+    }
+
+    .col-md-6 {
+        flex: 0 0 auto;
+        width: 50%;
+    }
+
+    .order-md-1 {
+        order: 1 !important;
     }
 }
 
