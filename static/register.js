@@ -43,10 +43,8 @@ query('.register input').forEach((input, index) => {
                 valid = this.value === password;
                 break;
         }
-        console.log(index);
         const mask = 1 << index;
         inputValid = valid ? inputValid | mask : inputValid & ~mask;
-        console.log(inputValid);
         registerBtn.disabled = inputValid !== 15; // 1111
     });
 });
