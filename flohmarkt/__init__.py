@@ -19,7 +19,7 @@ api_prefix = "/api/v1"
 
 app.include_router(item_router, tags=["Item"], prefix=api_prefix+"/item")
 app.include_router(user_router, tags=["User"], prefix=api_prefix+"/user")
-app.include_router(auth_router, tags=["User"], prefix="")
+app.include_router(auth_router, tags=["Auth"], prefix="")
 
 @app.on_event("startup")
 async def ini():
