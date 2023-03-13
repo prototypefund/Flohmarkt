@@ -31,7 +31,7 @@ class UserSchema(BaseModel):
     @staticmethod
     async def retrieve():
         users = []
-        async for user in Database.find({"type":"user"}):
+        for user in await Database.find({"type":"user"}):
             users.append(user)
         return users
 
