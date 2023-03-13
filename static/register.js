@@ -25,7 +25,7 @@ registerBtn.addEventListener('click', async event => {
 
 let inputValid = 0,
     password;
-query('input').forEach((input, index) => {
+query('.register input').forEach((input, index) => {
     input.addEventListener('input', function() {
         let valid;
         switch (this.id) {
@@ -43,8 +43,10 @@ query('input').forEach((input, index) => {
                 valid = this.value === password;
                 break;
         }
+        console.log(index);
         const mask = 1 << index;
         inputValid = valid ? inputValid | mask : inputValid & ~mask;
+        console.log(inputValid);
         registerBtn.disabled = inputValid !== 15; // 1111
     });
 });
