@@ -5,10 +5,7 @@ DebugMode = 0
 JwtSecret = S0op3rs3cr3t
 
 [Database]
-Server = 192.168.0.52
-Port = 27017
-User = foo
-Password = bar
+Server = https://user:password@some.couchdb.server.nil:1345/
 
 [SMTP]
 Server = mail.example.org
