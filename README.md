@@ -4,6 +4,7 @@ A decentral federated small trade platform
 
 ## Dependencies
 
+- python3-aiohttp
 - python3-email-validator
 - python3-jwt
 - python3-fastapi
