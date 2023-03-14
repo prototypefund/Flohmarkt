@@ -149,6 +149,10 @@ nav {
     /* margin-bottom: 7rem; */
 }
 
+nav input {
+    max-width: 180px;
+}
+
 nav ul {
     list-style: none;
     padding: 0;
@@ -162,7 +166,11 @@ nav ul li {
 }
 
 /* Nav Dropdown */
-details[open] .details-menu,
+nav details > summary {
+    list-style: none;
+}
+
+nav details[open] .details-menu,
 nav ul li:hover ul {
     display: block;
 }
@@ -181,7 +189,7 @@ nav ul li ul {
     /* top: 1.7rem; */
     white-space: nowrap;
     width: auto;
-    z-index: 1;
+    z-index: 2;
 }
 
 nav ul li ul::before {
@@ -307,7 +315,7 @@ input[type="submit"] {
     font-weight: bold;
     line-height: var(--line-height);
     margin: 0.5rem 0;
-    padding: 1rem 2rem;
+    padding: 0.5rem 1rem; /*padding: 1rem 2rem;*/
 }
 
 button,

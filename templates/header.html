@@ -4,12 +4,19 @@
             <use href="{{ url_for('static', path='/sprite.svg#logo') }}"></use>
         </svg>
     </a>
-    <ul class="order-md-1">
+    <form action="/search" role="search">
+        <div class="input-group">
+            <input type="text" class="m-0" name="q" placeholder="Search Flohmarkt" aria-label="Search Flohmarkt">
+            <button class="m-0">Go</button>
+        </div>
+    </form>
+    <ul>
         <li hidden id="register-list-item"><a href="/register"><i>Register</i></a></li>
         <li hidden id="login-list-item"><a href="/login"><i>Sign in</i></a></li>
         <li hidden id="details-list-item">
             <details>
                 <summary aria-label="View profile and more" aria-haspopup="menu" role="button">
+                    <span class="dropdown-caret"></span>
                 </summary>
                 <div class="details-menu">
                     <span>Signed in as </span>
@@ -21,10 +28,4 @@
             </details>
         </li>
     </ul>
-    <form action="/search" role="search">
-        <div class="input-group">
-            <input type="text" class="m-0" name="q" placeholder="Search Flohmarkt" aria-label="Search Flohmarkt">
-            <button class="m-0">Go</button>
-        </div>
-    </form>
 </nav>

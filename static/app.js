@@ -18,7 +18,7 @@ if (token != undefined && token != null && typeof(token) === 'string') {
     detailsListItem.querySelector('.details-menu span').append(username);
     detailsListItem.querySelector('.details-menu a').href = '/~' + username;
     const summaryElement = detailsListItem.querySelector('summary');
-    summaryElement.appendChild(createImage(parsedToken.avatar, username, 'avatar circle'));
+    summaryElement.prepend(createImage(parsedToken.avatar, username, 'avatar circle'));
 
     showElements.push(detailsListItem);
 }
