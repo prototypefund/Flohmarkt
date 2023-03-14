@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+<script defer type="module" src="{{ url_for('static', path='/new.js') }}"></script>
+{% endblock %}
+
+{% block main %}
+<section class="create">
+    <header>
+        <h1>Create new item</h1>
+    </header>
+    <form action="/" method="post" type="multipart/form-data">
+        <label for="title">Title</label>
+        <input type="text" id="title" name="title">
+        <label for="price">Price</label>
+        <input type="text" id="price" name="price">
+        <label for="description">Description</label>
+        <textarea class="w-100" id="description" name="description"></textarea>
+        <button type="submit" class="w-100" id="create-btn" disabled>Create</button>
+    </form>
+</section>
+{% endblock %}

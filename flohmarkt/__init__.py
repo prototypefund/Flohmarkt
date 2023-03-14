@@ -47,3 +47,8 @@ async def other(request: Request, user: str):
 @app.get("/admin")
 async def other(request: Request):
     return templates.TemplateResponse("admin.html", {"request": request})
+
+#New
+@app.get("/new")
+async def other(request: Request):
+    return templates.TemplateResponse("new.html", {"request": request})

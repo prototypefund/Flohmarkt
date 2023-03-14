@@ -21,6 +21,7 @@ if (token != undefined && token != null && typeof(token) === 'string') {
     summaryElement.prepend(createImage(parsedToken.avatar, username, 'avatar circle'));
 
     showElements.push(detailsListItem);
+    showElements.push(document.getElementById('new-list-item'));
 }
 else {
     showElements.push(document.getElementById('register-list-item'));
