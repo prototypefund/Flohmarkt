@@ -1,7 +1,7 @@
 import { fetchJSON } from "./utils.js";
 import { createItem } from "./create/item.js";
 import { createElement } from "./create/element.js";
-import { createImg } from "./create/img.js";
+import { createImage } from "./create/image.js";
 
 const [item, users, log] = await Promise.all([
     fetchJSON('item'),
@@ -17,7 +17,7 @@ itemFragment.appendChild(element);
 const usersFragment = document.createDocumentFragment();
 const usersContainer = createElement('div', 'd-flex');
 users.forEach(user => {
-    usersContainer.appendChild(createImg(user.src, user.name, 'avatar circle'));
+    usersContainer.appendChild(createImage(user.src, user.name, 'avatar circle'));
 });
 usersFragment.appendChild(usersContainer);
 

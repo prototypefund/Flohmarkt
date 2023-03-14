@@ -1,3 +1,5 @@
+import { createImage } from "./create/image.js";
+
 function parse_jwt (token) {
     var base64Url = token.split('.')[1];
     var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -15,9 +17,8 @@ if (token != undefined && token != null && typeof(token) === 'string') {
     const detailsListItem = document.getElementById('details-list-item');
     detailsListItem.querySelector('.details-menu span').append(username);
     detailsListItem.querySelector('.details-menu a').href = '/~' + username;
-    const avatar = detailsListItem.querySelector('img');
-    avatar.src = parsedToken.avatar;
-    avatar.alt = username;
+    const summaryElement = detailsListItem.querySelector('summary');
+    summaryElement.appendChild(createImage(parsedToken.avatar, username, 'avatar circle'));
 
     showElements.push(detailsListItem);
 }
