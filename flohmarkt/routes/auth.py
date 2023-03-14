@@ -139,3 +139,8 @@ async def _(username: str = Form(), password: str = Form()):
 @router.get("/login")
 async def _(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
+
+#Logout
+@router.get("/logout")
+async def _(request: Request):
+    return templates.TemplateResponse("logout.html", {"request": request})
