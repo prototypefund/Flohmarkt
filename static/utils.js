@@ -1,5 +1,5 @@
-export async function fetchJSON(name) {
-    const response = await window.fetch('/static/' + name + '.json');
+export async function fetchJSON(path) {
+    const response = await window.fetch('/api/v1/' + path);
     return await response.json();
 }
 

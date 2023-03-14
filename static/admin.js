@@ -2,7 +2,7 @@ import { fetchJSON } from "./utils.js";
 import { createElement } from "./create/element.js";
 import { createImage } from "./create/image.js";
 
-const users = await fetchJSON('users');
+const users = await fetchJSON('user');
 
 const usersFragment = document.createDocumentFragment();
 
@@ -17,7 +17,7 @@ usersFragment.appendChild(menuControls);
 
 users.forEach(user => {
     const userContainer = createElement('div', 'd-flex');
-    userContainer.appendChild(createImage(user.src, user.name, 'avatar circle'));
+    userContainer.appendChild(createImage('user.svg'/*user.avatar*/, user.name, 'avatar circle'));
     userContainer.appendChild(createElement('div', null, user.name));
     usersFragment.appendChild(userContainer);
     
