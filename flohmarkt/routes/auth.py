@@ -48,6 +48,10 @@ Yours, {}
 async def _(request: Request):
     return templates.TemplateResponse("register.html", {"request": request})
 
+@router.get("/registered")
+async def _(request: Request):
+    return templates.TemplateResponse("registered.html", {"request": request})
+
 @router.post("/register")
 async def _(request: Request,
                 email:str=Form(),

@@ -18,6 +18,7 @@ registerBtn.addEventListener('click', async event => {
         });
         const data = await response.json();
         console.log(data);
+        window.location.pathname = '/registered';
     } catch (error) {
         console.log(error);
     }
