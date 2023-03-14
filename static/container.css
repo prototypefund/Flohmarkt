@@ -42,6 +42,10 @@
         flex: 0 0 auto;
         width: 50%;
     }
+
+    .order-md-1 {
+        order: 1;
+    }
 }
 
 @media (min-width: 992px) {

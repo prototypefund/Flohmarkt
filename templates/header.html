@@ -1,18 +1,12 @@
 <nav>
-    <a href="/">
+    <a class="mr-2" href="/">
         <svg class="icon icon--logo" role="img" aria-hidden="true">
             <use href="{{ url_for('static', path='/sprite.svg#logo') }}"></use>
         </svg>
     </a>
-    <form action="/search" role="search">
-        <div class="input-group">
-            <input type="text" class="m-0" name="q" placeholder="Search Flohmarkt" aria-label="Search Flohmarkt">
-            <button class="m-0">Go</button>
-        </div>
-    </form>
-    <ul>
+    <ul class="order-md-1">
         <li hidden id="register-list-item"><a href="/register"><i>Register</i></a></li>
-        <li hidden id="login-list-item"><a href="/login"><i>Sign in</i></a></li>
+        <li hidden id="login-list-item"><a href="/login"><b>Sign in</b></a></li>
         <li hidden id="details-list-item">
             <details>
                 <summary aria-label="View profile and more" aria-haspopup="menu" role="button">
@@ -28,4 +22,7 @@
             </details>
         </li>
     </ul>
+    <form action="/search" role="search">
+        <input type="text" class="w-100 m-0" name="q" placeholder="Search Flohmarkt" aria-label="Search Flohmarkt">
+    </form>
 </nav>
