@@ -320,6 +320,8 @@ input[type="submit"] {
 
 button,
 input[type="submit"] {
+    background-color: var(--color-secondary);
+    border: 2px solid var(--color-secondary);
     font-family: var(--font-family);
 }
 
@@ -338,9 +340,13 @@ a b,
 a strong,
 button,
 input[type="submit"] {
+    color: var(--color-bg);
+}
+
+a b,
+a strong {
     background-color: var(--color-link);
     border: 2px solid var(--color-link);
-    color: var(--color-bg);
 }
 
 a em,
