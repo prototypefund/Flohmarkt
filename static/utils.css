@@ -1,3 +1,8 @@
+.card-img-top {
+    border-top-left-radius: var(--border-radius);
+    border-top-right-radius: var(--border-radius);
+}
+
 .circle {
     border-radius: 50%;
 }
@@ -29,6 +34,10 @@
 
 .m-0 {
     margin: 0 !important;
+}
+
+.p-2 {
+    padding: 0.5rem !important;
 }
 
 .position-relative {
