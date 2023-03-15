@@ -15,6 +15,8 @@ class UserSchema(BaseModel):
     pwhash : str = Field(...)
     avatar : str = Field(...)
     active : bool = Field(...)
+    admin : bool = Field(...)
+    moderator : bool = Field(...)
     activation_code : str = Field(...)
     role : str = Field(...)
     
@@ -96,7 +98,8 @@ class UserSchema(BaseModel):
 
 
 class UpdateUserModel(BaseModel):
-    name : Optional[str]
+    admin : Optional[bool]
+    moderator : Optional[bool]
 
     class Config: 
         schema_extra = {
