@@ -50,3 +50,9 @@ async def other(request: Request):
 @app.get("/new")
 async def other(request: Request):
     return templates.TemplateResponse("new.html", {"request": request})
+
+#Search
+@app.get("/search")
+async def other(request: Request, q : str):
+    print("EHLO")
+    return templates.TemplateResponse("search.html", {"request": request, "searchterm": q})

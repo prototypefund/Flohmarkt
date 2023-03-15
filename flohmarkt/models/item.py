@@ -54,6 +54,18 @@ class ItemSchema(BaseModel):
         return await Database.find({"type":"item","user":userid})
 
     @staticmethod
+    async def search(search:str)->dict:
+        found_by_name = await Database.find({"type":"item", "name": {"$regex":search}},[{"creation_date":"desc"}])
+        found_by_description = await Database.find({"type":"item", "description": {"$regex":search}},[{"creation_date":"desc"}])
+        results = {}
+        for item in found_by_name:
+            results[item["id"]] = item
+        for item in found_by_description:
+            results[item["id"]] = item
+        return list(results.values())
+
+
+    @staticmethod
     async def retrieve_newest()->dict:
         return await Database.find({"type":"item"},[{"creation_date":"desc"}])
     

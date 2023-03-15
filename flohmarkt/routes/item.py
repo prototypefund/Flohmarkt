@@ -30,11 +30,15 @@ async def get_items():
 async def get_items():
     return await ItemSchema.retrieve_newest()
 
+@router.get("/search/{searchterm}", response_description="Search results")
+async def get_items(searchterm: str):
+    return await ItemSchema.search(searchterm)
+
 @router.get("/oldest", response_description="Oldest items")
 async def get_items():
     return await ItemSchema.retrieve_oldest()
 
-@router.get("/by_user/{user_id}", response_description="All items")
+@router.get("/by_user/{user_id}", response_description="All items of user")
 async def get_items(user_id: str):
     return await ItemSchema.retrieve_by_user(user_id)
 
