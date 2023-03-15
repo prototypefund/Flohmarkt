@@ -1,8 +1,10 @@
+import uuid
+import datetime
+
 from typing import Optional
 from pydantic import BaseModel, Field
 
 from flohmarkt.db import Database
-import uuid
 
 class ModeEnum:
     SELL = 0
@@ -14,6 +16,8 @@ class ItemSchema(BaseModel):
     user : Optional[str]
     price : str = Field(...)
     description : str = Field(...)
+    conversations : Optional[set]
+    creation_date : Optional[datetime.datetime]
     
     class Config: 
         schema_extra = {
@@ -34,6 +38,7 @@ class ItemSchema(BaseModel):
     async def add(data: dict)->dict:
         data["type"] = "item"
         data["id"] = str(uuid.uuid4())
+        data["creation_date"] = datetime.datetime.now()
         ins = await Database.create(data)
         new = await Database.find_one({"id":ins})
         return new
@@ -47,6 +52,14 @@ class ItemSchema(BaseModel):
     @staticmethod
     async def retrieve_by_user(userid: str)->dict:
         return await Database.find({"type":"item","user":userid})
+
+    @staticmethod
+    async def retrieve_newest()->dict:
+        return await Database.find({"type":"item"},[{"creation_date":"desc"}])
+    
+    @staticmethod
+    async def retrieve_oldest()->dict:
+        return await Database.find({"type":"item"},[{"creation_date":"asc"}])
 
     @staticmethod
     async def update(ident: str, data: dict):

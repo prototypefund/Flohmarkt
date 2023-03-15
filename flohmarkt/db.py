@@ -4,6 +4,8 @@ import json
 import aiohttp
 import asyncio
 
+from fastapi.encoders import jsonable_encoder
+
 from flohmarkt.config import cfg
 
 db_server = cfg["Database"]["Server"]
@@ -25,6 +27,7 @@ class Database:
         if not "id" in o:
             o["id"] = str(uuid.uuid4())
         url = cfg["Database"]["Server"]+f"flohmarkt/{o['id']}"
+        o = jsonable_encoder(o)
         try:
             async with  cls.CS.put(url, data=json.dumps(o), timeout=cls.TIMEOUT
             ) as resp:
@@ -40,6 +43,7 @@ class Database:
         doc = await cls.find_one({"id":ident})
         o["_rev"] = doc["_rev"]
         url = cfg["Database"]["Server"]+f"flohmarkt/{ident}"
+        o = jsonable_encoder(o)
         try:
             async with  cls.CS.put(url, data=json.dumps(o), timeout=cls.TIMEOUT
             ) as resp:
@@ -62,14 +66,20 @@ class Database:
             raise(e)
 
     @classmethod
-    async def find(cls, o: dict):
+    async def find(cls, o: dict, sort: dict = []):
         url = cfg["Database"]["Server"]+f"flohmarkt/_find"
-        o = {"selector":o}
+        o = {"selector":o,
+             "sort": sort}
+        o = jsonable_encoder(o)
         try:
             async with  cls.CS.post(url, data=json.dumps(o), headers = {"Content-type": "application/json"}, timeout=cls.TIMEOUT
             ) as resp:
+                print(resp.status)#.status_code)
                 res = await resp.json()
-                return res['docs']
+                if resp.status == 400:
+                    print(res)
+                else:
+                    return res['docs']
         except asyncio.exceptions.TimeoutError:
             raise Exception("HTTP TIMEOUT DATABASE")
         except Exception as e:
