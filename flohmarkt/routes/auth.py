@@ -133,6 +133,7 @@ async def _(username: str = Form(), password: str = Form()):
     return jwt.encode(
             {
                 "exp": datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(days=1),
+                "user_id": found_user["id"],
                 "username": found_user["name"],
                 "avatar": found_user["avatar"] if found_user["avatar"] != "" else None,
             },
