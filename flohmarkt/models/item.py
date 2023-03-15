@@ -30,7 +30,7 @@ class ItemSchema(BaseModel):
     @staticmethod
     async def retrieve():
         items = []
-        async for item in Database.find({"type":"item"}):
+        for item in await Database.find({"type":"item"}):
             items.append(rename_id(item))
         return items
 
