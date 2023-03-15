@@ -15,7 +15,7 @@ async def get_users(current_user : UserSchema = Depends(get_current_user)):
 @router.get("/{ident}", response_description="A single user if any")
 async def get_user(ident:str):
     print("IN ROUTE", ident)
-    user = await UserSchema.retrieve_single(ident)
+    user = await UserSchema.retrieve_single_id(ident)
     return user
 
 @router.put("/{ident}", response_description="Update stuff")
