@@ -45,6 +45,10 @@ class ItemSchema(BaseModel):
             return item
 
     @staticmethod
+    async def retrieve_by_user(userid: str)->dict:
+        return await Database.find({"type":"item","user":userid})
+
+    @staticmethod
     async def update(ident: str, data: dict):
         if len(data) < 1:
             return False

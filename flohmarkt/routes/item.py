@@ -20,6 +20,16 @@ async def get_items():
     items = await ItemSchema.retrieve()
     return items
 
+#TODO: implement
+@router.get("/most_contested", response_description="All items")
+async def get_items():
+    items = await ItemSchema.retrieve()
+    return items
+
+@router.get("/by_user/{user_id}", response_description="All items")
+async def get_items(user_id: str):
+    return await ItemSchema.retrieve_by_user(user_id)
+
 @router.get("/{ident}", response_description="A single item if any")
 async def get_item(ident:str):
     print("IN ROUTE", ident)

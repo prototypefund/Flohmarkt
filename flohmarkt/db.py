@@ -22,7 +22,6 @@ class Database:
 
     @classmethod
     async def create(cls, o: dict):
-        print(o)
         if not "id" in o:
             o["id"] = str(uuid.uuid4())
         url = cfg["Database"]["Server"]+f"flohmarkt/{o['id']}"
