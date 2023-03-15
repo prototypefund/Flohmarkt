@@ -3,7 +3,7 @@ export async function fetchJSON(path) {
         "headers": {
             "Authorization" : "Bearer " + window.sessionStorage.getItem('token')
         }
-    });
+    }).catch(error => console.error(error));
     return await response.json();
 }
 
