@@ -1,16 +1,14 @@
 {% extends "base.html" %}
 
 {% block scripts %}
-<script defer type="module" src="{{ url_for('static', path='/new.js') }}"></script>
-<script> const searchterm = "{{ searchterm }}";</script>
+<script defer type="module" src="{{ url_for('static', path='/search.js') }}"></script>
 {% endblock %}
 
 {% block main %}
-<section class="create">
+<section>
     <header>
         <h1>Results for <i>{{ searchterm }}</i></h1>
     </header>
-    <div id="results">
-    </div>
+    <div id="results" data-searchterm="{{ searchterm }}"></div>
 </section>
 {% endblock %}
