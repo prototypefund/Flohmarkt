@@ -1,0 +1,13 @@
+Creating a coucdb index:
+
+ curl -X POST "http://admin2:admin@192.168.0.52:5984/flohmarkt/_index" -H "Content-type: application/json" --data '{
+    "ddoc": "text-index",
+    "index": {
+      "fields": [{
+        "creation_date":"desc"
+      }]
+    },
+    "name": "sort_creation_date",
+    "type": "json"
+}'
+{"result":"created","id":"_design/text-index","name":"sort_creation_date"}''
