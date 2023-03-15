@@ -15,6 +15,10 @@
     display: flex;
 }
 
+.justify-content-between {
+    justify-content: space-between;
+}
+
 .dropdown-caret {
     border-bottom-color: #0000;
     border-left-color: #0000;

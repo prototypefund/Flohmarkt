@@ -5,8 +5,8 @@
 .grid__newest,
 .grid__contested,
 .grid__user-items {
-    grid-gap: 1rem;
-    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 0.5rem;
+    grid-template-columns: repeat(2, 1fr);
 }
 
 .grid__admin {
