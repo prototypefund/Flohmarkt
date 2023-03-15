@@ -10,9 +10,7 @@ const [item, users, log] = await Promise.all([
 ]);
 
 const itemFragment = document.createDocumentFragment();
-const element = createItem(item);
-element.appendChild(createElement('p', null, item.description));
-itemFragment.appendChild(element);
+itemFragment.appendChild(createItem(item));
 
 const usersFragment = document.createDocumentFragment();
 const usersContainer = createElement('div', 'd-flex');
