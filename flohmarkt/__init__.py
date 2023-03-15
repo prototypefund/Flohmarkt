@@ -1,16 +1,14 @@
 from fastapi import FastAPI, Request, Depends, Form, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from fastapi.security import OAuth2PasswordBearer
 
 from flohmarkt.routes.item import router as item_router
 from flohmarkt.routes.user import router as user_router
 from flohmarkt.routes.auth import router as auth_router
+from flohmarkt.auth import oauth2, get_current_user
 from flohmarkt.db import Database
 
 templates = Jinja2Templates(directory="templates")
-
-oauth2 = OAuth2PasswordBearer(tokenUrl="token")
 
 app = FastAPI()
 

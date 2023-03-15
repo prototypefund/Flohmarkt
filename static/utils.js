@@ -1,5 +1,9 @@
 export async function fetchJSON(path) {
-    const response = await window.fetch('/api/v1/' + path);
+    const response = await window.fetch('/api/v1/' + path, {
+        "headers": {
+            "Authorization" : "Bearer " + window.sessionStorage.getItem('token')
+        }
+    });
     return await response.json();
 }
 

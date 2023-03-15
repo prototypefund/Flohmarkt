@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Body
+from fastapi import APIRouter, Body, Depends
 from fastapi.encoders import jsonable_encoder
 
 from flohmarkt.models.item import ItemSchema, UpdateItemModel
+from flohmarkt.auth import oauth2
 
 router = APIRouter()
 

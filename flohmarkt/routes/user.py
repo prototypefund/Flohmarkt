@@ -1,18 +1,13 @@
-from fastapi import APIRouter, Body
+from fastapi import APIRouter, Body, Depends
 from fastapi.encoders import jsonable_encoder
 
 from flohmarkt.models.user import UserSchema, UpdateUserModel
+from flohmarkt.auth import oauth2, get_current_user
 
 router = APIRouter()
 
-@router.post("/", response_description="Added")
-async def add_user(user: UserSchema = Body(...)):
-    user = jsonable_encoder(user)
-    new_user = await UserSchema.add(user)
-    return new_user
-
 @router.get("/", response_description="All users")
-async def get_users():
+async def get_users(current_user : str = Depends(get_current_user)):
     users = await UserSchema.retrieve()
     return users
 
