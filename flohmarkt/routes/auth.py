@@ -116,19 +116,19 @@ async def _(request : Request, activation_code : str):
     if await UserSchema.activate(activation_code):
         return templates.TemplateResponse("login.html", {"request": request})
     else:
-        raise HTTPException(status_code=403, detail="That did not taste very well.")
+        raise HTTPException(status_code=401, detail="That did not taste very well.")
 
 #Login
 @router.post("/token")
 async def _(username: str = Form(), password: str = Form()):
     found_user = await UserSchema.retrieve_single_name(username)
     if found_user is None or not found_user["active"]:
-        raise HTTPException(status_code=403, detail="Not a valid name-password-pair")
+        raise HTTPException(status_code=401, detail="Not a valid name-password-pair")
 
     current_pwhash = crypt.crypt(password, found_user["pwhash"])
     
     if current_pwhash != found_user["pwhash"]:
-        raise HTTPException(status_code=403, detail="Not a valid name-password-pair")
+        raise HTTPException(status_code=401, detail="Not a valid name-password-pair")
 
     return jwt.encode(
             {
