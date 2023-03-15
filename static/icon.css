@@ -13,3 +13,8 @@
     width: 42px;
     height: 42px;
 }
+
+.icon--photo {
+    width: 100%;
+    height: auto;
+}

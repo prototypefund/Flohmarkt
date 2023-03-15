@@ -98,9 +98,9 @@ section aside {
     border: 1px solid var(--color-bg-secondary);
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow) var(--color-shadow);
-    margin: 1rem;
+    /*margin: 1rem;*/
     padding: 1.25rem;
-    width: var(--width-card);
+    /*width: var(--width-card);*/
 }
 
 section aside:hover {
@@ -293,12 +293,12 @@ a {
     text-decoration: none;
 }
 
-a:active {
+a:not(a.stretched-link):active {
     filter: brightness(var(--active-brightness));
     text-decoration: underline;
 }
 
-a:hover {
+a:not(a.stretched-link):hover {
     filter: brightness(var(--hover-brightness));
     text-decoration: underline;
 }

@@ -1,12 +1,12 @@
 import { fetchJSON } from "./utils.js";
 import { createItem } from "./create/item.js";
 
-//const items = await fetchJSON('items');
+const items = await fetchJSON('items.json');
 
 const itemsFragment = document.createDocumentFragment();
-/*items.forEach(item => {
+items.forEach(item => {
     itemsFragment.appendChild(createItem(item));
-});*/
+});
 
 const secondFragment = itemsFragment.cloneNode(true);
 
