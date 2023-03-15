@@ -7,7 +7,8 @@ from flohmarkt.auth import oauth2, get_current_user
 router = APIRouter()
 
 @router.get("/", response_description="All users")
-async def get_users(current_user : str = Depends(get_current_user)):
+async def get_users(current_user : UserSchema = Depends(get_current_user)):
+    print(current_user)
     users = await UserSchema.retrieve()
     return users
 
