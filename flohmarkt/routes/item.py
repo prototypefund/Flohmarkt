@@ -1,14 +1,17 @@
-from fastapi import APIRouter, Body, Depends
+from fastapi import APIRouter, Body, Depends, Request
 from fastapi.encoders import jsonable_encoder
 
+from flohmarkt.models.user import UserSchema
 from flohmarkt.models.item import ItemSchema, UpdateItemModel
-from flohmarkt.auth import oauth2
+from flohmarkt.auth import get_current_user
 
 router = APIRouter()
 
 @router.post("/", response_description="Added")
-async def add_item(item: ItemSchema = Body(...)):
+async def add_item(request: Request, item: ItemSchema = Body(...), 
+                   current_user: UserSchema = Depends(get_current_user)):
     item = jsonable_encoder(item)
+    item["user"] = current_user["id"]
     new_item = await ItemSchema.add(item)
     return new_item
 

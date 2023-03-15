@@ -5,16 +5,18 @@ createBtn.addEventListener('click', async event => {
     event.preventDefault();
 
     try {
-        const response = await window.fetch('/', {
+        const payload = {
+            name: document.getElementById('title').value,
+            description: document.getElementById('description').value,
+            price: document.getElementById('price').value,
+        };
+        const response = await window.fetch('/api/v1/item/', {
             headers: {
-                "Content-type":"multipart/form-data",
+                "Content-type":"application/json",
+                "Authorization": "Bearer "+window.sessionStorage.getItem('token'),
             },
             method: "POST",
-            body: 'title=' + document.getElementById('title').value
-                  + '&' +
-                  'price=' + document.getElementById('price').value
-                  + '&' +
-                  'description=' + document.getElementById('description').value
+            body: JSON.stringify(payload),
         });
         const data = await response.json();
         console.log(data);

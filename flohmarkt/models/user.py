@@ -2,7 +2,6 @@ from typing import Optional
 from pydantic import BaseModel, Field
 
 from flohmarkt.db import Database
-import uuid
 
 class ModeEnum:
     SELL = 0

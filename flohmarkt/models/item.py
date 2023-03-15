@@ -2,19 +2,25 @@ from typing import Optional
 from pydantic import BaseModel, Field
 
 from flohmarkt.db import Database
+import uuid
 
 class ModeEnum:
     SELL = 0
     GIVEAWAY = 1
 
 class ItemSchema(BaseModel):
+    type : Optional[str]
     name : str = Field(...)
-    type : str = Field(...)
+    user : Optional[str]
+    price : str = Field(...)
+    description : str = Field(...)
     
     class Config: 
         schema_extra = {
             "example": {
-                "name": "Lawnmower"
+                "name": "Lawnmower",
+                "price": "1 €",
+                "description": "This mows lawns",
             }
         }
     @staticmethod
@@ -27,7 +33,8 @@ class ItemSchema(BaseModel):
     @staticmethod
     async def add(data: dict)->dict:
         data["type"] = "item"
-        ins = await Database.insert_one(data)
+        data["id"] = str(uuid.uuid4())
+        ins = await Database.create(data)
         new = await Database.find_one({"id":ins})
         return new
 
