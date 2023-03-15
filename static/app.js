@@ -14,6 +14,7 @@ const token = window.sessionStorage.getItem('token');
 if (token != undefined && token != null && typeof(token) === 'string') {
     const parsedToken = parse_jwt(token);
     const username = parsedToken.username;
+    window.USER_ID = parsedToken.user_id;
     const detailsListItem = document.getElementById('details-list-item');
     detailsListItem.querySelector('.details-menu span').append(username);
     detailsListItem.querySelector('.details-menu a').href = '/~' + username;
