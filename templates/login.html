@@ -9,12 +9,12 @@
     <header>
         <h1>Sign in</h1>
     </header>
-    <form action="/token" method="post" type="multipart/form-data">
+    <form id="login-form" action="/token" method="post" type="multipart/form-data">
         <label for="username">Username</label>
-        <input type="text" id="username" name="username" autocomplete="username">
+        <input type="text" name="username" autocomplete="username">
         <div class="position-relative">
             <label for="password">Password</label>
-            <input type="password" id="password" name="password" autocomplete="current-password">
+            <input type="password" name="password" autocomplete="current-password">
             <button type="submit" class="w-100" id="login-btn">Sign in</button>
             <a class="position-absolute top-0 right-0" href="/password_reset" tabindex="0">Forgot password?</a>
         </div>

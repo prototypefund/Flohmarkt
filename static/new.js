@@ -1,32 +1,24 @@
-import { query } from './utils.js';
+import { fetchJSON, postJSON } from './utils.js';
 
 const createBtn = document.getElementById('create-btn');
-createBtn.addEventListener('click', async event => {
+createBtn.addEventListener('click', event => {
     event.preventDefault();
 
-    try {
-        const payload = {
-            name: document.getElementById('title').value,
-            description: document.getElementById('description').value,
-            price: document.getElementById('price').value,
-        };
-        const response = await window.fetch('/api/v1/item/', {
-            headers: {
-                "Content-type":"application/json",
-                "Authorization": "Bearer "+window.sessionStorage.getItem('token'),
-            },
-            method: "POST",
-            body: JSON.stringify(payload),
-        });
-        const data = await response.json();
-        console.log(data);
-    } catch (error) {
-        console.log(error);
-    }
+    const formData = new FormData(createForm);
+    postJSON({
+        name: formData.get('title'),
+        description: formData.get('description'),
+        price: formData.get('price')
+    })
+    .then(async data => {
+        const user = await fetchJSON('user/' + data.user);
+        window.location.pathname = '/~' + user.name + '/' + data.id;
+    });
 });
 
+const createForm = document.getElementById('create-form');
 let inputValid = 0;
-query('.create input, .create textarea').forEach((input, index) => {
+createForm.querySelectorAll('input, textarea').forEach((input, index) => {
     input.addEventListener('input', function() {
         let valid;
         switch (this.id) {

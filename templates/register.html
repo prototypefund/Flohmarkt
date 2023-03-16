@@ -5,20 +5,20 @@
 {% endblock %}
 
 {% block main %}
-<section class="register">
+<section>
     <header>
         <h1>Register</h1>
     </header>
-    <form action="/register" method="post" type="multipart/form-data">
+    <form id="register-form" action="/register" method="post" type="multipart/form-data">
         <label for="username">Username</label>
-        <input type="text" id="username" name="username" autocomplete="username">
+        <input type="text" name="username" autocomplete="username">
         <label for="email">E-Mail</label>
-        <input type="text" id="email" name="email">
+        <input type="text" name="email">
         <label for="password">Password</label>
-        <input type="password" id="password" name="password" autocomplete="new-password">
+        <input type="password" name="password" autocomplete="new-password">
         <label for="password-repeat">Repeat password</label>
-        <input type="password" id="password-repeat" name="password-repeat" autocomplete="new-password">
-        <button type="submit" class="w-100" id="register-btn" disabled>Register</button>
+        <input type="password" name="password-repeat" autocomplete="new-password">
+        <button type="submit" class="w-100" disabled>Register</button>
     </form>
 </section>
 {% endblock %}

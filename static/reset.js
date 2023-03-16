@@ -1,17 +1,9 @@
-document.getElementById('reset-btn').addEventListener('click', async event => {
+import { postForm } from "./utils.js";
+
+document.getElementById('reset-btn').addEventListener('click', event => {
     event.preventDefault();
 
-    try {
-        const response = await window.fetch('/password_reset', {
-            headers: {
-                "Content-type":"application/x-www-form-urlencoded",
-            },
-            method: "POST",
-            body: 'email=' + document.getElementById('email').value
-        });
-        const data = await response.json();
-        console.log(data);
-    } catch (error) {
-        console.log(error);
-    }
+    const resetForm = document.getElementById('reset-form');
+    const data = postForm(resetForm);
+    console.log(data);
 });

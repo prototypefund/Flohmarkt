@@ -5,11 +5,11 @@
 {% endblock %}
 
 {% block main %}
-<section class="create">
+<section>
     <header>
         <h1>Create new item</h1>
     </header>
-    <form action="/" method="post" type="multipart/form-data">
+    <form id="create-form" action="/" method="post" type="multipart/form-data">
         <label for="title">Title</label>
         <input type="text" id="title" name="title">
         <label for="price">Price</label>
