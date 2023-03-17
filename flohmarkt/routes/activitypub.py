@@ -19,7 +19,7 @@ async def unfollow(obj):
     user = await UserSchema.retrieve_single_name(name)
     if user is None:
         raise HTTPException(status_code=404, detail="No such user :(")
-    delete(user["followers"][obj['object']['id']])
+    del(user["followers"][obj['object']['id']])
     await user.update(user['id'], user)
     return {}
 
