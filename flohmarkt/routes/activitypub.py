@@ -5,6 +5,24 @@ from flohmarkt.models.user import UserSchema, UpdateUserModel
 
 router = APIRouter()
 
+async def follow(obj):
+    name = obj['object'].replace(cfg["General"]["ExternalURL"]+"/users/","",1)
+    user = await UserSchema.retrieve_single_name(name)
+    if user is None:
+        raise HTTPException(status=404, detail="No such user :(")
+    user.followers[obj['id']] = obj
+    await user.update(user['id'], user)
+    return {}
+
+async def unffollow(obj):
+    name = obj['object']['object'].replace(cfg["General"]["ExternalURL"]+"/users/","",1)
+    user = await UserSchema.retrieve_single_name(name)
+    if user is None:
+        raise HTTPException(status=404, detail="No such user :(")
+    delete(user.followers[obj['object']['id']])
+    await user.update(user['id'], user)
+    return {}
+
 @router.post("/inbox")
 async def inbox(msg : dict = Body(...) ):
     print(msg)

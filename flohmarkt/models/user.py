@@ -2,6 +2,7 @@ from typing import Optional
 from pydantic import BaseModel, Field
 
 from flohmarkt.db import Database
+from flohmarkt.models.follow import FollowSchema
 
 class ModeEnum:
     SELL = 0
@@ -18,6 +19,7 @@ class UserSchema(BaseModel):
     admin : bool = Field(...)
     moderator : bool = Field(...)
     activation_code : str = Field(...)
+    followers : dict[str, FollowSchema] 
     role : str = Field(...)
     
     
