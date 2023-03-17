@@ -19,7 +19,7 @@ class UserSchema(BaseModel):
     admin : bool = Field(...)
     moderator : bool = Field(...)
     activation_code : str = Field(...)
-    followers : dict[str, FollowSchema] 
+    followers : dict[str, FollowSchema] = {}
     role : str = Field(...)
     
     
