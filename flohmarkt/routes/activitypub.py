@@ -9,7 +9,7 @@ async def follow(obj):
     name = obj['object'].replace(cfg["General"]["ExternalURL"]+"/users/","",1)
     user = await UserSchema.retrieve_single_name(name)
     if user is None:
-        raise HTTPException(status=404, detail="No such user :(")
+        raise HTTPException(status_code=404, detail="No such user :(")
     user.followers[obj['id']] = obj
     await user.update(user['id'], user)
     return {}
@@ -18,7 +18,7 @@ async def unfollow(obj):
     name = obj['object']['object'].replace(cfg["General"]["ExternalURL"]+"/users/","",1)
     user = await UserSchema.retrieve_single_name(name)
     if user is None:
-        raise HTTPException(status=404, detail="No such user :(")
+        raise HTTPException(status_code=404, detail="No such user :(")
     delete(user.followers[obj['object']['id']])
     await user.update(user['id'], user)
     return {}
@@ -32,7 +32,7 @@ async def inbox(msg : dict = Body(...) ):
 async def followers():
     user = await UserSchema.retrieve_single_name(name)
     if user is None:
-        raise HTTPException(status=404, detail="No such user :(")
+        raise HTTPException(status_code=404, detail="No such user :(")
     return user.followers
 
 @router.get("/users/{name}/following")
