@@ -5,7 +5,7 @@ from flohmarkt.models.user import UserSchema, UpdateUserModel
 router = APIRouter()
 
 @router.post("/inbox")
-async def inbox(name: str, msg : dict = Body(...) ):
+async def inbox(msg : dict = Body(...) ):
     print(msg)
     return {}
 
