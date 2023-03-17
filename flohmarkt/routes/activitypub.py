@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Body
+from fastapi import APIRouter, HTTPException, Body, Request
 
 from flohmarkt.models.user import UserSchema, UpdateUserModel
 
@@ -17,8 +17,9 @@ async def following():
     return {}
 
 @router.post("/users/{name}/inbox")
-async def user_inbox(name: str, msg : dict = Body(...) ):
+async def user_inbox(request: Request, name: str, msg : dict = Body(...) ):
     print(msg)
+    print(request)
     return {}
 
 @router.post("/users/{name}/outbox")
