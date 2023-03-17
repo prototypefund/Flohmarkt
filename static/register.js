@@ -16,7 +16,7 @@ let inputValid = 0,
 registerForm.querySelectorAll('input').forEach((input, index) => {
     input.addEventListener('input', function() {
         let valid;
-        switch (this.id) {
+        switch (this.name) {
             case 'username':
                 valid = this.value !== '';
                 break;
