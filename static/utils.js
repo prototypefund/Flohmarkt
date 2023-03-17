@@ -10,6 +10,9 @@ export async function fetchJSON(path) {
 export async function postForm(form, authorization=false) {
     const options = {
         method: form.method,
+        headers: {
+            "Content-type": "application/x-www-form-urlencoded"
+        },
         body: new FormData(form),
         ...(authorization && { headers: {
             'Authorization' : 'Bearer ' + window.sessionStorage.getItem('token')

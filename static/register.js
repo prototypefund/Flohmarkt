@@ -2,10 +2,10 @@ import { postForm } from './utils.js';
 
 const registerForm = document.getElementById('register-form');
 const registerBtn = registerForm.querySelector('button');
-registerBtn.addEventListener('click', event => {
+registerBtn.addEventListener('click', async event => {
     event.preventDefault();
 
-    const data = postForm(registerForm);
+    var data = await postForm(registerForm);
     console.log(data);
     window.location.pathname = '/registered';
 });
