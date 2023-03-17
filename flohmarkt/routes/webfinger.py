@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Body, Depends, Request
+from fastapi import APIRouter, Body, HTTPException
 
 from flohmarkt.models.user import UserSchema, UpdateUserModel
 
