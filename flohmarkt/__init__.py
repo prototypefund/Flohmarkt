@@ -5,6 +5,7 @@ from fastapi.templating import Jinja2Templates
 from flohmarkt.routes.item import router as item_router
 from flohmarkt.routes.user import router as user_router
 from flohmarkt.routes.auth import router as auth_router
+from flohmarkt.routes.webfinger import router as webfinger_router
 from flohmarkt.auth import oauth2, get_current_user
 from flohmarkt.db import Database
 
@@ -18,6 +19,7 @@ api_prefix = "/api/v1"
 app.include_router(item_router, tags=["Item"], prefix=api_prefix+"/item")
 app.include_router(user_router, tags=["User"], prefix=api_prefix+"/user")
 app.include_router(auth_router, tags=["Auth"], prefix="")
+app.include_router(webfinger_router, tags=["Webfinger"], prefix="")
 
 @app.on_event("startup")
 async def ini():
