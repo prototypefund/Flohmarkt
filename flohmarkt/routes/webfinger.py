@@ -6,27 +6,34 @@ router = APIRouter()
 
 @router.get("/.well-known/webfinger", response_description="Check for user")
 async def add_item(resource: str):
-    return {
-            "subject" : "acct:grindolite@testcontainer.lan",
-            "aliases": [
-                "https://testcontainer.lan/~grindolite",
-                "https://testcontainer.lan/users/grindolite",
-            ],
-            "links": [
-                {
-                    "rel": "http://webfinger.net/rel/profile-page",
-                    "type": "text/html",
-                    "href": "https://testcontainer.lan/~grindolite"
-                },
-                {
-                    "rel": "self",
-                    "type": "application/activity+json",
-                    "href": "https://testcontainer.lan/users/grindolite"
-                },
-                {
-                    "rel": "http://ostatus.org/schema/1.0/subscribe",
-                    "template" : "https://testcontainer.lan/authorize_interaction?uri={ uri }"
-                }
-            ]
-    }
+    username = resource.split("@")[0]
+    username = username.replace("acct:","",1)
+    user = await UserSchema.retrieve_single_name(username)
+    hostname = "testcontainer.lan"
+    if user:
+        return {
+                "subject" : f"acct:{user['name']}@{hostname}",
+                "aliases": [
+                    f"https://{hostname}/~{user['name']}",
+                    f"https://{hostname}/users/{user['name']}",
+                ],
+                "links": [
+                    {
+                        "rel": "http://webfinger.net/rel/profile-page",
+                        "type": "text/html",
+                        "href": f"https://{hostname}/~{user['name']}"
+                    },
+                    {
+                        "rel": "self",
+                        "type": "application/activity+json",
+                        "href": f"https://{hostname}/users/{user['name']}"
+                    },
+                    {
+                        "rel": "http://ostatus.org/schema/1.0/subscribe",
+                        "template" : f"https://{hostname}/authorize_interaction?uri="+"{ uri }"
+                    }
+                ]
+        }
+    else:
+        raise HTTPException(status_code=404, detail="User not here :(")
 
