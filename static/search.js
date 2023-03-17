@@ -1,8 +1,13 @@
 import { fetchJSON } from "./utils.js";
+import { createItem } from "./create/item.js";
 
-const results = document.getElementById('results');
+const gridResults = document.querySelector('.grid__results');
 
-const items = await fetchJSON('search/' + results.dataset.searchterm);
-items.forEach(item => {
-    console.log(item);
+const itemsResults = await fetchJSON('item/search/' + gridResults.dataset.searchterm);
+
+itemsResults.forEach(async item => {
+    const user = await fetchJSON('user/' + item.user);
+    window.requestAnimationFrame(() => {
+        gridResults.appendChild(createItem(item, user.name));
+    });
 });
