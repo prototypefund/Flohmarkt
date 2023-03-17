@@ -30,7 +30,10 @@ async def inbox(msg : dict = Body(...) ):
 
 @router.get("/users/{name}/followers")
 async def followers():
-    return {}
+    user = await UserSchema.retrieve_single_name(name)
+    if user is None:
+        raise HTTPException(status=404, detail="No such user :(")
+    return user.followers
 
 @router.get("/users/{name}/following")
 async def following():
@@ -39,6 +42,13 @@ async def following():
 @router.post("/users/{name}/inbox")
 async def user_inbox(name: str, msg : dict = Body(...) ):
     print(msg)
+    if msg['type'] == "Follow":
+        return follow(msg)
+    elif msg['type'] == "Undo":
+        if msg['object']['type'] == "Follow":
+            return unfollow(msg)
+
+
     return {}
 
 @router.post("/users/{name}/outbox")
