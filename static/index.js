@@ -6,21 +6,19 @@ const [itemsNewest, itemsContested] = await Promise.all([
     fetchJSON('item/most_contested')
 ]);
 
-const fragmentNewest = document.createDocumentFragment();
-itemsNewest.forEach(async item => {
-    const user = await fetchJSON('user/' + item.user);
-    fragmentNewest.appendChild(createItem(item, user.name));
-});
-
-const fragmentContested = document.createDocumentFragment();
-itemsContested.forEach(async item => {
-    const user = await fetchJSON('user/' + item.user);
-    fragmentContested.appendChild(createItem(item, user.name));
-});
-
 const gridNewest = document.querySelector('.grid__newest'),
       gridContested = document.querySelector('.grid__contested');
-window.requestAnimationFrame(() => {
-    gridNewest.appendChild(fragmentNewest);
-    gridContested.appendChild(fragmentContested);
+
+itemsNewest.forEach(async item => {
+    const user = await fetchJSON('user/' + item.user);
+    window.requestAnimationFrame(() => {
+        gridNewest.appendChild(createItem(item, user.name));
+    });
+});
+
+itemsContested.forEach(async item => {
+    const user = await fetchJSON('user/' + item.user);
+    window.requestAnimationFrame(() => {
+        gridContested.appendChild(createItem(item, user.name));
+    });
 });
