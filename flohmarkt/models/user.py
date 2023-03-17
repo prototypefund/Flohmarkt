@@ -77,12 +77,15 @@ class UserSchema(BaseModel):
             return user
 
     @staticmethod
-    async def update(ident: str, data: dict):
+    async def update(ident: str, data: dict, replace=False):
         if len(data) < 1:
             return False
 
         user = await Database.find_one({"id":ident})
-        user.update(data)
+        if replace:
+            user = data
+        else:
+            user.update(data)
         if user is not None:
             updated = await Database.update(
                     ident, data

@@ -23,7 +23,7 @@ async def unfollow(obj):
         raise HTTPException(status_code=404, detail="No such user :(")
     if "followers" in user:
         del(user["followers"][obj['object']['id']])
-        await UserSchema.update(user['id'], user)
+        await UserSchema.update(user['id'], user, replace=True)
     return {}
 
 @router.post("/inbox")
