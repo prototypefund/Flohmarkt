@@ -9,7 +9,6 @@ async def inbox(request: Request, name: str, msg : dict = Body(...) ):
     print(msg)
     print(request)
     return {}
-    return {}
 
 @router.get("/users/{name}/followers")
 async def followers():
