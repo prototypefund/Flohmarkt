@@ -5,7 +5,10 @@ from flohmarkt.models.user import UserSchema, UpdateUserModel
 router = APIRouter()
 
 @router.post("/inbox")
-async def inbox():
+async def inbox(request: Request, name: str, msg : dict = Body(...) ):
+    print(msg)
+    print(request)
+    return {}
     return {}
 
 @router.get("/users/{name}/followers")
