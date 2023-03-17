@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException, Body
 
+from flohmarkt.config import cfg
 from flohmarkt.models.user import UserSchema, UpdateUserModel
 
 router = APIRouter()
@@ -33,7 +34,7 @@ async def user(name: str):
     if not user:
         raise HTTPException(status_code=404, detail="User not found :(")
     username = user["name"]
-    hostname = "testcontainer.lan"
+    hostname = cfg["General"]["ExternalURL"]
     return {
       "@context": [
         "https://www.w3.org/ns/activitystreams",
@@ -90,31 +91,31 @@ async def user(name: str):
           "suspended": "toot:suspended"
         }
       ],
-      "id": f"https://{hostname}/users/{username}",
+      "id": f"{hostname}/users/{username}",
       "type": "Person",
-      "following": f"https://{hostname}/users/{username}/following",
-      "followers": f"https://{hostname}/users/{username}/followers",
-      "inbox": f"https://{hostname}/users/{username}/inbox",
-      "outbox": f"https://{hostname}/users/{username}/outbox",
-      "featured": f"https://{hostname}/users/{username}/collections/featured",
-      "featuredTags": f"https://{hostname}/users/{username}/collections/tags",
+      "following": f"{hostname}/users/{username}/following",
+      "followers": f"{hostname}/users/{username}/followers",
+      "inbox": f"{hostname}/users/{username}/inbox",
+      "outbox": f"{hostname}/users/{username}/outbox",
+      "featured": f"{hostname}/users/{username}/collections/featured",
+      "featuredTags": f"{hostname}/users/{username}/collections/tags",
       "preferredUsername": f"{username}",
       "name": f"{username}",
       "summary": "",
-      "url": f"https://{hostname}/~{username}",
+      "url": f"{hostname}/~{username}",
       "manuallyApprovesFollowers": False,
       "discoverable": False,
       "published": "2023-03-07T00:00:00Z",
-      "devices": f"https://{hostname}/users/{username}/collections/devices",
+      "devices": f"{hostname}/users/{username}/collections/devices",
       "publicKey": {
-        "id": f"https://{hostname}/users/{username}#main-key",
-        "owner": f"https://{hostname}/users/{username}",
+        "id": f"{hostname}/users/{username}#main-key",
+        "owner": f"{hostname}/users/{username}",
         "publicKeyPem": "-----BEGIN PUBLIC KEY-----\\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyM35mRSQj9O2hUaaTREO\\nL4qTgNx3MsvvM8MADHbYm2EgDKB+4O/hb7CKO9j7QUvS75xDpSx4PeoQuQz9nXC4\\nXeG4d+a4xZ6rPJ/mcrV4G99BTlfJwRigHa4Giavz4YyInRvambkf2qS4T2HGG2GN\\n8Wj4FFw0QLxUodfaEIfJCiZa+0e9Dpt2AaQv8WXcgQ0FFEuhq1ktXJmUjv+H0rUL\\nh2lp4JcPptmo97Lv50QfDSTFPkfPJ69QwMHXixuPpxRfk7NZlyl65Z+uZ5ZcuA01\\nGCDG2KDk0QXZKXIjpELuSwo3Vyp/mdYhcMCg6A24DD+VAMuIkW5GFpXTJJLTcUmy\\nDQIDAQAB\\n-----END PUBLIC KEY-----\\n"
       },
       "tag": [],
       "attachment": [],
       "endpoints": {
-        "sharedInbox": f"https://{hostname}/inbox"
+        "sharedInbox": f"{hostname}/inbox"
       }
     }
 
