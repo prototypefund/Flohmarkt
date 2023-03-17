@@ -14,7 +14,7 @@ async def follow(obj):
     await user.update(user['id'], user)
     return {}
 
-async def unffollow(obj):
+async def unfollow(obj):
     name = obj['object']['object'].replace(cfg["General"]["ExternalURL"]+"/users/","",1)
     user = await UserSchema.retrieve_single_name(name)
     if user is None:
@@ -43,10 +43,10 @@ async def following():
 async def user_inbox(name: str, msg : dict = Body(...) ):
     print(msg)
     if msg['type'] == "Follow":
-        return follow(msg)
+        return await follow(msg)
     elif msg['type'] == "Undo":
         if msg['object']['type'] == "Follow":
-            return unfollow(msg)
+            return await unfollow(msg)
 
 
     return {}
