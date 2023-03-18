@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request, Depends, Form, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
+from flohmarkt.models.user import UserSchema
 from flohmarkt.routes.item import router as item_router
 from flohmarkt.routes.user import router as user_router
 from flohmarkt.routes.auth import router as auth_router
@@ -43,6 +44,9 @@ async def other(request: Request, user: str, item: str):
 
 @app.get("/~{user}")
 async def other(request: Request, user: str):
+    user = await UserSchema.retrieve_single_name(user)
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found :(")
     return templates.TemplateResponse("user.html", {"request": request, "user": user})
 
 #Admin

@@ -2,13 +2,14 @@
 
 {% block scripts %}
 <script defer type="module" src="{{ url_for('static', path='/user.js') }}"></script>
+<script>window.USER_ID = "{{ user.id }}";</script>
 {% endblock %}
 
 {% block main %}
-<h1>{{ user }}'s profile</h1>
+<h1>{{ user.name }}'s profile</h1>
 <div class="row">
     <div class="col-md-6">
-        <h2>{{ user }}'s items</h2>
+        <h2>{{ user.name }}'s items</h2>
         <section class="grid grid__user-items"></section>
     </div>
     <div class="col-md-6 col__about"></div>
