@@ -8,7 +8,6 @@ router = APIRouter()
 
 @router.get("/", response_description="All users")
 async def get_users(current_user : UserSchema = Depends(get_current_user)):
-    print(current_user)
     users = await UserSchema.retrieve()
     return users
 

@@ -44,6 +44,7 @@ class Database:
         o["_rev"] = doc["_rev"]
         url = cfg["Database"]["Server"]+f"flohmarkt/{ident}"
         o = jsonable_encoder(o)
+        print("updating with object", o)
         try:
             async with  cls.CS.put(url, data=json.dumps(o), timeout=cls.TIMEOUT
             ) as resp:
