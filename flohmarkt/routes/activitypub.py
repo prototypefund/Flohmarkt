@@ -5,7 +5,7 @@ from flohmarkt.models.user import UserSchema, UpdateUserModel
 
 router = APIRouter()
 
-async def follow(obj):
+async def follow(obj, status_code=202):
     name = obj['object'].replace(cfg["General"]["ExternalURL"]+"/users/","",1)
     user = await UserSchema.retrieve_single_name(name)
     if user is None:
