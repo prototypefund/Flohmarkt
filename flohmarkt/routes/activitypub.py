@@ -1,11 +1,12 @@
 from fastapi import APIRouter, HTTPException, Body
+from fastapi.responses import JSONResponse
 
 from flohmarkt.config import cfg
 from flohmarkt.models.user import UserSchema, UpdateUserModel
 
 router = APIRouter()
 
-async def follow(obj, status_code=202):
+async def follow(obj):
     name = obj['object'].replace(cfg["General"]["ExternalURL"]+"/users/","",1)
     user = await UserSchema.retrieve_single_name(name)
     if user is None:
@@ -46,7 +47,7 @@ async def following():
 async def user_inbox(name: str, msg : dict = Body(...) ):
     print(msg)
     if msg['type'] == "Follow":
-        return await follow(msg)
+        return JSONResponse(content=await follow(msg), status_code=202)
     elif msg['type'] == "Undo":
         if msg['object']['type'] == "Follow":
             return await unfollow(msg)
