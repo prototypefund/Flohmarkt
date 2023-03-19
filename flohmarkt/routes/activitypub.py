@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Body
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 
 from flohmarkt.config import cfg
 from flohmarkt.models.user import UserSchema, UpdateUserModel
