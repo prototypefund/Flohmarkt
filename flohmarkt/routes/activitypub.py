@@ -47,7 +47,7 @@ async def following():
 async def user_inbox(name: str, msg : dict = Body(...) ):
     print(msg)
     if msg['type'] == "Follow":
-        return JSONResponse(content=await follow(msg), status_code=202)
+        return Response(content=b"0", status_code=202)
     elif msg['type'] == "Undo":
         if msg['object']['type'] == "Follow":
             return await unfollow(msg)
