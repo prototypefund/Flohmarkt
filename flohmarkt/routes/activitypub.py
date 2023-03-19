@@ -7,7 +7,6 @@ router = APIRouter()
 
 async def follow(obj):
     name = obj['object'].replace(cfg["General"]["ExternalURL"]+"/users/","",1)
-    print("follow obj: ",obj)
     user = await UserSchema.retrieve_single_name(name)
     if user is None:
         raise HTTPException(status_code=404, detail="No such user :(")
@@ -19,7 +18,6 @@ async def follow(obj):
 
 async def unfollow(obj):
     name = obj['object']['object'].replace(cfg["General"]["ExternalURL"]+"/users/","",1)
-    print("unfollow obj: ",obj)
     user = await UserSchema.retrieve_single_name(name)
     if user is None:
         raise HTTPException(status_code=404, detail="No such user :(")
