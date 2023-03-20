@@ -7,6 +7,7 @@
       p.fastapi
       p.aiohttp
       p.pyjwt
+      p.pycryptodome
       p.email-validator
     ];
   in

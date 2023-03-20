@@ -4,7 +4,6 @@ import jwt
 import crypt
 import email_validator
 import smtplib
-import ssl
 import uuid
 
 from email.mime.text import MIMEText
@@ -14,18 +13,10 @@ from fastapi.templating import Jinja2Templates
 from fastapi.encoders import jsonable_encoder
 
 from flohmarkt.config import cfg
+from flohmarkt.ssl import ssl_context
 from flohmarkt.models.user import UserSchema, UpdateUserModel
 templates = Jinja2Templates(directory="templates")
 router = APIRouter()
-
-if os.path.exists(cfg["SMTP"]["CAFile"]):
-    ssl_context = ssl.create_default_context(cafile=cfg["SMTP"]["CAFile"])
-else:
-    ssl_context = ssl.create_default_context()
-
-if int(cfg["General"]["DebugMode"]) > 0:
-    ssl_context.check_hostname = False
-    ssl_context.verify_mode = ssl.CERT_NONE
 
 ACTIVATION_MAIL = """
 

@@ -9,14 +9,23 @@ class FollowSchema(BaseModel):
     object : str = Field(...)
     
     class Config: 
+        allow_population_by_field_name = True
         schema_extra = {
             "example": {
-                "name": "horst schlüter",
-                "email": "horst@schlueter.de",
-                "pwhash": "$2$fjweöklfjwelkfjweöfkwefölwekjfewf",
+                "@context": "https://somethingavticitapub.org/schemaversion/blah",
+                "id": "https://mein.host/users/japierdolebober#folows/42",
+                "type": "Follow",
+                "actor":"https://mein.host/users/japierdolebober",
+                "object": "https://anderer.host/users/kurwabober" 
             }
         }
-"""
-Mar 17 19:42:39 testcontainer flohmarkt-start[401]: {'@context': 'https://www.w3.org/ns/activitystreams', 'id': 'https://mastodont.lan/d40547cf-bce1-4393-91f4-07eea0f4d314', 'type': 'Follow', 'actor': 'https://mastodont.lan/users/grindhold', 'object': 'https://testcontainer.lan/users/grindolite'}
-Mar 17 19:42:39 testcontainer flohmarkt-start[401]: INFO:     192.168.0.55:0 - "POST /users/grindolite/inbox HTTP/1.1" 200 OK
-"""
+
+class AcceptSchema(BaseModel):
+    context : str = Field(..., alias="@context")
+    id : str = Field(...)
+    type : str = Field(...)
+    actor : str = Field(...)
+    object : FollowSchema = Field(...)
+
+    class Config: 
+        allow_population_by_field_name = True

@@ -1,10 +1,55 @@
-from fastapi import APIRouter, HTTPException, Body
+import json
+import asyncio
+import aiohttp
+import urllib
+
+from fastapi import APIRouter, HTTPException, Body, Request
 from fastapi.responses import JSONResponse, Response
+from fastapi.encoders import jsonable_encoder
 
 from flohmarkt.config import cfg
-from flohmarkt.models.user import UserSchema, UpdateUserModel
+from flohmarkt.signatures import verify
+from flohmarkt.http import HttpClient
+from flohmarkt.models.user import UserSchema
+from flohmarkt.models.follow import AcceptSchema
 
 router = APIRouter()
+
+"""
+{
+  "@context":"https://www.w3.org/ns/activitystreams",
+  "id":"https://mastodont.lan/users/grindhold#accepts/follows/42",
+  "type":"Accept",
+  "actor":"https://mastodont.lan/users/grindhold",
+  "object":{"id":"https://mastodo.lan/fe65ad92-500f-4333-bc9a-945e4559497f","type":"Follow","actor":"https://mastodo.lan/users/grindhold","object":"https://mastodont.lan/users/grindhold"}}
+"""
+
+
+def get_actor_name(user):
+    return 
+
+async def get_userinfo(actor : str) -> dict:
+    async with HttpClient().get(actor, headers = {
+            "Accept":"application/json"
+        }) as resp:
+        return await resp.json()
+
+async def accept(rcv_inbox, follow, user):
+    accept = AcceptSchema(
+        object=follow,
+        id = cfg["General"]["ExternalURL"]+f"/users/{user['name']}#accepts/follows/42",
+        type = "Accept",
+        actor = user['id'],
+        context = "https://www.w3.org/ns/activitystreams"
+    )
+    #TODO determine numbers
+    accept = jsonable_encoder(accept)
+    async with HttpClient().post(rcv_inbox, data=json.dumps(accept), headers = {
+            "Content-Type":"application/json"
+        }) as resp:
+        print (resp.status)
+        #print (resp)
+        return
 
 async def follow(obj):
     name = obj['object'].replace(cfg["General"]["ExternalURL"]+"/users/","",1)
@@ -14,7 +59,12 @@ async def follow(obj):
     if "followers" not in user:
         user["followers"] = {}
     user["followers"][obj['id']] = obj
+
     await UserSchema.update(user['id'], user)
+
+    userinfo = await get_userinfo(obj['actor'])
+    await accept(userinfo['inbox'], obj, user)
+
     return {}
 
 async def unfollow(obj):
@@ -23,7 +73,10 @@ async def unfollow(obj):
     if user is None:
         raise HTTPException(status_code=404, detail="No such user :(")
     if "followers" in user:
-        del(user["followers"][obj['object']['id']])
+        try:
+            del(user["followers"][obj['object']['id']])
+        except KeyError as e:
+            return HTTPException(status_code=404, detail="object does not exist")
         await UserSchema.update(user['id'], user, replace=True)
     return {}
 
@@ -44,10 +97,14 @@ async def following():
     return {}
 
 @router.post("/users/{name}/inbox")
-async def user_inbox(name: str, msg : dict = Body(...) ):
-    print(msg)
+async def user_inbox(req: Request, name: str, msg : dict = Body(...) ):
+    if not await verify(req):
+        raise HTTPException(status_code=401, detail="request signature could not be validated")
+    else:
+        print("Valid signature")
     if msg['type'] == "Follow":
-        return Response(content=b"0", status_code=202)
+        result = await follow(msg)
+        return Response(content="0", status_code=202)
     elif msg['type'] == "Undo":
         if msg['object']['type'] == "Follow":
             return await unfollow(msg)
@@ -62,7 +119,6 @@ async def user_outbox():
 @router.get("/users/{name}", response_description="User Activitypub document")
 async def user(name: str):
     user = await UserSchema.retrieve_single_name(name)
-    print(user)
     if not user:
         raise HTTPException(status_code=404, detail="User not found :(")
     username = user["name"]

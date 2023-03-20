@@ -1,27 +1,15 @@
 import uuid
 import json
-
-import aiohttp
 import asyncio
 
 from fastapi.encoders import jsonable_encoder
 
 from flohmarkt.config import cfg
+from flohmarkt.http import HttpClient
 
 db_server = cfg["Database"]["Server"]
 
 class Database:
-    CS = None
-    TIMEOUT = 1
-
-    @classmethod
-    async def initialize(cls):
-        cls.CS = aiohttp.ClientSession()
-
-    @classmethod
-    async def shutdown(cls):
-        await cls.CS.close()
-
     @classmethod
     async def create(cls, o: dict):
         if not "id" in o:
@@ -29,8 +17,7 @@ class Database:
         url = cfg["Database"]["Server"]+f"flohmarkt/{o['id']}"
         o = jsonable_encoder(o)
         try:
-            async with  cls.CS.put(url, data=json.dumps(o), timeout=cls.TIMEOUT
-            ) as resp:
+            async with HttpClient().put(url, data=json.dumps(o)) as resp:
                 await resp.json()
                 return o["id"]
         except asyncio.exceptions.TimeoutError:
@@ -45,8 +32,7 @@ class Database:
         url = cfg["Database"]["Server"]+f"flohmarkt/{ident}"
         o = jsonable_encoder(o)
         try:
-            async with  cls.CS.put(url, data=json.dumps(o), timeout=cls.TIMEOUT
-            ) as resp:
+            async with HttpClient().put(url, data=json.dumps(o)) as resp:
                 return await resp.json()
         except asyncio.exceptions.TimeoutError:
             raise Exception("HTTP TIMEOUT DATABASE")
@@ -57,8 +43,7 @@ class Database:
     async def delete(cls, ident: str):
         url = cfg["Database"]["Server"]+f"flohmarkt/{ident}"
         try:
-            async with  cls.CS.delete(url, timeout=cls.TIMEOUT
-            ) as resp:
+            async with HttpClient().delete(url) as resp:
                 return await resp.json()
         except asyncio.exceptions.TimeoutError:
             raise Exception("HTTP TIMEOUT DATABASE")
@@ -72,8 +57,7 @@ class Database:
              "sort": sort}
         o = jsonable_encoder(o)
         try:
-            async with  cls.CS.post(url, data=json.dumps(o), headers = {"Content-type": "application/json"}, timeout=cls.TIMEOUT
-            ) as resp:
+            async with HttpClient().post(url, data=json.dumps(o), headers = {"Content-type": "application/json"}) as resp:
                 print(resp.status)#.status_code)
                 res = await resp.json()
                 if resp.status == 400:

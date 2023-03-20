@@ -7,6 +7,7 @@ A decentral federated small trade platform
 - python3-aiohttp
 - python3-email-validator
 - python3-jwt
+- python3-pycryptodome
 - python3-fastapi
 - python3-multipart
 - uvicorn

@@ -9,7 +9,7 @@ from flohmarkt.routes.auth import router as auth_router
 from flohmarkt.routes.webfinger import router as webfinger_router
 from flohmarkt.routes.activitypub import router as activitypub_router
 from flohmarkt.auth import oauth2, get_current_user
-from flohmarkt.db import Database
+from flohmarkt.http import HttpClient
 
 templates = Jinja2Templates(directory="templates")
 
@@ -27,12 +27,12 @@ app.include_router(activitypub_router, tags=["Activitypub"], prefix="")
 @app.on_event("startup")
 async def ini():
     print ("Flohmarkt booting!")
-    await Database.initialize()
+    await HttpClient.initialize()
     
 @app.on_event("shutdown")
 async def ini():
     print ("Tearing down Flohmarkt!")
-    await Database.shutdown()
+    await HttpClient.shutdown()
 
 @app.get("/")
 async def root(request: Request):
