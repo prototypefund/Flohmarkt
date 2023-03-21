@@ -29,7 +29,17 @@ class Signature:
             else:
                 print("Unknown signature header content: ",k, v)
 
-    def reconstruct(self):
+    async def _check_bodysum(self):
+        given_hash = self.request.headers['digest']
+        if given_hash.startswith('SHA-256='):
+            given_hash = given_hash.replace('SHA-256=', '', 1)
+            body_hash = SHA256.new()
+            body_hash.update(await self.request.body())
+            body_hash = base64.encodebytes(body_hash.digest()).decode('utf-8')
+            return body_hash.strip() == given_hash.strip()
+        raise NotImplementedError(f"Hash algorithm not implemented for: {given_hash}")
+
+    def _reconstruct(self):
         ret  =[]
         for head in self.headers:
             if head == "(request-target)":
@@ -40,7 +50,7 @@ class Signature:
                 ret.append(head+": "+self.request.headers[head])
         return "\n".join(ret)
 
-    async def obtain_pubkey(self):
+    async def _obtain_pubkey(self):
         url = self.key_id.split("#")[0]
         async with HttpClient().get(url, headers = {
                 "Accept":"application/json"
@@ -50,9 +60,11 @@ class Signature:
         raise Exception("Key could not be obtaineD")
 
     async def verify(self) -> bool:
+        if not await self._check_bodysum():
+            return False
         h = SHA256.new()
-        h.update(bytes(self.reconstruct(),'utf-8'))
-        s = pkcs1_15.new(await self.obtain_pubkey())
+        h.update(bytes(self._reconstruct(),'utf-8'))
+        s = pkcs1_15.new(await self._obtain_pubkey())
         try:
             decodedsig = base64.decodebytes(self.signature.encode('utf-8'))
             s.verify(h, decodedsig)
