@@ -1,4 +1,7 @@
 import base64
+import json
+import datetime
+from urllib.parse import urlparse
 
 from fastapi import Request
 
@@ -6,7 +9,37 @@ from Crypto.Signature import pkcs1_15
 from Crypto.Hash import SHA256
 from Crypto.PublicKey import RSA
 
+from flohmarkt.config import cfg
 from flohmarkt.http import HttpClient
+from flohmarkt.models.user import UserSchema
+
+def to_rfc_2616(date: datetime.datetime) -> str:
+    months = {
+        1 : "Jan",
+        2 : "Feb",
+        3 : "Mar",
+        4 : "Apr",
+        5 : "May",
+        6 : "Jun",
+        7 : "Jul",
+        8 : "Aug",
+        9 : "Sep",
+        10 : "Oct",
+        11 : "Nov",
+        12 : "Dec"
+    }
+    days = {
+        0 : "Sun",
+        1 : "Mon",
+        2 : "Tue",
+        3 : "Wed",
+        4 : "Thu",
+        5 : "Fri",
+        6 : "Sat"
+    }
+    weekday = days[date.weekday()]
+    month = months[date.month]
+    return f"{weekday}, {date.day} {month} {date.year} {date.hour:02d}:{date.minute:02d}:{date.second:02d} GMT"
 
 class Signature:
     def __init__(self, request):
@@ -40,7 +73,7 @@ class Signature:
         raise NotImplementedError(f"Hash algorithm not implemented for: {given_hash}")
 
     def _reconstruct(self):
-        ret  =[]
+        ret = []
         for head in self.headers:
             if head == "(request-target)":
                 ret.append(
@@ -76,5 +109,37 @@ class Signature:
 async def verify(req: Request):
     return await Signature(req).verify()
 
-def sign(req: Request):
-    pass #TODO: implement
+def sign(method : str, url: str, headers: dict, data: str, user : UserSchema):
+    parsed = urlparse(url)
+    request_target = method.lower() + " " + parsed.path
+    body_hash = SHA256.new()
+    body_hash.update(data.encode('utf-8'))
+    body_hash = base64.encodebytes(body_hash.digest()).decode('utf-8')
+    digest = ("SHA-256="+body_hash).strip()
+    headers["Digest"] = digest
+    headers["Host"] = parsed.netloc
+    headers["Date"] = to_rfc_2616(datetime.datetime.now(datetime.timezone.utc))
+    sign_headers = [
+        '(request-target)',
+        'Host',
+        'Date',
+        'Digest',
+        'Content-Type'
+    ]
+    ret = []
+    for head in sign_headers:
+        if head == "(request-target)":
+            ret.append(
+                "(request-target): "+method.lower() + " " +  parsed.path
+            )
+        #elif head == "digest":
+        #    ret.append(f"digest: {digest}")
+        else:
+            ret.append(head.lower()+": "+headers[head])
+    signature_text = "\n".join(ret)
+    signature_hash = SHA256.new()
+    signature_hash.update(bytes(signature_text,'utf-8'))
+    s = pkcs1_15.new(RSA.importKey(user['private_key']))
+    signature = base64.encodebytes(s.sign(signature_hash)).decode('utf-8').replace("\n","")
+    externalurl = cfg["General"]["ExternalURL"]
+    headers["Signature"] = f'keyId="{externalurl}/users/{user["name"]}#main-key",algorithm="rsa-sha256",headers="(request-target) host date digest content-type",signature="{signature}"'

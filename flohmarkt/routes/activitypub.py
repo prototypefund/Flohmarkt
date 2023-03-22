@@ -1,14 +1,13 @@
 import json
 import asyncio
 import aiohttp
-import urllib
 
 from fastapi import APIRouter, HTTPException, Body, Request
 from fastapi.responses import JSONResponse, Response
 from fastapi.encoders import jsonable_encoder
 
 from flohmarkt.config import cfg
-from flohmarkt.signatures import verify
+from flohmarkt.signatures import verify, sign
 from flohmarkt.http import HttpClient
 from flohmarkt.models.user import UserSchema
 from flohmarkt.models.follow import AcceptSchema
@@ -44,9 +43,12 @@ async def accept(rcv_inbox, follow, user):
     )
     #TODO determine numbers
     accept = jsonable_encoder(accept)
-    async with HttpClient().post(rcv_inbox, data=json.dumps(accept), headers = {
-            "Content-Type":"application/json"
-        }) as resp:
+    headers = {
+        "Content-Type":"application/json"
+    }
+    sign("post", rcv_inbox, headers, json.dumps(accept), user)
+    print(headers)
+    async with HttpClient().post(rcv_inbox, data=json.dumps(accept), headers = headers) as resp:
         print (resp.status)
         #print (resp)
         return
