@@ -5,9 +5,14 @@ from urllib.parse import urlparse
 
 from fastapi import Request
 
-from Crypto.Signature import pkcs1_15
-from Crypto.Hash import SHA256
-from Crypto.PublicKey import RSA
+try:
+    from Crypto.Signature import pkcs1_15
+    from Crypto.Hash import SHA256
+    from Crypto.PublicKey import RSA
+except ModuleNotFoundError:
+    from Cryptodome.Signature import pkcs1_15
+    from Cryptodome.Hash import SHA256
+    from Cryptodome.PublicKey import RSA
 
 from flohmarkt.config import cfg
 from flohmarkt.http import HttpClient

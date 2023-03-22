@@ -1,7 +1,11 @@
 from typing import Optional
 from pydantic import BaseModel, Field
 
-from Crypto.PublicKey import RSA
+try:
+    from Crypto.PublicKey import RSA
+except ModuleNotFoundError:
+    from Cryptodome.PublicKey import RSA
+ 
 
 from flohmarkt.db import Database
 from flohmarkt.models.follow import FollowSchema
