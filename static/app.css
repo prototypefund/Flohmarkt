@@ -406,6 +406,10 @@ form header {
     padding: 1.5rem 0;
 }
 
+#create-form {
+    width: 360px;
+}
+
 input,
 label,
 select,
@@ -413,6 +417,7 @@ textarea {
     display: block;
     font-size: inherit;
     /*max-width: var(--width-card-wide);*/
+    width: 100%;
 }
 
 input[type="checkbox"],

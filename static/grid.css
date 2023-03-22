@@ -5,7 +5,8 @@
 .grid__newest,
 .grid__contested,
 .grid__user-items,
-.grid__results {
+.grid__results,
+.grid__images {
     grid-gap: 0.5rem;
     grid-template-columns: repeat(2, 1fr);
 }

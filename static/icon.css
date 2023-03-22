@@ -19,3 +19,8 @@
     height: auto;
     aspect-ratio: 5 / 4;
 }
+
+.icon--photo-up {
+    width: 120px;
+    height: 120px;
+}
