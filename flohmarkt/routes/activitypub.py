@@ -122,6 +122,7 @@ async def user(name: str):
     if not user:
         raise HTTPException(status_code=404, detail="User not found :(")
     username = user["name"]
+    public_key = user.get("public_key", "")
     hostname = cfg["General"]["ExternalURL"]
     return {
       "@context": [
@@ -198,7 +199,7 @@ async def user(name: str):
       "publicKey": {
         "id": f"{hostname}/users/{username}#main-key",
         "owner": f"{hostname}/users/{username}",
-        "publicKeyPem": "-----BEGIN PUBLIC KEY-----\\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyM35mRSQj9O2hUaaTREO\\nL4qTgNx3MsvvM8MADHbYm2EgDKB+4O/hb7CKO9j7QUvS75xDpSx4PeoQuQz9nXC4\\nXeG4d+a4xZ6rPJ/mcrV4G99BTlfJwRigHa4Giavz4YyInRvambkf2qS4T2HGG2GN\\n8Wj4FFw0QLxUodfaEIfJCiZa+0e9Dpt2AaQv8WXcgQ0FFEuhq1ktXJmUjv+H0rUL\\nh2lp4JcPptmo97Lv50QfDSTFPkfPJ69QwMHXixuPpxRfk7NZlyl65Z+uZ5ZcuA01\\nGCDG2KDk0QXZKXIjpELuSwo3Vyp/mdYhcMCg6A24DD+VAMuIkW5GFpXTJJLTcUmy\\nDQIDAQAB\\n-----END PUBLIC KEY-----\\n"
+        "publicKeyPem": public_key
       },
       "tag": [],
       "attachment": [],

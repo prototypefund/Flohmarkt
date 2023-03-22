@@ -1,6 +1,8 @@
 from typing import Optional
 from pydantic import BaseModel, Field
 
+from Crypto.PublicKey import RSA
+
 from flohmarkt.db import Database
 from flohmarkt.models.follow import FollowSchema
 
@@ -17,11 +19,12 @@ class UserSchema(BaseModel):
     avatar : str = Field(...)
     active : bool = Field(...)
     admin : bool = Field(...)
+    private_key : str = Field(...)
+    public_key : str = Field(...)
     moderator : bool = Field(...)
     activation_code : str = Field(...)
     followers : dict[str, FollowSchema] = {}
     role : str = Field(...)
-    
     
     class Config: 
         schema_extra = {
@@ -41,6 +44,11 @@ class UserSchema(BaseModel):
     @staticmethod
     async def add(data: dict)->dict:
         data["type"] = "user"
+
+        keypair = RSA.generate(2048)
+        data["private_key"] = keypair.export_key()
+        data["public_key"] = keypair.public_key().export_key()
+
         ins = await Database.create(data)
         new = await Database.find_one({"id":ins})
         return new
