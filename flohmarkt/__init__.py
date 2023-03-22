@@ -6,6 +6,7 @@ from flohmarkt.models.user import UserSchema
 from flohmarkt.routes.item import router as item_router
 from flohmarkt.routes.user import router as user_router
 from flohmarkt.routes.auth import router as auth_router
+from flohmarkt.routes.image import router as image_router
 from flohmarkt.routes.webfinger import router as webfinger_router
 from flohmarkt.routes.activitypub import router as activitypub_router
 from flohmarkt.auth import oauth2, get_current_user
@@ -19,6 +20,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 api_prefix = "/api/v1"
 
 app.include_router(item_router, tags=["Item"], prefix=api_prefix+"/item")
+app.include_router(image_router, tags=["Image"], prefix=api_prefix+"/image")
 app.include_router(user_router, tags=["User"], prefix=api_prefix+"/user")
 app.include_router(auth_router, tags=["Auth"], prefix="")
 app.include_router(webfinger_router, tags=["Webfinger"], prefix="")
