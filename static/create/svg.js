@@ -1,5 +1,4 @@
-export function createSVG(src) {
-    const icon = src.slice(0, -4); // remove .svg
+export function createSVG(icon) {
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.classList.add('icon');
     svg.classList.add('icon--' + icon);

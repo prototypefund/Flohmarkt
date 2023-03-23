@@ -1,5 +1,6 @@
 .grid {
     display: grid;
+    grid-gap: 0.5rem;
 }
 
 .grid__newest,
@@ -7,8 +8,16 @@
 .grid__user-items,
 .grid__results,
 .grid__images {
-    grid-gap: 0.5rem;
     grid-template-columns: repeat(2, 1fr);
+}
+
+.grid__images:not(:empty) {
+    /*height: 256px;
+    overflow-y: auto;*/
+}
+
+.grid__images > li:first-child {
+    grid-column-end: span 2;
 }
 
 .grid__admin {

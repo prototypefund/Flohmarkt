@@ -9,6 +9,26 @@
     stroke-linejoin: round;
 }
 
+.icon--hand-grab,
+.icon--x {
+    position: absolute;
+    top: 0.5rem;
+    width: 32px;
+    height: 32px;
+    background-color: var(--color-bg);
+    border-radius: 50%;
+}
+
+.icon--x {
+    right: 0.5rem;
+    cursor: pointer;
+}
+
+.icon--hand-grab {
+    left: 0.5rem;
+    cursor: grab;
+}
+
 .icon--logo {
     width: 42px;
     height: 42px;

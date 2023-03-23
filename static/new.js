@@ -1,4 +1,7 @@
 import { fetchJSON, postJSON } from './utils.js';
+import { createElement } from "./create/element.js";
+import { createImg } from "./create/img.js";
+import { createSVG } from "./create/svg.js";
 
 const MAX_WIDTH = 1920,
       MAX_HEIGHT = 1080;
@@ -37,6 +40,7 @@ createForm.querySelectorAll('input, textarea').forEach((input, index) => {
     });
 });
 
+let selected;
 const uploadInput = document.getElementById('upload');
 uploadInput.addEventListener('change', () => {
     const gridImages = document.querySelector('.grid__images');
@@ -44,8 +48,7 @@ uploadInput.addEventListener('change', () => {
         const fileReader = new FileReader();
         fileReader.onload = event => {
             let srcData = event.target.result;
-            const image = new Image();
-            image.src = srcData
+            const image = createImg(srcData, file.name, 'd-block');
             image.onload = () => {
                 let width = image.width,
                     height = image.height,
@@ -74,8 +77,55 @@ uploadInput.addEventListener('change', () => {
                     //srcData = canvas.toDataURL('image/jpeg')
                 }
             }
+            function isBefore(el1, el2) {
+                let cur;
+                if (el2.parentNode === el1.parentNode) {
+                  for (cur = el1.previousSibling; cur; cur = cur.previousSibling) {
+                    if (cur === el2) return true;
+                  }
+                }
+
+                return false;
+            }
+            const li = createElement('li');
+            li.classList.add('position-relative');
+            li.classList.add('p-0');
+            li.draggable = false;
+            li.addEventListener('dragend', () => {
+                selected = null;
+                li.draggable = false;
+            });
+            li.addEventListener('dragover', event => {
+                const parent = event.target.parentNode;
+                if (parent.tagName !== 'LI') return;
+                if (event.target.closest('li').isEqualNode(selected)) return;
+                if (isBefore(selected, parent)) {
+                    gridImages.insertBefore(selected, parent);
+                } else {
+                    gridImages.insertBefore(selected, parent.nextSibling)
+                }
+            });
+            li.addEventListener('dragstart', event => {
+                event.dataTransfer.effectAllowed = 'move';
+                event.dataTransfer.setData('text/plain', null); // still needed for Firefox?
+                selected = event.target;
+            });
+            li.appendChild(image);
+            const iconDelete = createSVG('x');
+            iconDelete.addEventListener('click', () => {
+                li.remove();
+            });
+            li.appendChild(iconDelete);
+            const iconGrab = createSVG('hand-grab');
+            iconGrab.addEventListener('pointerdown', () => {
+                li.draggable = true;
+            });
+            iconGrab.addEventListener('pointerup', () => {
+                li.draggable = false;
+            });
+            li.appendChild(iconGrab);
             window.requestAnimationFrame(() => {
-                gridImages.appendChild(image);
+                gridImages.appendChild(li);
             });
         }
         fileReader.readAsDataURL(file);
