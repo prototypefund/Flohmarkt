@@ -74,8 +74,17 @@ uploadInput.addEventListener('change', () => {
                     canvas.height = height
                     
                     context.drawImage(image, 0, 0, width, height)
-                    //srcData = canvas.toDataURL('image/jpeg')
+                    srcData = canvas.toDataURL('image/jpeg')
                 }
+                window.fetch('/api/v1/image/', {
+                        method: "post",
+                        headers: {
+                            "Authorization": "Bearer "+window.sessionStorage.getItem("token")
+                        },
+                        body: srcData
+                    }
+                ).then(data=>data.json()
+                ).then(realdata=>console.log(realdata));
             }
             function isBefore(el1, el2) {
                 let cur;
