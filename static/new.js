@@ -6,6 +6,8 @@ import { createSVG } from "./create/svg.js";
 const MAX_WIDTH = 1920,
       MAX_HEIGHT = 1080;
 
+var uploaded_images = [];
+
 const createBtn = document.getElementById('create-btn');
 createBtn.addEventListener('click', event => {
     event.preventDefault();
@@ -14,7 +16,8 @@ createBtn.addEventListener('click', event => {
     postJSON({
         name: formData.get('title'),
         description: formData.get('description'),
-        price: formData.get('price')
+        price: formData.get('price'),
+        images: uploaded_images
     })
     .then(async data => {
         const user = await fetchJSON('user/' + data.user);
@@ -25,18 +28,25 @@ createBtn.addEventListener('click', event => {
 const createForm = document.getElementById('create-form');
 let inputValid = 0;
 createForm.querySelectorAll('input, textarea').forEach((input, index) => {
-    input.addEventListener('input', function() {
+    input.addEventListener('change', function() {
         let valid;
+        console.log("IN here SWITCH");
         switch (this.id) {
             case 'title':
             case 'price':
             case 'description':
                 valid = this.value !== '';
                 break;
+            case 'upload':
+            case 'images':
+                valid = true;
+                break;
         }
+        console.log("GIBE INFO");
         const mask = 1 << index;
         inputValid = valid ? inputValid | mask : inputValid & ~mask;
-        createBtn.disabled = inputValid !== 7; // 111
+        console.log(inputValid);
+        createBtn.disabled = inputValid !== 15; // 1111
     });
 });
 
@@ -84,7 +94,10 @@ uploadInput.addEventListener('change', () => {
                         body: srcData
                     }
                 ).then(data=>data.json()
-                ).then(realdata=>console.log(realdata));
+                ).then(id=>{
+                    const images_input = document.getElementById('images');
+                    uploaded_images.push(id);
+                });
             }
             function isBefore(el1, el2) {
                 let cur;

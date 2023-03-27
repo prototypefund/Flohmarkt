@@ -1,7 +1,7 @@
 import uuid
 import datetime
 
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel, Field
 
 from flohmarkt.db import Database
@@ -15,6 +15,7 @@ class ItemSchema(BaseModel):
     name : str = Field(...)
     user : Optional[str]
     price : str = Field(...)
+    images : List[str] = Field(...)
     description : str = Field(...)
     conversations : Optional[set]
     creation_date : Optional[datetime.datetime]

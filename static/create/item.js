@@ -4,7 +4,7 @@ import { createElement } from "./element.js";
 
 export function createItem(item, username) {
     const element = createElement('aside', 'position-relative');
-    element.appendChild(createImage('https://http.cat/200' /*item.image.src*/, item.name/*item.image.alt*/, 'card-img-top w-100'));
+    element.appendChild(createImage("/api/v1/image/"+item.images[0] /*item.image.src*/, item.name/*item.image.alt*/, 'card-img-top w-100'));
     const wrapper = createElement('div', 'p-2');
     const container = createElement('div', 'd-flex justify-content-between');
     container.appendChild(createLink('/~' + username + '/' + item.id, 'stretched-link', item.name));
