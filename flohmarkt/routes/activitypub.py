@@ -5,17 +5,16 @@ import aiohttp
 from fastapi import APIRouter, HTTPException, Body, Request
 from fastapi.responses import JSONResponse, Response
 from fastapi.encoders import jsonable_encoder
+from typing import List
 
 from flohmarkt.config import cfg
 from flohmarkt.signatures import verify, sign
 from flohmarkt.http import HttpClient
 from flohmarkt.models.user import UserSchema
+from flohmarkt.models.item import ItemSchema
 from flohmarkt.models.follow import AcceptSchema
 
 router = APIRouter()
-
-def get_actor_name(user):
-    return 
 
 async def get_userinfo(actor : str) -> dict:
     async with HttpClient().get(actor, headers = {
@@ -77,11 +76,34 @@ async def inbox(msg : dict = Body(...) ):
     return {}
 
 @router.get("/users/{name}/followers")
-async def followers(name: str):
+async def followers(name: str, page : int = None):
+    hostname = cfg["General"]["ExternalURL"]
     user = await UserSchema.retrieve_single_name(name)
     if user is None:
         raise HTTPException(status_code=404, detail="No such user :(")
-    return user.followers
+    if page is None:
+        return {
+            "@context":"https://www.w3.org/ns/activitystreams",
+            "id":f"{hostname}/users/{user['name']}/followers",
+            "type":"OrderedCollection",
+            "totalItems":len(user["followers"]),
+            "first":f"{hostname}/users/{user['name']}/followers?page=1"
+        }
+    else:
+        if page < 1:
+            raise HTTPException(status_code=404, detail="Page not found :(")
+        return {
+            "@context":"https://www.w3.org/ns/activitystreams",
+            "id":f"{hostname}/users/{user['name']}/followers?page=1",
+            "type":"OrderedCollectionPage",
+            "totalItems":len(user["followers"]),
+            "partOf":f"{hostname}/users/{user['name']}/followers",
+            "orderedItems": [
+                x["actor"] for x in list(user["followers"].values())[(page-1)*10:page*10]
+            ]
+        }
+
+
 
 @router.get("/users/{name}/following")
 async def following():
@@ -103,9 +125,101 @@ async def user_inbox(req: Request, name: str, msg : dict = Body(...) ):
 
     return {}
 
-@router.post("/users/{name}/outbox")
-async def user_outbox():
-    return {}
+async def items_to_activity(items: List[ItemSchema], user: UserSchema):
+    ret = []
+    hostname = cfg["General"]["ExternalURL"]
+
+    for item in items:
+        attachments = []
+        for image in item["images"]:
+            attachments.append({
+                "type":"Document",
+                "mediaType":"image/jpeg",
+                "url": f"{hostname}/api/v1/images/{image}",
+                "name": None,
+                "width":600,
+                "height":400
+            })
+        ret.append({
+            "id": f"{hostname}/users/{user['name']}/items/{item['id']}/activity",
+            "type": "Create",
+            "actor": f"{hostname}/users/{user['name']}",
+            "published": item["creation_date"],
+            "to": [
+                "https://www.w3.org/ns/activitystreams#Public"
+            ],
+            "cc": [
+                f"{hostname}/users/{user['name']}/followers"
+            ],
+            "object": {
+                "id": f"{hostname}/users/{user['name']}/items/{item['id']}",
+                "type": "Note",
+                "summary": None,
+                "inReplyTo": None,
+                "published": item["creation_date"],
+                "url": f"{hostname}/~{user['name']}/{item['id']}",
+                "attributedTo": f"{hostname}/users/{user['name']}",
+                "to": [
+                    "https://www.w3.org/ns/activitystreams#Public"
+                ],
+                "cc": [
+                    f"{hostname}/users/{user['name']}/followers"
+                ],
+                "sensitive": False,
+                "content": item["name"] + " <br> " + item["description"],
+                "contentMap": {
+                    "en":item["name"] + " <br> " + item["description"],
+                },
+                "attachment": attachments,
+                "tag": [],
+                "replies": None
+            }
+        })
+    return ret
+
+@router.get("/users/{name}/outbox")
+async def user_outbox(name: str, page : bool = False, min_id : str = ""):
+    hostname = cfg["General"]["ExternalURL"]
+    user = await UserSchema.retrieve_single_name(name)
+    if user is None:
+        raise HTTPException(status_code=404, detail="No such user :(")
+    if page:
+        items = await ItemSchema.retrieve_by_user(user['id'])
+
+        return {
+            "@context": [
+                "https://www.w3.org/ns/activitystreams",
+                {
+                    "ostatus": "http://ostatus.org#",
+                    "atomUri": "ostatus:atomUri",
+                    "inReplyToAtomUri": "ostatus:inReplyToAtomUri",
+                    "conversation": "ostatus:conversation",
+                    "sensitive": "as:sensitive",
+                    "toot": "http://joinmastodon.org/ns#",
+                    "votersCount": "toot:votersCount",
+                    "blurhash": "toot:blurhash",
+                    "focalPoint": {
+                        "@container": "@list",
+                        "@id": "toot:focalPoint"
+                    },
+                    "Hashtag": "as:Hashtag"
+                }
+            ],
+            "id": f"{hostname}/users/{user['name']}/outbox?page=true",
+            "type": "OrderedCollectionPage",
+            "prev": f"{hostname}/users/{user['name']}/outbox?min_id=110040056389441342&page=true", #TODO fill
+            "partOf": f"{hostname}/users/{user['name']}/outbox",
+            "orderedItems": await items_to_activity(items, user)
+            
+        }
+    else:
+        return {
+            "@context":"https://www.w3.org/ns/activitystreams",
+            "id":f"{hostname}/users/{user['name']}/outbox",
+            "type":"OrderedCollection",
+            "totalItems":1, # TODO fill
+            "first":f"{hostname}/users/{user['name']}/outbox?page=true"
+        }
 
 @router.get("/users/{name}", response_description="User Activitypub document")
 async def user(name: str):
