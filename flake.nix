@@ -162,6 +162,7 @@
               ExternalURL = ${config.services.flohmarkt.settings.general.externalUrl}
               DebugMode = ${toString config.services.flohmarkt.settings.general.debugMode}
               JwtSecret =  ${config.services.flohmarkt.settings.general.jwtSecret}
+              ImagePath =  ${config.services.flohmarkt.settings.general.imagePath}
 
               [Database]
               Server = ${config.services.flohmarkt.settings.database.server}
@@ -177,7 +178,9 @@
           };
           systemd.services.flohmarkt = {
             description = "Flohmarkt Webservice";
-            user = "flohmarkt";
+            serviceConfig = {
+              User = "flohmarkt";
+            };
             wantedBy = [ "multi-user.target" ];
             after = [ "network.target" ];
             script = ''
