@@ -14,16 +14,6 @@ from flohmarkt.models.follow import AcceptSchema
 
 router = APIRouter()
 
-"""
-{
-  "@context":"https://www.w3.org/ns/activitystreams",
-  "id":"https://mastodont.lan/users/grindhold#accepts/follows/42",
-  "type":"Accept",
-  "actor":"https://mastodont.lan/users/grindhold",
-  "object":{"id":"https://mastodo.lan/fe65ad92-500f-4333-bc9a-945e4559497f","type":"Follow","actor":"https://mastodo.lan/users/grindhold","object":"https://mastodont.lan/users/grindhold"}}
-"""
-
-
 def get_actor_name(user):
     return 
 
@@ -34,11 +24,12 @@ async def get_userinfo(actor : str) -> dict:
         return await resp.json()
 
 async def accept(rcv_inbox, follow, user):
+    hostname = cfg["General"]["ExternalURL"]
     accept = AcceptSchema(
         object=follow,
-        id = cfg["General"]["ExternalURL"]+f"/users/{user['name']}#accepts/follows/42",
+        id = f"{hostname}/users/{user['name']}#accepts/follows/42",
         type = "Accept",
-        actor = user['id'],
+        actor = f"{hostname}/users/{user['name']}",
         context = "https://www.w3.org/ns/activitystreams"
     )
     #TODO determine numbers
@@ -47,10 +38,8 @@ async def accept(rcv_inbox, follow, user):
         "Content-Type":"application/json"
     }
     sign("post", rcv_inbox, headers, json.dumps(accept), user)
-    print(headers)
     async with HttpClient().post(rcv_inbox, data=json.dumps(accept), headers = headers) as resp:
         print (resp.status)
-        #print (resp)
         return
 
 async def follow(obj):
@@ -88,7 +77,7 @@ async def inbox(msg : dict = Body(...) ):
     return {}
 
 @router.get("/users/{name}/followers")
-async def followers():
+async def followers(name: str):
     user = await UserSchema.retrieve_single_name(name)
     if user is None:
         raise HTTPException(status_code=404, detail="No such user :(")
