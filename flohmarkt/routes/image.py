@@ -2,7 +2,7 @@ import os
 import uuid
 import base64
 
-from fastapi import APIRouter, Body, Depends
+from fastapi import APIRouter, Body, Depends, HTTPException
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import StreamingResponse
 
@@ -28,7 +28,10 @@ async def upload_image(current_user : UserSchema = Depends(get_current_user), im
 
 @router.get("/{ident}", response_description="Get an image")
 async def get_image(ident: str):
-    imagefile = open(os.path.join(cfg["General"]["ImagePath"],ident+".jpg"), "rb")
+    path = os.path.join(cfg["General"]["ImagePath"],ident+".jpg")
+    if not os.path.exists(path):
+        raise HTTPException(status_code=404, detail="Image not found :(")
+    imagefile = open(path, "rb")
     data = imagefile.read()
     imagefile.close()
 
