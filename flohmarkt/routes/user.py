@@ -9,12 +9,14 @@ router = APIRouter()
 @router.get("/", response_description="All users")
 async def get_users(current_user : UserSchema = Depends(get_current_user)):
     users = await UserSchema.retrieve()
+    for user in users:
+        await UserSchema.filter(user)
     return users
 
 @router.get("/{ident}", response_description="A single user if any")
 async def get_user(ident:str):
-    print("IN ROUTE", ident)
     user = await UserSchema.retrieve_single_id(ident)
+    await UserSchema.filter(user)
     return user
 
 @router.put("/{ident}", response_description="Update stuff")

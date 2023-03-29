@@ -113,6 +113,17 @@ class UserSchema(BaseModel):
             await Database.delete_one({"id":ident})
             return True
 
+    @staticmethod
+    async def filter(user):
+        fields_to_ignore = (
+            "private_key",
+            "pwhash",
+            "activation_code"
+        )
+        for fti in fields_to_ignore:
+            if fti in user:
+                del(user[fti])
+
 
 class UpdateUserModel(BaseModel):
     admin : Optional[bool]
