@@ -1,3 +1,4 @@
+import os
 import uuid
 import base64
 
@@ -7,6 +8,7 @@ from fastapi.responses import StreamingResponse
 
 from flohmarkt.models.user import UserSchema, UpdateUserModel
 from flohmarkt.auth import oauth2, get_current_user
+from flohmarkt.config import cfg
 
 router = APIRouter()
 
@@ -18,7 +20,7 @@ async def upload_image(current_user : UserSchema = Depends(get_current_user), im
 
     image_id = str(uuid.uuid4())
 
-    imagefile = open('/tmp/'+image_id+".jpg", "wb")
+    imagefile = open(os.path.join(cfg["General"]["ImagePath"], image_id+".jpg"), "wb")
     imagefile.write(image)
     imagefile.close()
 
@@ -26,7 +28,7 @@ async def upload_image(current_user : UserSchema = Depends(get_current_user), im
 
 @router.get("/{ident}", response_description="Get an image")
 async def get_image(ident: str):
-    imagefile = open('/tmp/'+ident+".jpg", "rb")
+    imagefile = open(os.path.join(cfg["General"]["ImagePath"],ident+".jpg"), "rb")
     data = imagefile.read()
     imagefile.close()
 

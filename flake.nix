@@ -80,6 +80,13 @@
                     JWT generation and validation.
                   '';
                 };
+                imagePath = lib.mkOption {
+                  default = "/var/lib/flohmarkt";
+                  type = lib.types.str;
+                  description = ''
+                    The path where uploaded images land.
+                  '';
+                };
               };
               database = {
                 server = lib.mkOption {
@@ -142,8 +149,12 @@
           };
         };
 
-
         config = lib.mkIf config.services.flohmarkt.enable {
+          users.users.flohmarkt = {
+            isNormalUser = true;
+            home = config.services.flohmarkt.settings.general.imagePath;
+            description = "Flohmarkt Webserver User";
+          };
           environment.etc."flohmarkt.conf" = {
             text = ''
               [General]
@@ -166,6 +177,7 @@
           };
           systemd.services.flohmarkt = {
             description = "Flohmarkt Webservice";
+            user = "flohmarkt";
             wantedBy = [ "multi-user.target" ];
             after = [ "network.target" ];
             script = ''
