@@ -2,6 +2,8 @@ import json
 import asyncio
 import aiohttp
 
+from urllib.parse import urlparse
+
 from fastapi import APIRouter, HTTPException, Body, Request
 from fastapi.responses import JSONResponse, Response
 from fastapi.encoders import jsonable_encoder
@@ -12,6 +14,7 @@ from flohmarkt.signatures import verify, sign
 from flohmarkt.http import HttpClient
 from flohmarkt.models.user import UserSchema
 from flohmarkt.models.item import ItemSchema
+from flohmarkt.models.conversation import ConversationSchema
 from flohmarkt.models.follow import AcceptSchema
 
 router = APIRouter()
@@ -38,7 +41,8 @@ async def accept(rcv_inbox, follow, user):
     }
     sign("post", rcv_inbox, headers, json.dumps(accept), user)
     async with HttpClient().post(rcv_inbox, data=json.dumps(accept), headers = headers) as resp:
-        print (resp.status)
+        if resp.status != 200:
+            raise HTTPException(status_code=400, detail=f"Received {resp.status} upon accepting")
         return
 
 async def follow(obj):
@@ -71,9 +75,55 @@ async def unfollow(obj):
     return {}
 
 @router.post("/inbox")
-async def inbox(msg : dict = Body(...) ):
+async def inbox(req : Request, msg : dict = Body(...) ):
+    hostname = cfg["General"]["ExternalURL"]
+    if not await verify(req):
+        raise HTTPException(status_code=401, detail="request signature could not be validated")
+    else:
+        print("Valid signature")
+    if msg["type"] != "Create":
+        raise HTTPException(status_code=400, detail="Only Create activity allowed right now")
+
     print(msg)
-    return {}
+
+    if "https://www.w3.org/ns/activitystreams#Public" in msg["to"]:
+        raise HTTPException(status_code=400, detail="Can only accept private messages")
+
+    if len(msg["to"]) != 1:
+        raise HTTPException(status_code=400, detail="Can only accept private messages to 1 user")
+
+    username = msg["to"][0].replace(f"{hostname}/users/","")
+    user = await UserSchema.retrieve_single_name(username)
+
+    if user is None:
+        print("HERE", username)
+        raise HTTPException(status_code=404, detail="Targeted user not found")
+
+    item_id = msg["object"]["inReplyTo"].replace(
+        f"{hostname}/users/{username}/items/", ""
+    )
+    item = await ItemSchema.retrieve_single_id(item_id)
+    if item is None:
+        print("THERE", item_id)
+        raise HTTPException(status_code=404, detail="Targeted item not found")
+
+    conversation = await ConversationSchema.retrieve_for_item_remote_user(item_id, msg["actor"])
+    if conversation is None:
+        conversation = {
+            "user_id" : user['id'],
+            "remote_user" : msg["actor"],
+            "item_id" : item['id'],
+            "messages" : []
+        }
+        conversation = await ConversationSchema.add(conversation)
+
+    print(conversation)
+
+    conversation["messages"].append(msg["object"])
+
+    await ConversationSchema.update(conversation['id'], conversation)
+
+    return Response(content="0", status_code=202)
 
 @router.get("/users/{name}/followers")
 async def followers(name: str, page : int = None):
@@ -81,6 +131,7 @@ async def followers(name: str, page : int = None):
     user = await UserSchema.retrieve_single_name(name)
     if user is None:
         raise HTTPException(status_code=404, detail="No such user :(")
+
     if page is None:
         return {
             "@context":"https://www.w3.org/ns/activitystreams",
@@ -121,11 +172,62 @@ async def user_inbox(req: Request, name: str, msg : dict = Body(...) ):
     elif msg['type'] == "Undo":
         if msg['object']['type'] == "Follow":
             return await unfollow(msg)
-
-
     return {}
 
+async def get_inbox_list_from_activity(data: dict):
+    urls = []
+    urls.extend(data.get("to", []))
+    urls.extend(data.get("cc", []))
+
+    hosts = {}
+
+    for url in urls:
+        parsed = urlparse(url)
+        inbox = f"{parsed.scheme}://{parsed.netloc}/inbox"
+        hosts[inbox] = 1
+    return hosts.keys()
+
+async def post_to_remote(item: ItemSchema, user: UserSchema):
+    items = await items_to_activity([item], user)
+    data = {
+        "@context": [
+            "https://www.w3.org/ns/activitystreams",
+            {
+                "ostatus": "http://ostatus.org#",
+                "atomUri": "ostatus:atomUri",
+                "inReplyToAtomUri": "ostatus:inReplyToAtomUri",
+                "conversation": "ostatus:conversation",
+                "sensitive": "as:sensitive",
+                "toot": "http://joinmastodon.org/ns#",
+                "votersCount": "toot:votersCount",
+                "blurhash": "toot:blurhash",
+                "focalPoint": {
+                    "@container": "@list",
+                    "@id": "toot:focalPoint"
+                },
+                "Hashtag": "as:Hashtag"
+            }
+        ],
+    }
+    data.update(items[0])
+
+    headers = {
+        "Content-Type":"application/json"
+    }
+
+    for rcv_inbox in await get_inbox_list_from_activity(data):
+        rcv_inbox = "https://mastodo.lan/inbox"
+        sign("post", rcv_inbox, headers, json.dumps(data), user)
+
+        async with HttpClient().post(rcv_inbox, data=json.dumps(data), headers = headers) as resp:
+            if resp.status != 202:
+                print ("Article has not been accepted by target system",rcv_inbox, resp.status)
+            return
+
 async def items_to_activity(items: List[ItemSchema], user: UserSchema):
+    """
+    Render an item into its corresponding Create-activity
+    """
     ret = []
     hostname = cfg["General"]["ExternalURL"]
 
@@ -135,7 +237,7 @@ async def items_to_activity(items: List[ItemSchema], user: UserSchema):
             attachments.append({
                 "type":"Document",
                 "mediaType":"image/jpeg",
-                "url": f"{hostname}/api/v1/images/{image}",
+                "url": f"{hostname}/api/v1/image/{image}",
                 "name": None,
                 "width":600,
                 "height":400
@@ -172,7 +274,16 @@ async def items_to_activity(items: List[ItemSchema], user: UserSchema):
                 },
                 "attachment": attachments,
                 "tag": [],
-                "replies": None
+                "replies": {
+                    "id": f"{hostname}/users/{user['id']}/items/{item['id']}/replies",
+                    "type": "Collection",
+                    "first": {
+                        "type":"CollectionPage",
+                        "next": f"{hostname}/users/{user['id']}/items/{item['id']}/replies/never",
+                        "partOf":f"{hostname}/users/{user['id']}/items/{item['id']}/replies",
+                        "items": []
+                    }
+                }
             }
         })
     return ret

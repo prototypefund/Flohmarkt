@@ -16,6 +16,8 @@ async def get_users(current_user : UserSchema = Depends(get_current_user)):
 @router.get("/{ident}", response_description="A single user if any")
 async def get_user(ident:str):
     user = await UserSchema.retrieve_single_id(ident)
+    if user is None:
+        raise HTTPException(status_code=404, details="User is not here :(")
     await UserSchema.filter(user)
     return user
 

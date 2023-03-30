@@ -4,6 +4,7 @@ from fastapi.encoders import jsonable_encoder
 from flohmarkt.models.user import UserSchema
 from flohmarkt.models.item import ItemSchema, UpdateItemModel
 from flohmarkt.auth import get_current_user
+from flohmarkt.routes.activitypub import post_to_remote
 
 router = APIRouter()
 
@@ -13,6 +14,7 @@ async def add_item(request: Request, item: ItemSchema = Body(...),
     item = jsonable_encoder(item)
     item["user"] = current_user["id"]
     new_item = await ItemSchema.add(item)
+    await post_to_remote(new_item, current_user)
     return new_item
 
 @router.get("/", response_description="All items")
