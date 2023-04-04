@@ -90,7 +90,7 @@
               };
               database = {
                 server = lib.mkOption {
-                  default = "127.0.0.1";
+                  default = "http://user:user@127.0.0.1:1025";
                   type = lib.types.str;
                   description = ''
                     The IP of the MongoDB Server we are going to connect
@@ -176,6 +176,14 @@
               CAFile = ${config.services.flohmarkt.settings.smtp.cafile}
             '';
           };
+          services.couchdb = {
+            enable = true;
+            bindAddress = "127.0.0.1";
+            port = 1025;
+            adminUser = "cowabunga"; # XXX Override this
+            adminPass = "cowabunga"; # XXX Override this
+          };
+
           systemd.services.flohmarkt = {
             description = "Flohmarkt Webservice";
             serviceConfig = {
