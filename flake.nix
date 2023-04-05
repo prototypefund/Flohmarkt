@@ -176,13 +176,6 @@
               CAFile = ${config.services.flohmarkt.settings.smtp.cafile}
             '';
           };
-          services.couchdb = {
-            enable = true;
-            bindAddress = "127.0.0.1";
-            port = 1025;
-            adminUser = "cowabunga"; # XXX Override this
-            adminPass = "cowabunga"; # XXX Override this
-          };
 
           systemd.services.flohmarkt = {
             description = "Flohmarkt Webservice";
