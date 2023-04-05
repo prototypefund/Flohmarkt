@@ -27,15 +27,11 @@ hostname = db_url.netloc.split("@")[1]
 credentials = f"admin:{admin_pw}"
 credentials = (base64.b64encode(credentials.encode('utf-8'))).decode()
 
-headers_admin = {
+req = PutRequest(f"{db_url.scheme}://{hostname}/_users")
+req.headers = {
     "Content-type": "application/json",
-    "Accept": "application/json",
     "Authorization": "Basic "+credentials
 }
-
-
-req = PutRequest(f"{db_url.scheme}://{hostname}/_users")
-req.headers = headers_admin
 print(f"{db_url.scheme}://{hostname}/_users/")
 res = urllib.request.urlopen(req)
 print(res)
@@ -48,7 +44,10 @@ req.data = json.dumps({
     "roles": [],
     "password": user_pw
 }).encode('utf-8')
-req.headers = headers_admin
+req.headers = {
+    "Content-type": "application/json",
+    "Authorization": "Basic "+credentials
+}
 print(f"{db_url.scheme}://{hostname}/_users/")
 res = urllib.request.urlopen(req)
 print(res)
