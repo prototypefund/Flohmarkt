@@ -3,6 +3,7 @@ import base64
 import json
 import urllib.request
 import urllib.parse
+import urllib.error
 
 
 from flohmarkt.config import cfg
