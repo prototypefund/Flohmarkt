@@ -79,6 +79,19 @@ except urllib.error.HTTPError as e:
         print(e)
 print(res)
 
+print("Allow user to write database")
+req = urllib.request.Request(f"{db_url.scheme}://{hostname}/flohmarkt/_index")
+req.data = json.dumps({
+    "writers": {
+        "names":["flohmarkt"],
+        "roles":["editor"]
+    }
+}).encode('utf-8')
+req.headers = {
+    "Content-type": "application/json",
+    "Authorization": "Basic "+credentials
+}
+res = urllib.request.urlopen(req)
 
 print("Trying to add date search index")
 req = urllib.request.Request(f"{db_url.scheme}://{hostname}/flohmarkt/_index")
