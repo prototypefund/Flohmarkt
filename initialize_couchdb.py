@@ -69,7 +69,6 @@ req.headers = {
     "Content-type": "application/json",
     "Authorization": "Basic "+credentials
 }
-print(f"{db_url.scheme}://{hostname}/_users/")
 try:
     res = urllib.request.urlopen(req)
 except urllib.error.HTTPError as e:
@@ -77,7 +76,6 @@ except urllib.error.HTTPError as e:
         print ("User flohmarkt exists. skipping")
     else:
         print(e)
-print(res)
 
 print("Allow user to write database")
 req = urllib.request.Request(f"{db_url.scheme}://{hostname}/flohmarkt/_index")
@@ -110,6 +108,5 @@ req.headers = {
     "Authorization": "Basic "+credentials
 }
 res = urllib.request.urlopen(req)
-print(res)
 
 
