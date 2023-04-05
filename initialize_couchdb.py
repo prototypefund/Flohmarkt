@@ -36,7 +36,7 @@ req.headers = {
     "Authorization: Basic "+credentials
 }
 print(db_url)
-res = urllib.urlopen(req)
+res = urllib.request.urlopen(req)
 print(res)
 
 
@@ -55,7 +55,7 @@ req.headers = {
     "Content-type: application/json",
     "Authorization: Basic "+credentials
 }
-res = urllib.urlopen(req)
+res = urllib.request.urlopen(req)
 print(res)
 
 
