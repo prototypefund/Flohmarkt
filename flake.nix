@@ -45,6 +45,22 @@
                 Enable flohmarkt service.
               '';
             };
+            initialization = {
+              db_admin_pw = lib.mkOption {
+                default = "secretpassw0rd";
+                type = lib.types.str;
+                description = ''
+                  The password of the database admin user
+                '';
+              };
+              db_user_pw = lib.mkOption {
+                default = "secretpassw0rd";
+                type = lib.types.str;
+                description = ''
+                  The password of the database flohmarkt user
+                '';
+              }
+            };
             settings = {
               general = {
                 instanceName = lib.mkOption {
@@ -174,6 +190,29 @@
               From = ${config.services.flohmarkt.settings.smtp.from}
               Password = ${config.services.flohmarkt.settings.smtp.password}
               CAFile = ${config.services.flohmarkt.settings.smtp.cafile}
+            '';
+          };
+
+          services.couchdb = {
+            enable = true;
+            bindAddress = "127.0.0.1";
+            port = 1025;
+            adminUser = "admin"; # XXX Override this
+            adminPass = couchdb_admin_pw; # XXX Override this
+          };
+
+          systemd.services.prime_couchdb_flohmarkt = {
+            description = "Flohmarkt CouchDB Primer - Fills flohmarkt DBs with indices and views";
+            wantedBy = [ "flohmarkt.service" ];
+            after = [ "couchdb.service" ];
+            serviceConfig = {
+              Type = "oneshot";
+            };
+            script = ''
+              echo "Initializing Database"
+              cd ${./.}
+              ${nixpkgs.legacyPackages.x86_64-linux.python3}/bin/python3 initialize_couchdb.py ${config.services.flohmarkt.initialization.db_admin_pw} ${config.services.flohmarkt.initialization.db_user_pw}
+              echo "Initializing Database"
             '';
           };
 
