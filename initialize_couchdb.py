@@ -36,7 +36,7 @@ req.headers = {
 print(f"{db_url.scheme}://{hostname}/_users/")
 try:
     res = urllib.request.urlopen(req)
-except urrlib.error.HTTPError as e:
+except urllib.error.HTTPError as e:
     if "412" in str(e):
         print ("Database exists, skipping")
     else:
