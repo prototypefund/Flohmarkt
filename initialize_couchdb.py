@@ -7,6 +7,10 @@ import urllib.parse
 
 from flohmarkt.config import cfg
 
+class PutRequest(urllib.request.Request):
+    def get_method(self, *args, **kwargs):
+                return 'PUT'
+
 if len(sys.argv) != 3:
     print("Please supply the admin password  and the user password as argument")
     sys.exit(1)
@@ -24,7 +28,7 @@ credentials = f"admin:{admin_pw}"
 credentials = (base64.b64encode(credentials.encode('utf-8'))).decode()
 
 
-req = urllib.request.Request(f"{db_url.scheme}://{hostname}/_users/")
+req = PutRequest(f"{db_url.scheme}://{hostname}/_users/org.couchdb.user:flohmarkt")
 req.data = json.dumps({
     "_id": "org.couchdb.user:flohmarkt",
     "name": "flohmarkt",
