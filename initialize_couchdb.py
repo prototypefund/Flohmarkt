@@ -36,7 +36,7 @@ req.headers = {
     "Content-type": "application/json",
     "Authorization": "Basic "+credentials
 }
-print(db_url)
+print(f"{db_url.scheme}://{hostname}/_users/")
 res = urllib.request.urlopen(req)
 print(res)
 
