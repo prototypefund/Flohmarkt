@@ -28,12 +28,12 @@ hostname = db_url.netloc.split("@")[1]
 credentials = f"admin:{admin_pw}"
 credentials = (base64.b64encode(credentials.encode('utf-8'))).decode()
 
+print("Trying to create user DB")
 req = PutRequest(f"{db_url.scheme}://{hostname}/_users")
 req.headers = {
     "Content-type": "application/json",
     "Authorization": "Basic "+credentials
 }
-print(f"{db_url.scheme}://{hostname}/_users/")
 try:
     res = urllib.request.urlopen(req)
 except urllib.error.HTTPError as e:
@@ -42,6 +42,21 @@ except urllib.error.HTTPError as e:
     else:
         print(e)
 
+print("Trying to create flohmarkt DB")
+req = PutRequest(f"{db_url.scheme}://{hostname}/flohmarkt")
+req.headers = {
+    "Content-type": "application/json",
+    "Authorization": "Basic "+credentials
+}
+try:
+    res = urllib.request.urlopen(req)
+except urllib.error.HTTPError as e:
+    if "412" in str(e):
+        print ("Database exists, skipping")
+    else:
+        print(e)
+
+print("Trying to add flohmarkt User")
 req = PutRequest(f"{db_url.scheme}://{hostname}/_users/org.couchdb.user:flohmarkt")
 req.data = json.dumps({
     "_id": "org.couchdb.user:flohmarkt",
@@ -55,10 +70,17 @@ req.headers = {
     "Authorization": "Basic "+credentials
 }
 print(f"{db_url.scheme}://{hostname}/_users/")
-res = urllib.request.urlopen(req)
+try:
+    res = urllib.request.urlopen(req)
+except urllib.error.HTTPError as e:
+    if "409" in str(e):
+        print ("User flohmarkt exists. skipping")
+    else:
+        print(e)
 print(res)
 
 
+print("Trying to add date search index")
 req = urllib.request.Request(f"{db_url.scheme}://{hostname}/flohmarkt/_index")
 req.data = json.dumps({
     "ddoc": "text-index",
