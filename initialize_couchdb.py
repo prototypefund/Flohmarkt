@@ -9,7 +9,7 @@ from flohmarkt.config import cfg
 
 class PutRequest(urllib.request.Request):
     def get_method(self, *args, **kwargs):
-                return 'PUT'
+        return 'PUT'
 
 if len(sys.argv) != 3:
     print("Please supply the admin password  and the user password as argument")
@@ -33,8 +33,13 @@ req.headers = {
     "Authorization": "Basic "+credentials
 }
 print(f"{db_url.scheme}://{hostname}/_users/")
-res = urllib.request.urlopen(req)
-print(res)
+try:
+    res = urllib.request.urlopen(req)
+except urrlib.error.HTTPError as e:
+    if "412" in str(e):
+        print ("Database exists, skipping")
+    else:
+        print(e)
 
 req = PutRequest(f"{db_url.scheme}://{hostname}/_users/org.couchdb.user:flohmarkt")
 req.data = json.dumps({
