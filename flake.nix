@@ -59,7 +59,7 @@
                 description = ''
                   The password of the database flohmarkt user
                 '';
-              }
+              };
             };
             settings = {
               general = {
