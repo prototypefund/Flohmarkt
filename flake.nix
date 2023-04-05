@@ -197,8 +197,8 @@
             enable = true;
             bindAddress = "127.0.0.1";
             port = 1025;
-            adminUser = "admin"; # XXX Override this
-            adminPass = couchdb_admin_pw; # XXX Override this
+            adminUser = "admin";
+            adminPass = config.services.flohmarkt.initialization.db_admin_pw;
           };
 
           systemd.services.prime_couchdb_flohmarkt = {
