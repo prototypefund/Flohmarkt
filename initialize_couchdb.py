@@ -78,7 +78,7 @@ except urllib.error.HTTPError as e:
         print(e)
 
 print("Allow user to write database")
-req = urllib.request.Request(f"{db_url.scheme}://{hostname}/flohmarkt/_index")
+req = PutRequest(f"{db_url.scheme}://{hostname}/flohmarkt/_index")
 req.data = json.dumps({
     "writers": {
         "names":["flohmarkt"],
