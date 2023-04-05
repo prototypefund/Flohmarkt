@@ -27,6 +27,14 @@ hostname = db_url.netloc.split("@")[1]
 credentials = f"admin:{admin_pw}"
 credentials = (base64.b64encode(credentials.encode('utf-8'))).decode()
 
+req = PutRequest(f"{db_url.scheme}://{hostname}/_users")
+req.headers = {
+    "Content-type": "application/json",
+    "Authorization": "Basic "+credentials
+}
+print(f"{db_url.scheme}://{hostname}/_users/")
+res = urllib.request.urlopen(req)
+print(res)
 
 req = PutRequest(f"{db_url.scheme}://{hostname}/_users/org.couchdb.user:flohmarkt")
 req.data = json.dumps({
