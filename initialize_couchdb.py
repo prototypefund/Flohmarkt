@@ -32,8 +32,8 @@ req.data = """{
     "password": user_pw
 }""".encode('utf-8')
 req.headers = {
-    "Content-type: application/json",
-    "Authorization: Basic "+credentials
+    "Content-type": "application/json",
+    "Authorization": "Basic "+credentials
 }
 print(db_url)
 res = urllib.request.urlopen(req)
@@ -52,8 +52,8 @@ req.data = """{
     "type": "json"
 }""".encode('utf-8')
 req.headers = {
-    "Content-type: application/json",
-    "Authorization: Basic "+credentials
+    "Content-type": "application/json",
+    "Authorization": "Basic "+credentials
 }
 res = urllib.request.urlopen(req)
 print(res)
