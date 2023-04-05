@@ -213,7 +213,7 @@
               echo "Initializing Database"
               cd ${./.}
               ${nixpkgs.legacyPackages.x86_64-linux.python3.withPackages (p: depfun p ++ [packages.x86_64-linux.default ])}/bin/python3 initialize_couchdb.py ${config.services.flohmarkt.initialization.db_admin_pw} ${config.services.flohmarkt.initialization.db_user_pw}
-              echo "Initializing Database"
+              echo "Initialized Database"
             '';
           };
 
