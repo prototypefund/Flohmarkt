@@ -24,12 +24,12 @@ credentials = (base64.b64encode(credentials.encode('utf-8'))).decode()
 
 
 req = urllib.request.Request(f"{db_url.scheme}://{hostname}/_users/")
-req.data = """{
+req.data = f"""{
     "_id": "org.couchdb.user:flohmarkt",
     "name": "flohmarkt",
     "type": "user",
     "roles": [],
-    "password": user_pw
+    "password": {user_pw}
 }""".encode('utf-8')
 req.headers = {
     "Content-type": "application/json",
