@@ -1,5 +1,6 @@
 import sys
 import base64
+import json
 import urllib.request
 import urllib.parse
 
@@ -24,13 +25,13 @@ credentials = (base64.b64encode(credentials.encode('utf-8'))).decode()
 
 
 req = urllib.request.Request(f"{db_url.scheme}://{hostname}/_users/")
-req.data = f"""{
+req.data = json.dumps({
     "_id": "org.couchdb.user:flohmarkt",
     "name": "flohmarkt",
     "type": "user",
     "roles": [],
-    "password": {user_pw}
-}""".encode('utf-8')
+    "password": user_pw
+}).encode('utf-8')
 req.headers = {
     "Content-type": "application/json",
     "Authorization": "Basic "+credentials
@@ -41,7 +42,7 @@ print(res)
 
 
 req = urllib.request.Request(f"{db_url.scheme}://{hostname}/flohmarkt/_index")
-req.data = """{
+req.data = json.dumps({
     "ddoc": "text-index",
     "index": {
         "fields": [{
@@ -50,7 +51,7 @@ req.data = """{
     },
     "name": "sort_creation_date",
     "type": "json"
-}""".encode('utf-8')
+}).encode('utf-8')
 req.headers = {
     "Content-type": "application/json",
     "Authorization": "Basic "+credentials
