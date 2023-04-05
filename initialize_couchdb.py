@@ -30,7 +30,7 @@ req.data = """{
     "type": "user",
     "roles": [],
     "password": user_pw
-}"""
+}""".encode('utf-8')
 req.headers = {
     "Content-type: application/json",
     "Authorization: Basic "+credentials
@@ -50,7 +50,7 @@ req.data = """{
     },
     "name": "sort_creation_date",
     "type": "json"
-}"""
+}""".encode('utf-8')
 req.headers = {
     "Content-type: application/json",
     "Authorization: Basic "+credentials
