@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block scripts %}
-<script defer type="module" src="{{ url_for('static', path='/new.js') }}"></script>
+<script defer type="module" src="/static/new.js"></script>
 {% endblock %}
 
 {% block main %}
@@ -14,7 +14,7 @@
         <header class="m-0">
             <label class="m-0 cursor-pointer" for="upload">
                 <svg class="icon icon--photo-up" role="img" aria-hidden="true">
-                    <use href="{{ url_for('static', path='/sprite.svg#photo-up') }}"></use>
+                    <use href="/static/sprite.svg#photo-up"></use>
                 </svg>
             </label>
             <input type="file" name="upload" id="upload" accept="image/*" multiple hidden>
