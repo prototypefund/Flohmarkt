@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     {% include 'head.html' %}
-    <script defer type="module" src="{{ url_for('static', path='/app.js', _scheme='https', _external=False }}"></script>
+    <script defer type="module" src="{{ url_for('static', path='/app.js', _scheme='https', _external=False) }}"></script>
     {% block scripts %}{% endblock %}
 </head>
 <body>
