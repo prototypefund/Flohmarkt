@@ -21,8 +21,8 @@ export async function postForm(form, authorization=false) {
     return await response.json();
 }
 
-export async function postJSON(payload) {
-    const response = await window.fetch('/api/v1/item/', {
+export async function postJSON(url, payload) {
+    const response = await window.fetch(url, {
         headers: {
             'Content-type': 'application/json',
             'Authorization': 'Bearer ' + window.sessionStorage.getItem('token')

@@ -26,9 +26,19 @@ class ConversationSchema(BaseModel):
     @staticmethod
     async def retrieve_for_item(item_id:str):
         conversations = []
-        async for conversation in Database.find({"type":"conversation", "item_id":item_id}):
+        for conversation in await Database.find({"type":"conversation", "item_id":item_id}):
             conversations.append(conversation)
         return conversations
+
+    @staticmethod
+    async def retrieve_for_id(ident:str):
+        res =  await Database.find({"type":"conversation", "id":ident})
+        if len(res) > 1:
+            raise Exception(f"More than one conversation with id: {ident}")
+        elif len(res) == 1:
+            return res[0]
+        else:
+            return None
 
     @staticmethod
     async def retrieve_for_item_remote_user(item_id:str, remote_user: str):

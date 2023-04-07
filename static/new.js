@@ -13,7 +13,7 @@ createBtn.addEventListener('click', event => {
     event.preventDefault();
 
     const formData = new FormData(createForm);
-    postJSON({
+    postJSON("/api/v1/item", {
         name: formData.get('title'),
         description: formData.get('description'),
         price: formData.get('price'),
@@ -30,7 +30,6 @@ let inputValid = 0;
 createForm.querySelectorAll('input, textarea').forEach((input, index) => {
     input.addEventListener('change', function() {
         let valid;
-        console.log("IN here SWITCH");
         switch (this.id) {
             case 'title':
             case 'price':

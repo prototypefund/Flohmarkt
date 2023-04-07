@@ -9,6 +9,7 @@ from flohmarkt.routes.auth import router as auth_router
 from flohmarkt.routes.image import router as image_router
 from flohmarkt.routes.webfinger import router as webfinger_router
 from flohmarkt.routes.activitypub import router as activitypub_router
+from flohmarkt.routes.conversation import router as conversation_router
 from flohmarkt.auth import oauth2, get_current_user
 from flohmarkt.http import HttpClient
 
@@ -25,6 +26,7 @@ app.include_router(user_router, tags=["User"], prefix=api_prefix+"/user")
 app.include_router(auth_router, tags=["Auth"], prefix="")
 app.include_router(webfinger_router, tags=["Webfinger"], prefix="")
 app.include_router(activitypub_router, tags=["Activitypub"], prefix="")
+app.include_router(conversation_router, tags=["Conversation"], prefix=api_prefix+"/conversation")
 
 @app.on_event("startup")
 async def ini():

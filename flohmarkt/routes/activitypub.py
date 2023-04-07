@@ -117,8 +117,6 @@ async def inbox(req : Request, msg : dict = Body(...) ):
         }
         conversation = await ConversationSchema.add(conversation)
 
-    print(conversation)
-
     conversation["messages"].append(msg["object"])
 
     await ConversationSchema.update(conversation['id'], conversation)
