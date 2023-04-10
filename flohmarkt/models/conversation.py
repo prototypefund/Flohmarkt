@@ -58,6 +58,26 @@ class ConversationSchema(BaseModel):
             raise Exception(f"Found multiple conversations for {remote_user} on  {item_id}")
 
     @staticmethod
+    async def retrieve_for_message_id(remote_message_id : str):
+        conversations = []
+        selector = {
+            "type":"conversation",
+            "messages": {
+                "$elemMatch": {
+                    "id": remote_message_id
+                }
+            }
+        }
+        for conversation in await Database.find(selector):
+            conversations.append(conversation)
+        if len(conversations) == 1:
+            return conversations[0]
+        elif len(conversations) == 0:
+            return None
+        else:
+            raise Exception(f"Found multiple conversations for {remote_user} on  {item_id}")
+
+    @staticmethod
     async def update(ident: str, data: dict, replace=False):
         if len(data) < 1:
             return False

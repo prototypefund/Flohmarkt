@@ -96,14 +96,19 @@ async def inbox(req : Request, msg : dict = Body(...) ):
     if user is None:
         raise HTTPException(status_code=404, detail="Targeted user not found")
 
-    item_id = msg["object"]["inReplyTo"].replace(
-        f"{hostname}/users/{username}/items/", ""
-    )
-    item = await ItemSchema.retrieve_single_id(item_id)
-    if item is None:
-        raise HTTPException(status_code=404, detail="Targeted item not found")
+    if f"{hostname}/users/{username}/items/" in msg["object"]["inReplyTo"]:
+        item_id = msg["object"]["inReplyTo"].replace(
+            f"{hostname}/users/{username}/items/", ""
+        )
+        item = await ItemSchema.retrieve_single_id(item_id)
+        if item is None:
+            raise HTTPException(status_code=404, detail="Targeted item not found")
+        conversation = await ConversationSchema.retrieve_for_item_remote_user(item_id, msg["actor"])
+    else:
+        print(msg["object"]["inReplyTo"])
+        conversation = await ConversationSchema.retrieve_for_message_id(msg["object"]["inReplyTo"])
+        print(conversation)
 
-    conversation = await ConversationSchema.retrieve_for_item_remote_user(item_id, msg["actor"])
     if conversation is None:
         conversation = {
             "user_id" : user['id'],
