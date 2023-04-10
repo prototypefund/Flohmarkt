@@ -1,7 +1,11 @@
+import uuid
+import datetime
+
 from fastapi import APIRouter, Body, Depends, HTTPException
 from fastapi.encoders import jsonable_encoder
 
 from flohmarkt.config import cfg
+from flohmarkt.routes.activitypub import post_message_remote
 from flohmarkt.models.item import ItemSchema
 from flohmarkt.models.user import UserSchema
 from flohmarkt.models.conversation import ConversationSchema, MessageSchema
@@ -28,32 +32,28 @@ async def _(item_id:str, current_user: UserSchema = Depends(get_current_user)):
 
     return conversations
 
-async def convert_to_activitypub_message(msg, current_user, last_message=None, item=None):
-    if last_message is not None and item is not None:
-        raise Exception("Please suppley either last_message or item, not both")
-    if last_message is None and item is None:
-        raise Exception("Please suppley either last_message or item")
-
+async def convert_to_activitypub_message(msg, current_user, parent=None, item=None):
     hostname = cfg["General"]["ExternalURL"]
+    item_user = await UserSchema.retrieve_single_id(item["user"])
 
-    if last_message is not None:
+
+    if parent["type"] != "item":
         update = {
-            "inReplyTo": last_message['id'],
+            "inReplyTo": parent['id'],
             "to": [
-                last_message["attributedTo"]
+                parent["attributedTo"]
             ],
             "tag":[
                 {
                     "type": "Mention",
-                    "href": last_message["attributedTo"],
+                    "href": parent["attributedTo"],
                     "name": "@derpy@testcontainer.lan"
                 }
             ]
         }
-    if item is not None:
-        item_user = await UserSchema.retrieve_single_id(item["user"])
+    else:
         update = {
-            "inReplyTo": f"{hostname}/users/{current_user['name']}/items/{item['id']}",
+            "inReplyTo": f"{hostname}/users/{item_user['name']}/items/{item['id']}",
             "to": [
                 f"{hostname}/users/{item_user['name']}"
             ],
@@ -66,13 +66,16 @@ async def convert_to_activitypub_message(msg, current_user, last_message=None, i
             ]
         }
 
+    date = datetime.datetime.now(tz=datetime.timezone.utc).isoformat().split(".")[0]+"Z"
+    message_uuid = str(uuid.uuid4())
+
     ret = {
-        "id": f"{hostname}/users/{current_user['name']}/statuses/110113452826075130",
+        "id": f"{hostname}/users/{item_user['name']}/statuses/{message_uuid}",
         "type": "Note",
         "summary": None,
-        "published": "2023-03-30T17:39:09Z",
-        "url": "https://mastodo.lan/@grindhold/110113452826075130#",
-        "attributedTo": "https://mastodo.lan/users/grindhold",
+        "published": date,
+        "url": f"{hostname}/~{item_user['name']}/{item['id']}#{message_uuid}",
+        "attributedTo": f"{hostname}/users/{current_user['name']}",
         "cc": [],
         "sensitive": False,
         "conversation": "tag:mastodo.lan,2023-03-29:objectId=27:objectType=Conversation",
@@ -82,12 +85,12 @@ async def convert_to_activitypub_message(msg, current_user, last_message=None, i
         },
         "attachment": [],
         "replies": {
-            "id": "https://mastodo.lan/users/grindhold/statuses/110113452826075130/replies",
+            "id": f"{hostname}/users/{item_user['name']}/statuses/{message_uuid}/replies",
             "type": "Collection",
             "first": {
                 "type": "CollectionPage",
-                "next": "https://mastodo.lan/users/grindhold/statuses/110113452826075130/replies?only_other_accounts=true&page=true",
-                "partOf": "https://mastodo.lan/users/grindhold/statuses/110113452826075130/replies",
+                "next": f"{hostname}/users/{item_user['name']}/statuses/{message_uuid}/replies?only_other_accounts=true&page=true",
+                "partOf": f"{hostname}/users/{item_user['name']}/statuses/{message_uuid}/replies",
                 "items": []
             }
         }
@@ -97,7 +100,7 @@ async def convert_to_activitypub_message(msg, current_user, last_message=None, i
 
 async def get_last_message(conversation, current_user):
     hostname = cfg["General"]["ExternalURL"]
-    current_actor = f"{hostname}/users/{current_user['name']}",
+    current_actor = f"{hostname}/users/{current_user['name']}"
     if not "messages" in conversation:
         return None
     for i in range(len(conversation["messages"])):
@@ -126,14 +129,17 @@ async def create_message(item_id: str, msg: dict = Body(...), current_user: User
     
     last_message = await get_last_message(conversation, current_user)
     if last_message is not None:
-        conversation["messages"].append(await convert_to_activitypub_message(msg, current_user,last_message=last_message))
-        await ConversationSchema.update(conversation['id'], conversation)
+        message = await convert_to_activitypub_message(msg, current_user,parent=last_message, item=item)
     else:
         if item["user"] != current_user["id"]:
-            conversation["messages"].append(await convert_to_activitypub_message(msg, current_user, item=item))
-            await ConversationSchema.update(conversation['id'], conversation)
+            message = await convert_to_activitypub_message(msg, current_user, parent=item, item=item)
+        else:
+            raise HTTPException(status_code=403, detail="You may not answer your own items")
 
+    conversation["messages"].append(message)
+    await ConversationSchema.update(conversation['id'], conversation)
 
+    await post_message_remote(message, current_user)
 
 @router.delete("/{ident}", response_description="deleted")
 async def delete_user(ident: str):

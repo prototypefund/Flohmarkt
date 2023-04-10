@@ -282,6 +282,63 @@ async def items_to_activity(items: List[ItemSchema], user: UserSchema):
         })
     return ret
 
+async def message_to_activity(message: dict):
+    """
+    Render an item into its corresponding Create-activity
+    """
+    ret = []
+    hostname = cfg["General"]["ExternalURL"]
+
+    return {
+        "id": message["id"]+"/activity",
+        "type": "Create",
+        "actor": message['attributedTo'],
+        "published": message["published"],
+        "to": message["to"],
+        "cc": message["cc"],
+        "object": message
+    }
+
+async def post_message_remote(message: dict, user: UserSchema):
+    message = await message_to_activity(message)
+    hostname = cfg["General"]["ExternalURL"]
+    data = {
+        "@context": [
+            "https://www.w3.org/ns/activitystreams",
+            {
+                "ostatus": "http://ostatus.org#",
+                "atomUri": "ostatus:atomUri",
+                "inReplyToAtomUri": "ostatus:inReplyToAtomUri",
+                "conversation": "ostatus:conversation",
+                "sensitive": "as:sensitive",
+                "toot": "http://joinmastodon.org/ns#",
+                "votersCount": "toot:votersCount",
+                "blurhash": "toot:blurhash",
+                "focalPoint": {
+                    "@container": "@list",
+                    "@id": "toot:focalPoint"
+                },
+                "Hashtag": "as:Hashtag"
+            }
+        ],
+    }
+    data.update(message)
+
+    headers = {
+        "Content-Type":"application/json"
+    }
+
+    for rcv_inbox in await get_inbox_list_from_activity(data):
+        if rcv_inbox.startwith(hostname):
+            continue
+        sign("post", rcv_inbox, headers, json.dumps(data), user)
+
+        async with HttpClient().post(rcv_inbox, data=json.dumps(data), headers = headers) as resp:
+            if resp.status != 202:
+                print ("Article has not been accepted by target system",rcv_inbox, resp.status)
+            return
+
+
 @router.get("/users/{name}/outbox")
 async def user_outbox(name: str, page : bool = False, min_id : str = ""):
     hostname = cfg["General"]["ExternalURL"]
