@@ -44,7 +44,7 @@ def to_rfc_2616(date: datetime.datetime) -> str:
     }
     weekday = days[date.weekday()]
     month = months[date.month]
-    return f"{weekday}, {date.day} {month} {date.year} {date.hour:02d}:{date.minute:02d}:{date.second:02d} GMT"
+    return f"{weekday}, {date.day:02d} {month} {date.year} {date.hour:02d}:{date.minute:02d}:{date.second:02d} GMT"
 
 class Signature:
     def __init__(self, request):
@@ -123,7 +123,7 @@ def sign(method : str, url: str, headers: dict, data: str, user : UserSchema):
     digest = ("SHA-256="+body_hash).strip()
     headers["Digest"] = digest
     headers["Host"] = parsed.netloc
-    headers["Date"] = to_rfc_2616(datetime.datetime.now(datetime.timezone.utc))
+    headers["Date"] = to_rfc_2616(datetime.datetime.now(tz=datetime.timezone.utc))
     sign_headers = [
         '(request-target)',
         'Host',
