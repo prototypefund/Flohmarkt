@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Body, Depends
+from fastapi import APIRouter, Body, Depends, HTTPException
 from fastapi.encoders import jsonable_encoder
 
 from flohmarkt.models.user import UserSchema, UpdateUserModel
@@ -17,13 +17,16 @@ async def get_users(current_user : UserSchema = Depends(get_current_user)):
 async def get_user(ident:str):
     user = await UserSchema.retrieve_single_id(ident)
     if user is None:
-        raise HTTPException(status_code=404, details="User is not here :(")
+        raise HTTPException(status_code=404, detail="User is not here :(")
     await UserSchema.filter(user)
     return user
 
 @router.put("/{ident}", response_description="Update stuff")
-async def update_user(ident: str, req: UpdateUserModel = Body(...)):
-    req = {k: v for k,v in req.dict().users() if v is not None}
+async def update_user(ident: str, req: dict = Body(...),current_user : UserSchema = Depends(get_current_user)):
+    if ident != current_user["id"]:
+        return HTTPException(status_code=403, detail="Cant override other users properties")
+    #req = {k: v for k,v in req.dict().users() if v is not None}
+    print(req)
     updated_user = await UserSchema.update(ident, req)
     if updated_user:
         return "YEEEH"

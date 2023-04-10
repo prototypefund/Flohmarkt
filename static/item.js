@@ -54,8 +54,9 @@ conversations.forEach(conversation => {
     const token = JSON.parse(window.sessionStorage.getItem('parsedToken'));
     messages.forEach(message=> {
         const messageElement = createElement('p', null, '');
-	messageElement.innerHTML = message.content;
-	const cssclass = message.attributedTo.includes(token.username) ? "message_me" : "message_you";
+        messageElement.innerHTML = message.content;
+        messageElement.classList.add("message");
+        const cssclass = message.attributedTo.includes(token.username) ? "message_me" : "message_you";
         messageElement.classList.add(cssclass);
         conversationMessagesContainer.appendChild(messageElement);
     });

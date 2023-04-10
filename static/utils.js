@@ -34,3 +34,17 @@ export async function postJSON(url, payload) {
     
     return await response.json();
 }
+
+export async function putJSON(url, payload) {
+    const response = await window.fetch(url, {
+        headers: {
+            'Content-type': 'application/json',
+            'Authorization': 'Bearer ' + window.sessionStorage.getItem('token')
+        },
+        method: 'put',
+        body: JSON.stringify(payload),
+    })
+    .catch(error => console.error(error));
+    
+    return await response.json();
+}

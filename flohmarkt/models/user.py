@@ -126,6 +126,17 @@ class UserSchema(BaseModel):
 
 
 class UpdateUserModel(BaseModel):
+    bio: str
+    avatar: str
+
+    class Config: 
+        schema_extra = {
+            "example": {
+                "name": "Lawnmower"
+            }
+    }
+
+class UpdateAdminUserModel(BaseModel):
     admin : Optional[bool]
     moderator : Optional[bool]
 

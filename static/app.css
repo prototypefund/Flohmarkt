@@ -538,8 +538,16 @@ blockquote footer {
     padding: 1.5rem 0;
 }
 
+.message {
+    border-radius: 5px;
+    border-spacing: 0px;
+    border: 1px solid #333;
+    padding: 10px;
+}
+
 .message_me {
     background-color: var(--color-accent);
+    text-align:right;
 }
 .message_you {
     background-color: var(--color-link);
