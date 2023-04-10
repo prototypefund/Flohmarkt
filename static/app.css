@@ -537,3 +537,10 @@ blockquote footer {
     line-height: var(--line-height);
     padding: 1.5rem 0;
 }
+
+.message_me {
+    background-color: var(--color-accent);
+}
+.message_you {
+    background-color: var(--color-link);
+}

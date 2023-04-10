@@ -5,7 +5,6 @@ import { createImage } from "./create/image.js";
 
 const item = await fetchJSON('item/' + window.location.pathname.replace(/^.+?[/]/, ''));
 const conversations = await fetchJSON('conversation/by_item/' + window.location.pathname.replace(/^.+?[/]/, ''));
-console.log(conversations);
 const user = await fetchJSON('user/' + item.user);
 
 const itemFragment = document.createDocumentFragment();
@@ -27,7 +26,7 @@ sendButton.addEventListener('click', event => {
 	item_id :  item.id
     })
     .then(async data => {
-	console.log(data);
+	//console.log(data);
     });
 });
 const textArea = createElement('textarea', null, '');
@@ -40,7 +39,7 @@ conversations.forEach(conversation => {
     const indicator = createElement('a', null, conversation.remote_user);
     indicator.name = conversation.id;
     indicator.onclick = (t) => {
-        const mcs = document.getElementsByClassName('.message_container');
+        const mcs = document.getElementsByClassName('message_container');
 	for (const mc of mcs) {
 	    const is_current = mc.id == t.srcElement.name;
 	    mc.style.display = is_current ? "block" : "none";
@@ -52,14 +51,17 @@ conversations.forEach(conversation => {
     const conversationMessagesContainer = createElement('div', null, "");
     conversationIndicatorContainer.appendChild(indicator);
     const messages = "messages" in conversation ? conversation.messages : [];
+    const token = JSON.parse(window.sessionStorage.getItem('parsedToken'));
     messages.forEach(message=> {
         const messageElement = createElement('p', null, '');
 	messageElement.innerHTML = message.content;
+	const cssclass = message.attributedTo.includes(token.username) ? "message_me" : "message_you";
+        messageElement.classList.add(cssclass);
         conversationMessagesContainer.appendChild(messageElement);
     });
     conversationMessagesContainer.id = conversation.id;
     conversationMessagesContainer.style.display = "none";
-    conversationMessagesContainer.classList.add('.message_container');
+    conversationMessagesContainer.classList.add('message_container');
     conversationContainer.appendChild(conversationMessagesContainer);
 });
 conversationsFragment.appendChild(conversationIndicatorContainer);
