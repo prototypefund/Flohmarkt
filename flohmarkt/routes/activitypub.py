@@ -187,7 +187,7 @@ async def get_inbox_list_from_activity(data: dict):
     return hosts.keys()
 
 async def post_to_remote(item: ItemSchema, user: UserSchema):
-    items = await items_to_activity([item], user)
+    item = await item_to_activity(item, user)
     data = {
         "@context": [
             "https://www.w3.org/ns/activitystreams",
@@ -208,7 +208,7 @@ async def post_to_remote(item: ItemSchema, user: UserSchema):
             }
         ],
     }
-    data.update(items[0])
+    data.update(item)
 
     headers = {
         "Content-Type":"application/json"
@@ -223,69 +223,136 @@ async def post_to_remote(item: ItemSchema, user: UserSchema):
                 print ("Article has not been accepted by target system",rcv_inbox, resp.status)
             return
 
-async def items_to_activity(items: List[ItemSchema], user: UserSchema):
+async def item_to_note(item: ItemSchema, user: UserSchema):
+    hostname = cfg["General"]["ExternalURL"]
+
+    attachments = []
+    for image in item["images"]:
+        attachments.append({
+            "type":"Document",
+            "mediaType":"image/jpeg",
+            "url": f"{hostname}/api/v1/image/{image}",
+            "name": None,
+            "width":600,
+            "height":400
+        })
+    return  {
+        "id": f"{hostname}/users/{user['name']}/items/{item['id']}",
+        "type": "Note",
+        "summary": None,
+        "inReplyTo": None,
+        "published": item["creation_date"].split(".")[0]+"Z",
+        "url": f"{hostname}/~{user['name']}/{item['id']}",
+        "attributedTo": f"{hostname}/users/{user['name']}",
+        "to": [
+            "https://www.w3.org/ns/activitystreams#Public"
+        ],
+        "cc": [
+            f"{hostname}/users/{user['name']}/followers"
+        ],
+        "sensitive": False,
+        "content": item["name"] + " <br> " + item["description"],
+        "contentMap": {
+            "en":item["name"] + " <br> " + item["description"],
+        },
+        "attachment": attachments,
+        "tag": [],
+        "replies": {
+            "id": f"{hostname}/users/{user['id']}/items/{item['id']}/replies",
+            "type": "Collection",
+            "first": {
+                "type":"CollectionPage",
+                "next": f"{hostname}/users/{user['id']}/items/{item['id']}/replies/never",
+                "partOf":f"{hostname}/users/{user['id']}/items/{item['id']}/replies",
+                "items": []
+            }
+        }
+    }
+
+async def item_to_activity(item: ItemSchema, user: UserSchema):
     """
     Render an item into its corresponding Create-activity
     """
-    ret = []
     hostname = cfg["General"]["ExternalURL"]
 
-    for item in items:
-        attachments = []
-        for image in item["images"]:
-            attachments.append({
-                "type":"Document",
-                "mediaType":"image/jpeg",
-                "url": f"{hostname}/api/v1/image/{image}",
-                "name": None,
-                "width":600,
-                "height":400
-            })
-        ret.append({
-            "id": f"{hostname}/users/{user['name']}/items/{item['id']}/activity",
-            "type": "Create",
-            "actor": f"{hostname}/users/{user['name']}",
+
+    attachments = []
+    for image in item["images"]:
+        attachments.append({
+            "type":"Document",
+            "mediaType":"image/jpeg",
+            "url": f"{hostname}/api/v1/image/{image}",
+            "name": None,
+            "width":600,
+            "height":400
+        })
+    return {
+        "id": f"{hostname}/users/{user['name']}/items/{item['id']}/activity",
+        "type": "Create",
+        "actor": f"{hostname}/users/{user['name']}",
+        "published": item["creation_date"],
+        "to": [
+            "https://www.w3.org/ns/activitystreams#Public"
+        ],
+        "cc": [
+            f"{hostname}/users/{user['name']}/followers"
+        ],
+        "object": {
+            "id": f"{hostname}/users/{user['name']}/items/{item['id']}",
+            "type": "Note",
+            "summary": None,
+            "inReplyTo": None,
             "published": item["creation_date"],
+            "url": f"{hostname}/~{user['name']}/{item['id']}",
+            "attributedTo": f"{hostname}/users/{user['name']}",
             "to": [
                 "https://www.w3.org/ns/activitystreams#Public"
             ],
             "cc": [
                 f"{hostname}/users/{user['name']}/followers"
             ],
-            "object": {
-                "id": f"{hostname}/users/{user['name']}/items/{item['id']}",
-                "type": "Note",
-                "summary": None,
-                "inReplyTo": None,
-                "published": item["creation_date"],
-                "url": f"{hostname}/~{user['name']}/{item['id']}",
-                "attributedTo": f"{hostname}/users/{user['name']}",
-                "to": [
-                    "https://www.w3.org/ns/activitystreams#Public"
-                ],
-                "cc": [
-                    f"{hostname}/users/{user['name']}/followers"
-                ],
-                "sensitive": False,
-                "content": item["name"] + " <br> " + item["description"],
-                "contentMap": {
-                    "en":item["name"] + " <br> " + item["description"],
-                },
-                "attachment": attachments,
-                "tag": [],
-                "replies": {
-                    "id": f"{hostname}/users/{user['id']}/items/{item['id']}/replies",
-                    "type": "Collection",
-                    "first": {
-                        "type":"CollectionPage",
-                        "next": f"{hostname}/users/{user['id']}/items/{item['id']}/replies/never",
-                        "partOf":f"{hostname}/users/{user['id']}/items/{item['id']}/replies",
-                        "items": []
-                    }
+            "sensitive": False,
+            "content": item["name"] + " <br> " + item["description"],
+            "contentMap": {
+                "en":item["name"] + " <br> " + item["description"],
+            },
+            "attachment": attachments,
+            "tag": [],
+            "replies": {
+                "id": f"{hostname}/users/{user['id']}/items/{item['id']}/replies",
+                "type": "Collection",
+                "first": {
+                    "type":"CollectionPage",
+                    "next": f"{hostname}/users/{user['id']}/items/{item['id']}/replies/never",
+                    "partOf":f"{hostname}/users/{user['id']}/items/{item['id']}/replies",
+                    "items": []
                 }
             }
-        })
-    return ret
+        }
+    }
+
+async def get_item_activity(item: str, user: str):
+    item = await ItemSchema.retrieve_single_id(item)
+    if item is None:
+        raise HTTPException(status_code=404, detail = "Item not found")
+    user = await UserSchema.retrieve_single_name(user)
+    if user is None:
+        raise HTTPException(status_code=404, detail = "User not found")
+    item = await item_to_note(item, user)
+    data = {
+        "@context": [
+            "https://www.w3.org/ns/activitystreams",
+            {
+                "ostatus": "http://ostatus.org#",
+                "conversation": "ostatus:conversation",
+                "sensitive": "as:sensitive",
+                "toot": "http://joinmastodon.org/ns#",
+                "votersCount": "toot:votersCount",
+            }
+        ],
+    }
+    data.update(item)
+    return data
 
 async def message_to_activity(message: dict):
     """
@@ -353,6 +420,8 @@ async def user_outbox(name: str, page : bool = False, min_id : str = ""):
     if page:
         items = await ItemSchema.retrieve_by_user(user['id'])
 
+        activities = [await item_to_activity(x) for x in items]
+
         return {
             "@context": [
                 "https://www.w3.org/ns/activitystreams",
@@ -376,7 +445,7 @@ async def user_outbox(name: str, page : bool = False, min_id : str = ""):
             "type": "OrderedCollectionPage",
             "prev": f"{hostname}/users/{user['name']}/outbox?min_id=110040056389441342&page=true", #TODO fill
             "partOf": f"{hostname}/users/{user['name']}/outbox",
-            "orderedItems": await items_to_activity(items, user)
+            "orderedItems": activities
             
         }
     else:

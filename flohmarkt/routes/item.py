@@ -42,7 +42,7 @@ async def get_items():
     return await ItemSchema.retrieve_oldest()
 
 @router.get("/by_user/{user_id}", response_description="All items of user")
-async def get_items(user_id: str):
+async def get_single_item(user_id: str):
     return await ItemSchema.retrieve_by_user(user_id)
 
 @router.get("/{ident}", response_description="A single item if any")
