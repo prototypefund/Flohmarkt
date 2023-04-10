@@ -334,7 +334,7 @@ async def post_message_remote(message: dict, user: UserSchema):
     }
 
     for rcv_inbox in await get_inbox_list_from_activity(data):
-        if rcv_inbox.startwith(hostname):
+        if rcv_inbox.startswith(hostname):
             continue
         sign("post", rcv_inbox, headers, json.dumps(data), user)
 
