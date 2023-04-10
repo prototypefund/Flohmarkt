@@ -84,8 +84,6 @@ async def inbox(req : Request, msg : dict = Body(...) ):
     if msg["type"] != "Create":
         raise HTTPException(status_code=400, detail="Only Create activity allowed right now")
 
-    print(msg)
-
     if "https://www.w3.org/ns/activitystreams#Public" in msg["to"]:
         raise HTTPException(status_code=400, detail="Can only accept private messages")
 
@@ -96,7 +94,6 @@ async def inbox(req : Request, msg : dict = Body(...) ):
     user = await UserSchema.retrieve_single_name(username)
 
     if user is None:
-        print("HERE", username)
         raise HTTPException(status_code=404, detail="Targeted user not found")
 
     item_id = msg["object"]["inReplyTo"].replace(
@@ -104,7 +101,6 @@ async def inbox(req : Request, msg : dict = Body(...) ):
     )
     item = await ItemSchema.retrieve_single_id(item_id)
     if item is None:
-        print("THERE", item_id)
         raise HTTPException(status_code=404, detail="Targeted item not found")
 
     conversation = await ConversationSchema.retrieve_for_item_remote_user(item_id, msg["actor"])
@@ -214,7 +210,7 @@ async def post_to_remote(item: ItemSchema, user: UserSchema):
     }
 
     for rcv_inbox in await get_inbox_list_from_activity(data):
-        #rcv_inbox = "https://mastodo.lan/inbox"
+        rcv_inbox = "https://mastodo.lan/inbox"
         sign("post", rcv_inbox, headers, json.dumps(data), user)
 
         async with HttpClient().post(rcv_inbox, data=json.dumps(data), headers = headers) as resp:
