@@ -215,7 +215,6 @@ async def post_to_remote(item: ItemSchema, user: UserSchema):
     }
 
     for rcv_inbox in await get_inbox_list_from_activity(data):
-        rcv_inbox = "https://mastodo.lan/inbox"
         sign("post", rcv_inbox, headers, json.dumps(data), user)
 
         async with HttpClient().post(rcv_inbox, data=json.dumps(data), headers = headers) as resp:
