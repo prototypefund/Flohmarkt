@@ -187,6 +187,7 @@ async def get_inbox_list_from_activity(data: dict):
     return hosts.keys()
 
 async def post_to_remote(item: ItemSchema, user: UserSchema):
+    hostname = cfg["General"]["ExternalURL"]
     item = await item_to_activity(item, user)
     data = {
         "@context": [
@@ -215,6 +216,8 @@ async def post_to_remote(item: ItemSchema, user: UserSchema):
     }
 
     for rcv_inbox in await get_inbox_list_from_activity(data):
+        if rcv_inbox.startswith(hostname):
+            continue
         sign("post", rcv_inbox, headers, json.dumps(data), user)
 
         async with HttpClient().post(rcv_inbox, data=json.dumps(data), headers = headers) as resp:
