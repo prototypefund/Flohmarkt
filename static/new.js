@@ -13,7 +13,7 @@ createBtn.addEventListener('click', event => {
     event.preventDefault();
 
     const formData = new FormData(createForm);
-    postJSON("/api/v1/item", {
+    postJSON("/api/v1/item/", {
         name: formData.get('title'),
         description: formData.get('description'),
         price: formData.get('price'),
