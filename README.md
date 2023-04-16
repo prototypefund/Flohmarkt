@@ -15,3 +15,7 @@ A decentral federated small trade platform
 ## Run
 
 `uvicorn flohmarkt:app`
+
+## License
+
+This project is licensed under the GNU Affero General Public License 3.
