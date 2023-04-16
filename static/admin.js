@@ -2,7 +2,7 @@ import { fetchJSON } from "./utils.js";
 import { createElement } from "./create/element.js";
 import { createImage } from "./create/image.js";
 
-const users = await fetchJSON('user');
+const users = await fetchJSON('user/');
 
 const usersFragment = document.createDocumentFragment();
 
