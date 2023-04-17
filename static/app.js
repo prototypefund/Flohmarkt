@@ -7,7 +7,8 @@ if (token != undefined && token != null && typeof(token) === 'string') {
     const username = parsedToken.username;
     const detailsListItem = document.getElementById('details-list-item');
     detailsListItem.querySelector('.details-menu span').append(username);
-    detailsListItem.querySelector('.details-menu a').href = '/~' + username;
+    detailsListItem.querySelector('.details-menu .l-profile').href = '/~' + username;
+    detailsListItem.querySelector('.details-menu .l-site-admin').href = '/admin';
     const summaryElement = detailsListItem.querySelector('summary');
     summaryElement.prepend(createImage(parsedToken.avatar || 'user.svg', username, 'avatar circle'));
 
