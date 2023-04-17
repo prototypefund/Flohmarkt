@@ -120,7 +120,7 @@ req.data = json.dumps({
     "about": "please enter a text about this instance here",
     "rules": "eplease enter the instance rules here",
     "perimeter": 50,
-    "coordinates": "" 
+    "coordinates": "",
     "followers": [],
     "following": []
 }).encode('utf-8')
