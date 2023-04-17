@@ -114,6 +114,8 @@ res = urllib.request.urlopen(req)
 print("Trying to add instance settigs")
 req = PutRequest(f"{db_url.scheme}://{hostname}/flohmarkt/instance_settings")
 req.data = json.dumps({
+    "id": "instance_settings",
+    "type": "instance_settings",
     "initialized" : False,
     "initialization_key": str(uuid.uuid4()),
     "name": "A new Flohmarkt instance",
