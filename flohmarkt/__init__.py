@@ -4,8 +4,10 @@ from fastapi import FastAPI, Request, Response, Depends, Form, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
+from flohmarkt.config import cfg
 from flohmarkt.routes.activitypub import get_item_activity
 from flohmarkt.models.user import UserSchema
+from flohmarkt.models.instance_settings import InstanceSettingsSchema
 from flohmarkt.routes.item import router as item_router
 from flohmarkt.routes.user import router as user_router
 from flohmarkt.routes.auth import router as auth_router
@@ -35,6 +37,12 @@ app.include_router(conversation_router, tags=["Conversation"], prefix=api_prefix
 async def ini():
     print ("Flohmarkt booting!")
     await HttpClient.initialize()
+    instance_settings = await InstanceSettingsSchema.retrieve()
+    if not instance_settings["initialized"]:
+        hostname = cfg["General"]["ExternalURL"]
+        key = instance_settings["initialization_key"]
+        print ("Flohmarkt is not initialized yet. Please go to \n\t {hostname}/setup/{key}\nto complete the setup process")
+
     
 @app.on_event("shutdown")
 async def ini():

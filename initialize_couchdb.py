@@ -1,6 +1,7 @@
 import sys
 import base64
 import json
+import uuid
 import urllib.request
 import urllib.parse
 import urllib.error
@@ -110,3 +111,27 @@ req.headers = {
 res = urllib.request.urlopen(req)
 
 
+print("Trying to add instance settigs")
+req = PutRequest(f"{db_url.scheme}://{hostname}/flohmarkt/instance_settings")
+req.data = json.dumps({
+    "initialized" : False,
+    "initialization_key": str(uuid.uuid4()),
+    "name": "A new Flohmarkt instance",
+    "about": "please enter a text about this instance here",
+    "rules": "eplease enter the instance rules here",
+    "perimeter": 50,
+    "coordinates": "" 
+    "followers": [],
+    "following": []
+}).encode('utf-8')
+req.headers = {
+    "Content-type": "application/json",
+    "Authorization": "Basic "+credentials
+}
+try:
+    res = urllib.request.urlopen(req)
+except urllib.error.HTTPError as e:
+    if "409" in str(e):
+        print ("Instance settings already exist. skipping")
+    else:
+        print(e)
