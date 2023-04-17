@@ -187,8 +187,8 @@ async def get_inbox_list_from_activity(data: dict):
     return hosts.keys()
 
 async def post_to_remote(item: ItemSchema, user: UserSchema):
-    hostname = cfg["General"]["ExternalURL"]
     item = await item_to_activity(item, user)
+    hostname = cfg["General"]["ExternalURL"]
     data = {
         "@context": [
             "https://www.w3.org/ns/activitystreams",
