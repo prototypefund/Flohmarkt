@@ -60,7 +60,6 @@ class Database:
         o = jsonable_encoder(o)
         try:
             async with HttpClient().post(url, data=json.dumps(o), headers = {"Content-type": "application/json"}) as resp:
-                print(resp.status)#.status_code)
                 res = await resp.json()
                 if resp.status == 400:
                     print(res)
