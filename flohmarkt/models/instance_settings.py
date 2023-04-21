@@ -34,13 +34,9 @@ class InstanceSettingsSchema(BaseModel):
         data["type"] = "instance_settings"
 
         updated = await Database.update(
-            user_to_activate["id"], user_to_activate
+            data["id"], data
         )
         return True
-
-        ins = await Database.create(data)
-        new = await Database.find_one({"id":ins})
-        return new
 
 class UpdateInstanceSettingsModel(BaseModel):
     name: Optional[str]

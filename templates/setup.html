@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+<script defer type="module" src="/static/setup.js"></script>
+{% endblock %}
+
+{% block main %}
+<section>
+    <header>
+        <h1> Flohmarkt instance Setup </h1>
+	<p> 
+	  Congratulations to your new Flohmarkt instance. You should now
+	</p>
+    </header>
+    <form id="setup-form" action="/setup/{{initkey}}/" method="post" type="multipart/form-data">
+	    <h2> Admin User </h2>
+		<label for="username">Adminuser Name</label>
+		<input type="text" name="username" autocomplete="username">
+		<label for="email">Adminuser E-Mail</label>
+		<input type="text" name="email">
+		<label for="password">Password</label>
+		<input type="password" name="password" autocomplete="new-password">
+		<label for="password-repeat">Repeat password</label>
+		<input type="password" name="password-repeat" autocomplete="new-password">
+	    <h2> Instance Info </h2>
+		<label for="instancename">Instance Name</label>
+		<input type="text" name="instancename" autocomplete="instancename">
+		<button id="setupbutton" class="w-100">Set up</button>
+    </form>
+</section>
+{% endblock %}

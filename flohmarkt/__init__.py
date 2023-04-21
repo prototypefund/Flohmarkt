@@ -1,4 +1,6 @@
 import json
+import email_validator
+import crypt
 
 from fastapi import FastAPI, Request, Response, Depends, Form, HTTPException
 from fastapi.staticfiles import StaticFiles
@@ -37,15 +39,20 @@ app.include_router(conversation_router, tags=["Conversation"], prefix=api_prefix
 async def ini():
     print ("Flohmarkt booting!")
     await HttpClient.initialize()
-    instance_settings = await InstanceSettingsSchema.retrieve()
-    if not instance_settings["initialized"]:
-        hostname = cfg["General"]["ExternalURL"]
-        key = instance_settings["initialization_key"]
-        print ("Flohmarkt is not initialized yet. Please go to \n\t {hostname}/setup/{key}\nto complete the setup process")
+    try:
+        instance_settings = await InstanceSettingsSchema.retrieve()
+        if not instance_settings["initialized"]:
+            hostname = cfg["General"]["ExternalURL"]
+            key = instance_settings["initialization_key"]
+            print (f"""Flohmarkt is not initialized yet. Please go to 
+            {hostname}/setup/{key}
+            in order to complete the setup process""")
+    except:
+        shutdown()
 
     
 @app.on_event("shutdown")
-async def ini():
+async def shutdown():
     print ("Tearing down Flohmarkt!")
     await HttpClient.shutdown()
 
@@ -69,6 +76,60 @@ async def other(request: Request, user: str):
     if user is None:
         raise HTTPException(status_code=404, detail="User not found :(")
     return templates.TemplateResponse("user.html", {"request": request, "user": user})
+
+
+@app.get("/setup/{initkey}")
+async def setup_page(request: Request, initkey : str):
+    instance_settings = await InstanceSettingsSchema.retrieve()
+    if instance_settings["initialization_key"] != initkey:
+        raise HTTPException(status_code=403, detail="This is no valid initialization key")
+    return templates.TemplateResponse("setup.html", {"request": request, "initkey": initkey})
+
+@app.post("/setup/{initkey}/")
+async def setup_execute(request: Request, initkey : str,
+                email:str=Form(),
+                instancename:str=Form(),
+                username:str=Form(),
+                password:str=Form(),
+    ):
+    email = email.replace(" ","+")
+
+    if username == "" or password == "":
+        return {"error": "username or password empty"}
+    try:
+        email_validator.validate_email(email)
+    except email_validator.EmailNotValidError as e:
+        return {"error": "email invalid "+str(e)+"'"+email+"'"}
+
+    found_for_email = await UserSchema.retrieve_single_email(email)
+    found_for_name = await UserSchema.retrieve_single_email(username)
+    
+    if found_for_name is not None or found_for_email is not None:
+        return {"error": "user already exists"}
+
+    pwhash = crypt.crypt(password, crypt.mksalt(method=crypt.METHOD_SHA512,rounds=10000))
+
+    new_user = {
+        "email":email,
+        "name":username,
+        "pwhash":pwhash,
+        "active": True,
+        "admin": True,
+        "moderator": True,
+        "avatar":None,
+        "role":"User"
+    }
+
+    new_user = await UserSchema.add(new_user)
+
+    instance_settings = await InstanceSettingsSchema.retrieve()
+    instance_settings["name"] = instancename
+    instance_settings["initialized"] = True
+    instance_settings["initialization_key"] = ""
+
+    await InstanceSettingsSchema.set(instance_settings)
+
+    return {"ok": True}
 
 #Admin
 @app.get("/admin")
