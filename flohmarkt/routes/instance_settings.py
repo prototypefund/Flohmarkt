@@ -11,6 +11,8 @@ router = APIRouter()
 async def set(request: Request, settings: UpdateInstanceSettingsModel = Body(...), 
                    current_user: UserSchema = Depends(get_current_user)):
     # TODO: check for user being an admin
+    if not current_user["admin"]:
+        raise HTTPException(status_code=403, detail="Only admins may do this")
     settings = jsonable_encoder(settings)
     item["user"] = current_user["id"]
     new_item = await ItemSchema.add(item)
