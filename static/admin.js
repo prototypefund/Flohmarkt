@@ -1,4 +1,4 @@
-import { fetchJSON } from "./utils.js";
+import { fetchJSON, postJSON } from "./utils.js";
 import { createElement } from "./create/element.js";
 import { createImage } from "./create/image.js";
 
@@ -23,12 +23,20 @@ users.forEach(user => {
     
     const adminInput = createElement('input');
     adminInput.type = 'checkbox';
-    adminInput.checked = user.role.admin;
+    adminInput.checked = user.admin;
+    adminInput.addEventListener("change", async e => {
+        const response = (await fetchJSON("admin/toggle_admin/"+user.id));
+        adminInput.checked = response.admin;
+    });
     usersFragment.appendChild(adminInput);
 
     const modInput = createElement('input');
     modInput.type = 'checkbox';
-    modInput.checked = user.role.mod;
+    modInput.checked = user.moderator;
+    modInput.addEventListener("change", async e => {
+        const response = (await fetchJSON("admin/toggle_moderator/"+user.id));
+        modInput.checked = response.moderator;
+    });
     usersFragment.appendChild(modInput);
     
     const controlsContainer = createElement('div', 'd-flex');

@@ -12,6 +12,7 @@ from flohmarkt.models.user import UserSchema
 from flohmarkt.models.instance_settings import InstanceSettingsSchema
 from flohmarkt.routes.item import router as item_router
 from flohmarkt.routes.user import router as user_router
+from flohmarkt.routes.admin import router as admin_router
 from flohmarkt.routes.auth import router as auth_router
 from flohmarkt.routes.image import router as image_router
 from flohmarkt.routes.webfinger import router as webfinger_router
@@ -30,6 +31,7 @@ api_prefix = "/api/v1"
 app.include_router(item_router, tags=["Item"], prefix=api_prefix+"/item")
 app.include_router(image_router, tags=["Image"], prefix=api_prefix+"/image")
 app.include_router(user_router, tags=["User"], prefix=api_prefix+"/user")
+app.include_router(admin_router, tags=["Admin"], prefix=api_prefix+"/admin")
 app.include_router(auth_router, tags=["Auth"], prefix="")
 app.include_router(webfinger_router, tags=["Webfinger"], prefix="")
 app.include_router(activitypub_router, tags=["Activitypub"], prefix="")
