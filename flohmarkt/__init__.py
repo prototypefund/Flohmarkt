@@ -58,7 +58,8 @@ async def shutdown():
 
 @app.get("/")
 async def root(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+    instance_settings = await InstanceSettingsSchema.retrieve()
+    return templates.TemplateResponse("index.html", {"request": request, "settings": instance_settings})
 
 @app.get("/~{user}/{item}")
 async def other(request: Request, user: str, item: str):
