@@ -4,6 +4,8 @@ import { createImage } from "./create/image.js";
 
 const users = await fetchJSON('user/');
 
+const instance_settings = await fetchJSON('admin/');
+
 const usersFragment = document.createDocumentFragment();
 
 const menuUsername = createElement('div', null, 'Username');
@@ -94,8 +96,52 @@ instanceForm.appendChild(instanceAboutTextArea);
 instanceForm.appendChild(instanceSaveButton);
 instanceFragment.appendChild(instanceForm);
 
+const followFragment = document.createDocumentFragment();
+
+const followHeading = createElement('h2', null, 'Instance Federation');
+
+const followingHeading = createElement('h3', null, 'Following');
+const followingList = createElement('ul');
+instance_settings.following.forEach(e => {
+    const listElement = createElement('li', null, e);
+    const unfollowButton = createElement('button', null, 'Unfollow');
+    unfollowButton.addEventListener('click', async ve => {
+        const response = await fetchJSON("admin/unfollow_instance/?url="+e).catch(error=>console.error(error));
+	listElement.remove();
+    });
+    listElement.appendChild(unfollowButton);
+    followingList.appendChild(listElement);
+});
+const followingInput = createElement('input');
+const followingButton = createElement('button', null, 'Follow');
+followingButton.addEventListener('click', async e =>  {
+    const inp = encodeURIComponent(followingInput.value);
+    const response = await fetchJSON("admin/follow_instance/?url="+inp).catch(error=>console.error(error));
+    const listElement = createElement('li', null, followingInput.value);
+    const unfollowButton = createElement('button', null, 'Unfollow');
+    unfollowButton.addEventListener('click', async e => {
+        const response = await fetchJSON("admin/unfollow_instance/?url="+inp).catch(error=>console.error(error));
+	listElement.remove();
+    });
+    listElement.appendChild(unfollowButton);
+    followingList.appendChild(listElement);
+});
+followFragment.append(followingHeading);
+followFragment.append(followingList);
+followFragment.append(followingInput);
+followFragment.append(followingButton);
+
+const followersHeading = createElement('h3', null, 'Followers');
+const followersList = createElement('ul');
+instance_settings.followers.forEach(e => {
+    followersList.appendChild(createElement('li', null, e));
+});
+followFragment.append(followersHeading);
+followFragment.append(followersList);
+
 const gridAdmin = document.querySelector('.grid__admin');
 window.requestAnimationFrame(() => {
     gridAdmin.appendChild(usersFragment);
     gridAdmin.appendChild(instanceFragment);
+    gridAdmin.appendChild(followFragment);
 });
