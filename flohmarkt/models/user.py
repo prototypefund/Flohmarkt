@@ -136,15 +136,3 @@ class UpdateUserModel(BaseModel):
             }
     }
 
-class UpdateAdminUserModel(BaseModel):
-    admin : Optional[bool]
-    moderator : Optional[bool]
-
-    class Config: 
-        schema_extra = {
-            "example": {
-                "name": "Lawnmower"
-            }
-    }
-
-
