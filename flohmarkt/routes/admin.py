@@ -66,7 +66,7 @@ async def toogle_admin(user_id, current_user : UserSchema = Depends(get_current_
         raise HTTPException(status_code=404, detail="User not here :(")
     if current_user == user:
         raise HTTPException(status_code=403, detail="Admins are not allowed to de-admin themselves")
-    user["admin"] = not user["admin"]
+    user["admin"] = not user.get("admin",False)
     res = await UserSchema.update(user_id, user)
     if res:
         return {"admin": user["admin"]}
@@ -80,7 +80,7 @@ async def toogle_moderator(user_id, current_user : UserSchema = Depends(get_curr
     user = await UserSchema.retrieve_single_id(user_id)
     if user is None:
         raise HTTPException(status_code=404, detail="User not here :(")
-    user["moderator"] = not user["moderator"]
+    user["moderator"] = not user.get("moderator", False)
     res = await UserSchema.update(user_id, user)
     if res:
         return {"moderator": user["moderator"]}
