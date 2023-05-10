@@ -217,7 +217,7 @@
             '';
           };
 
-          systemd.services.flohmakrt-background = {
+          systemd.services.flohmarkt-background = {
             description = "Flohmarkt Background Tasks";
             serviceConfig = {
               User = "flohmarkt";
@@ -225,7 +225,7 @@
             after = [ "network.target" ];
             script = ''
               cd ${./.}
-              ${nixpkgs.legacyPackages.x86_64-linux.python3.withPackages (p: depfun p ++ [packages.x86_64-linux.default ])}/bin/python3 flohmarkt/background.py
+              ${nixpkgs.legacyPackages.x86_64-linux.python3.withPackages (p: depfun p ++ [packages.x86_64-linux.default ])}/bin/python3 background.py
             '';
           };
 
