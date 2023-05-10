@@ -204,7 +204,7 @@
           systemd.services.prime_couchdb_flohmarkt = {
             description = "Flohmarkt CouchDB Primer - Fills flohmarkt DBs with indices and views";
             wantedBy = [ "flohmarkt.service" ];
-            after = [ "couchdb.service" ];
+            after = [ "couchdb.service" ]; # TODO: this might be a problem if couchdb is on remote host
             serviceConfig = {
               Type = "oneshot";
             };
@@ -214,6 +214,18 @@
               cd ${./.}
               ${nixpkgs.legacyPackages.x86_64-linux.python3.withPackages (p: depfun p ++ [packages.x86_64-linux.default ])}/bin/python3 initialize_couchdb.py ${config.services.flohmarkt.initialization.db_admin_pw} ${config.services.flohmarkt.initialization.db_user_pw}
               echo "Initialized Database"
+            '';
+          };
+
+          systemd.services.flohmakrt-background = {
+            description = "Flohmarkt Background Tasks";
+            serviceConfig = {
+              User = "flohmarkt";
+            };
+            after = [ "network.target" ];
+            script = ''
+              cd ${./.}
+              ${nixpkgs.legacyPackages.x86_64-linux.python3.withPackages (p: depfun p ++ [packages.x86_64-linux.default ])}/bin/python3 flohmarkt/background.py
             '';
           };
 
