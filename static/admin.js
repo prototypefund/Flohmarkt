@@ -54,8 +54,10 @@ instanceFragment.appendChild(instanceHeading);
 const instanceForm = createElement('form', null, '');
 const instanceRulesTextArea = createElement('textarea');
 instanceRulesTextArea.name = "instance_rules";
+instanceRulesTextArea.value = instance_settings.rules;
 const instanceAboutTextArea = createElement('textarea');
 instanceAboutTextArea.name = "instance_about";
+instanceAboutTextArea.value = instance_settings.about;
 const instanceRulesLabel = createElement('label', null, 'Rules');
 const instanceAboutLabel = createElement('label', null, 'About');
 instanceRulesLabel.for = "instance_rules";
@@ -65,7 +67,6 @@ instanceSaveButton.addEventListener('click', event => {
     event.preventDefault();
 
     const formData = new FormData(instanceForm);
-    console.log(formData);
     postJSON("/api/v1/admin/", {
         coordinates: formData.get('instance_coordinates'),
         perimeter: formData.get('instance_perimeter'),
@@ -78,8 +79,10 @@ instanceSaveButton.addEventListener('click', event => {
 });
 const instanceCoordinatesInput = createElement('input');
 instanceCoordinatesInput.name = "instance_coordinates";
+instanceCoordinatesInput.value = instance_settings.coordinates;
 const instanceRangeInput = createElement('input');
 instanceRangeInput.name = "instance_perimeter";
+instanceRangeInput.value = instance_settings.perimeter;
 const instanceCoordinatesLabel = createElement('label', null, 'Location of your Site (lat:lon e.g. 51.213:23.24)');
 const instanceRangeLabel = createElement('label', null, 'Range for your Site in km'
 );
