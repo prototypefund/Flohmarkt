@@ -125,6 +125,8 @@ req.data = json.dumps({
     "coordinates": "",
     "followers": [],
     "following": []
+    "pending_followers": [],
+    "pending_following": []
 }).encode('utf-8')
 req.headers = {
     "Content-type": "application/json",
