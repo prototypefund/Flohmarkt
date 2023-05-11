@@ -74,16 +74,8 @@ async def unfollow(obj):
         await UserSchema.update(user['id'], user, replace=True)
     return {}
 
-@router.post("/inbox")
-async def inbox(req : Request, msg : dict = Body(...) ):
+async def inbox_process_create(req: Request, msg: dict):
     hostname = cfg["General"]["ExternalURL"]
-    if not await verify(req):
-        raise HTTPException(status_code=401, detail="request signature could not be validated")
-    else:
-        print("Valid signature")
-    if msg["type"] != "Create":
-        raise HTTPException(status_code=400, detail="Only Create activity allowed right now")
-
     if "https://www.w3.org/ns/activitystreams#Public" in msg["to"]:
         raise HTTPException(status_code=400, detail="Can only accept private messages")
 
@@ -123,6 +115,25 @@ async def inbox(req : Request, msg : dict = Body(...) ):
     await ConversationSchema.update(conversation['id'], conversation)
 
     return Response(content="0", status_code=202)
+
+async def inbox_process_follow(req : Request, msg: dict):
+    hostname = cfg["General"]["ExternalURL"]
+    print(msg)
+    instance = msg["actor"].replace(f"{hostname}/users/","")
+
+
+@router.post("/inbox")
+async def inbox(req : Request, msg : dict = Body(...) ):
+    if not await verify(req):
+        raise HTTPException(status_code=401, detail="request signature could not be validated")
+    else:
+        print("Valid signature")
+
+    if msg["type"] == "Create":
+        return await inbox_process_create(req, msg)
+    elif msg["type"] == "Follow":
+        return await inbox_process_follow(req, msg)
+
 
 @router.get("/users/{name}/followers")
 async def followers(name: str, page : int = None):
@@ -215,15 +226,26 @@ async def post_item_to_remote(item: ItemSchema, user: UserSchema):
         "Content-Type":"application/json"
     }
 
-    for rcv_inbox in await get_inbox_list_from_activity(data):
+    rcv_inboxes = await get_inbox_list_from_activity(data)
+    instance_settings = await InstanceSettingsSchema.retrieve()
+    rcv_inboxes.extend([i + "/inbox" for i in instance_settings["followers"]])
+
+    tasks = []
+    for rcv_inbox in rcv_inboxes:
         if rcv_inbox.startswith(hostname):
             continue
-        sign("post", rcv_inbox, headers, json.dumps(data), user)
 
-        async with HttpClient().post(rcv_inbox, data=json.dumps(data), headers = headers) as resp:
-            if resp.status != 202:
-                print ("Article has not been accepted by target system",rcv_inbox, resp.status)
-            return
+        async def do():
+            sign("post", rcv_inbox, headers, json.dumps(data), user)
+
+            async with HttpClient().post(rcv_inbox, data=json.dumps(data), headers = headers) as resp:
+                if resp.status != 202:
+                    print ("Article has not been accepted by target system",rcv_inbox, resp.status)
+                return
+        tasks.append(do())
+        await asyncio.gather(*tasks)
+
+
 
 async def item_to_note(item: ItemSchema, user: UserSchema):
     hostname = cfg["General"]["ExternalURL"]
