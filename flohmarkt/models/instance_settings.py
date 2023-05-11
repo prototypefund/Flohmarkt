@@ -11,7 +11,9 @@ class InstanceSettingsSchema(BaseModel):
     coordinates : str = Field(...)
     range : str = Field(...)
     following : List[str] = []
+    pending_following : List[str] = []
     followers : List[str] = []
+    pending_followers : List[str] = []
     
     class Config: 
         schema_extra = {
@@ -21,7 +23,9 @@ class InstanceSettingsSchema(BaseModel):
                 "coordinates": "49.80:9.90",
                 "range": 50,
                 "followers": ["https://other.flohmarkt.instance.org"],
+                "pending_followers": [],
                 "following": ["https://other.flohmarkt.instance.org"],
+                "pending_following": [],
             }
         }
     @staticmethod
