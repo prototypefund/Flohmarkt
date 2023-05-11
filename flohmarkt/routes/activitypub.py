@@ -14,6 +14,7 @@ from flohmarkt.signatures import verify, sign
 from flohmarkt.http import HttpClient
 from flohmarkt.models.user import UserSchema
 from flohmarkt.models.item import ItemSchema
+from flohmarkt.models.instance_settings import InstanceSettingsSchema
 from flohmarkt.models.conversation import ConversationSchema
 from flohmarkt.models.follow import AcceptSchema
 
@@ -74,10 +75,17 @@ async def unfollow(obj):
         await UserSchema.update(user['id'], user, replace=True)
     return {}
 
+async def create_new_item(req: Request, msg: dict):
+    #TODO : implement
+    hostname = cfg["General"]["ExternalURL"]
+    item = await ItemSchema.retrieve_single_id(item_id)
+    return Response(content="0", status_code=201)
+
 async def inbox_process_create(req: Request, msg: dict):
     hostname = cfg["General"]["ExternalURL"]
+    print(msg)
     if "https://www.w3.org/ns/activitystreams#Public" in msg["to"]:
-        raise HTTPException(status_code=400, detail="Can only accept private messages")
+        return create_new_item(req, msg)
 
     if len(msg["to"]) != 1:
         raise HTTPException(status_code=400, detail="Can only accept private messages to 1 user")
@@ -117,9 +125,50 @@ async def inbox_process_create(req: Request, msg: dict):
     return Response(content="0", status_code=202)
 
 async def inbox_process_follow(req : Request, msg: dict):
+    """
+    this is where instance follows are being handled
+    """
     hostname = cfg["General"]["ExternalURL"]
     print(msg)
-    instance = msg["actor"].replace(f"{hostname}/users/","")
+    instance = msg["actor"].replace(f"/users/instance","")
+    instance_settings = await InstanceSettingsSchema.retrieve()
+    if instance not in instance_settings["pending_followers"]:
+        instance_settings["pending_followers"].append(instance)
+
+    await InstanceSettingsSchema.set(instance_settings)
+
+    return Response(content="0", status_code=202)
+
+
+async def inbox_process_accept(req : Request, msg: dict):
+    hostname = cfg["General"]["ExternalURL"]
+    print(msg)
+    instance = msg["actor"].replace(f"/users/instance","",1)
+    instance_settings = await InstanceSettingsSchema.retrieve()
+    if instance not in instance_settings["pending_following"]:
+        raise HTTPException(status_code=404, detail="we are not waiting for this instance follow")
+
+    instance_settings["pending_following"].remove(instance)
+
+    if instance not in instance_settings["following"]:
+        instance_settings["following"].append(instance)
+
+    instance_settings = await InstanceSettingsSchema.set(instance_settings)
+    return Response(content="0", status_code=202)
+
+async def inbox_process_reject(req : Request, msg: dict):
+    hostname = cfg["General"]["ExternalURL"]
+    print(msg)
+    instance = msg["actor"].replace(f"/users/instance","",1)
+    instance_settings = await InstanceSettingsSchema.retrieve()
+    if instance not in instance_settings["pending_following"]:
+        raise HTTPException(status_code=404, detail="we are not waiting for this instance follow")
+
+    instance_settings["pending_following"].remove(instance)
+
+    instance_settings = await InstanceSettingsSchema.set(instance_settings)
+    return Response(content="0", status_code=204)
+
 
 
 @router.post("/inbox")
@@ -133,6 +182,10 @@ async def inbox(req : Request, msg : dict = Body(...) ):
         return await inbox_process_create(req, msg)
     elif msg["type"] == "Follow":
         return await inbox_process_follow(req, msg)
+    elif msg["type"] == "Accept":
+        return await inbox_process_accept(req, msg)
+    elif msg["type"] == "Reject":
+        return await inbox_process_reject(req, msg)
 
 
 @router.get("/users/{name}/followers")
@@ -195,7 +248,7 @@ async def get_inbox_list_from_activity(data: dict):
         parsed = urlparse(url)
         inbox = f"{parsed.scheme}://{parsed.netloc}/inbox"
         hosts[inbox] = 1
-    return hosts.keys()
+    return list(hosts.keys())
 
 async def post_item_to_remote(item: ItemSchema, user: UserSchema):
     item = await item_to_activity(item, user)
@@ -243,7 +296,7 @@ async def post_item_to_remote(item: ItemSchema, user: UserSchema):
                     print ("Article has not been accepted by target system",rcv_inbox, resp.status)
                 return
         tasks.append(do())
-        await asyncio.gather(*tasks)
+    await asyncio.gather(*tasks)
 
 
 

@@ -1,3 +1,5 @@
+import json
+
 from fastapi import APIRouter, Body, Depends, Request, HTTPException
 from fastapi.encoders import jsonable_encoder
 
@@ -5,8 +7,9 @@ from flohmarkt.config import cfg
 from flohmarkt.auth import get_current_user
 from flohmarkt.models.instance_settings import InstanceSettingsSchema, UpdateInstanceSettingsModel
 from flohmarkt.models.user import UserSchema
-from flohmarkt.models.follow import FollowSchema
+from flohmarkt.models.follow import FollowSchema, AcceptSchema
 from flohmarkt.http import HttpClient
+from flohmarkt.signatures import sign
 
 
 router = APIRouter()
@@ -36,7 +39,7 @@ async def follow_instance(url : str, current_user: UserSchema = Depends(get_curr
         if follow == url:
             return instance_settings["pending_following"]
 
-    instance_user = UserSchema.retrieve_single_name("instance")
+    instance_user = await UserSchema.retrieve_single_name("instance")
 
     #TODO: try to connect and webfinger the shit out of the other instance
 
@@ -53,13 +56,15 @@ async def follow_instance(url : str, current_user: UserSchema = Depends(get_curr
         object= url+"/users/instance"
     )
 
+    follow = jsonable_encoder(follow)
+
     print(follow)
 
     headers = {
         "Content-Type":"application/json"
     }
-    sign("post", url + "/inbox", headers, json.dumps(accept), instance_user)
-    async with HttpClient().post(rcv_inbox, data=json.dumps(accept), headers = headers) as resp:
+    sign("post", url + "/inbox", headers, json.dumps(follow), instance_user)
+    async with HttpClient().post(url + "/inbox", data=json.dumps(follow), headers = headers) as resp:
         print(resp.status)
         if resp.status != 200:
             raise HTTPException(status_code=400, detail=f"Received {resp.status} upon accepting")
@@ -86,6 +91,108 @@ async def unfollow_instance(url : str, current_user: UserSchema = Depends(get_cu
 
     return instance_settings["following"]
 
+@router.get("/remove_instance/", response_description="The current list of followed instances")
+async def unfollow_instance(url : str, current_user: UserSchema = Depends(get_current_user)):
+    if not current_user["admin"]:
+        raise HTTPException(status_code=403, detail="Only admins may do this")
+    instance_settings = await InstanceSettingsSchema.retrieve()
+
+    if url in instance_settings["followers"]:
+        instance_settings["followers"].remove(url)
+    else:
+        raise HTTPException(status_code=404, detail="This instance is not a follower")
+
+    await InstanceSettingsSchema.set(instance_settings)
+
+    return instance_settings["following"]
+
+
+@router.get("/reject_instance/", response_description="The current list of followed instances")
+async def reject_instance(url : str, current_user: UserSchema = Depends(get_current_user)):
+    if not current_user["admin"]:
+        raise HTTPException(status_code=403, detail="Only admins may do this")
+    instance_settings = await InstanceSettingsSchema.retrieve()
+
+    if url not in instance_settings["pending_followers"]:
+        raise HTTPException(status_code=403, detail="This is not a follower candidate")
+
+    instance_settings["pending_followers"].remove(url)
+
+    await InstanceSettingsSchema.set(instance_settings)
+
+    instance_user = await UserSchema.retrieve_single_name("instance")
+
+    hostname = cfg["General"]["ExternalURL"]
+    follow = FollowSchema(
+        context= "https://www.w3.org/ns/activitystreams",
+        id= url + "/users/instance#follows/42",
+        type= "Follow",
+        actor= url +"/users/instance",
+        object= hostname +"/users/instance"
+    )
+    accept = AcceptSchema(
+        object=follow,
+        id = f"{hostname}/users/instance#accepts/follows/42",
+        type = "Reject",
+        actor = f"{hostname}/users/instance",
+        context = "https://www.w3.org/ns/activitystreams"
+    )
+    accept = jsonable_encoder(accept)
+    headers = {
+        "Content-Type":"application/json"
+    }
+    sign("post", url+"/inbox", headers, json.dumps(accept), instance_user)
+    async with HttpClient().post(url+"/inbox", data=json.dumps(accept), headers = headers) as resp:
+        if resp.status != 200:
+            raise HTTPException(status_code=400, detail=f"Received {resp.status} upon accepting")
+        return
+
+    return instance_settings["following"]
+    
+
+@router.get("/accept_instance/", response_description="The current list of followed instances")
+async def accept_instance(url : str, current_user: UserSchema = Depends(get_current_user)):
+    if not current_user["admin"]:
+        raise HTTPException(status_code=403, detail="Only admins may do this")
+    instance_settings = await InstanceSettingsSchema.retrieve()
+
+    if url not in instance_settings["pending_followers"]:
+        raise HTTPException(status_code=403, detail="This is not a follower candidate")
+
+    instance_settings["pending_followers"].remove(url)
+    if url not in instance_settings["followers"]:
+        instance_settings["followers"].append(url)
+
+    await InstanceSettingsSchema.set(instance_settings)
+
+    instance_user = await UserSchema.retrieve_single_name("instance")
+
+    hostname = cfg["General"]["ExternalURL"]
+    follow = FollowSchema(
+        context= "https://www.w3.org/ns/activitystreams",
+        id= url + "/users/instance#follows/42",
+        type= "Follow",
+        actor= url +"/users/instance",
+        object= hostname +"/users/instance"
+    )
+    accept = AcceptSchema(
+        object=follow,
+        id = f"{hostname}/users/instance#accepts/follows/42",
+        type = "Accept",
+        actor = f"{hostname}/users/instance",
+        context = "https://www.w3.org/ns/activitystreams"
+    )
+    accept = jsonable_encoder(accept)
+    headers = {
+        "Content-Type":"application/json"
+    }
+    sign("post", url+"/inbox", headers, json.dumps(accept), instance_user)
+    async with HttpClient().post(url+"/inbox", data=json.dumps(accept), headers = headers) as resp:
+        if resp.status != 200:
+            raise HTTPException(status_code=400, detail=f"Received {resp.status} upon accepting")
+        return
+
+    return instance_settings["following"]
     
 
 @router.get("/toggle_admin/{user_id}", response_description="A boolean representing the users new admin state")

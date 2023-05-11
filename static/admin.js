@@ -118,7 +118,7 @@ instance_settings.following.forEach(e => {
 });
 instance_settings.pending_following.forEach(e => {
     const listElement = createElement('li', null, e);
-    const unfollowButton = createElement('button', null, 'Unfollow');
+    const unfollowButton = createElement('button', null, 'Withdraw');
     unfollowButton.addEventListener('click', async ve => {
         const response = await fetchJSON("admin/unfollow_instance/?url="+e).catch(error=>console.error(error));
 	listElement.remove();
@@ -148,6 +148,16 @@ followFragment.append(followingButton);
 const followersHeading = createElement('h3', null, 'Followers');
 const followersList = createElement('ul');
 instance_settings.followers.forEach(e => {
+    const listElement = createElement('li', null, e);
+    const removeButton = createElement('button', null, 'Remove');
+    removeButton.addEventListener('click', async ve => {
+        const response = await fetchJSON("admin/remove_instance/?url="+e).catch(error=>console.error(error));
+	listElement.remove();
+    });
+    listElement.appendChild(removeButton);
+    followersList.appendChild(listElement);
+});
+instance_settings.pending_followers.forEach(e => {
     const listElement = createElement('li', null, e);
     const acceptButton = createElement('button', null, 'Accept');
     acceptButton.addEventListener('click', async ve => {
