@@ -116,13 +116,23 @@ instance_settings.following.forEach(e => {
     listElement.appendChild(unfollowButton);
     followingList.appendChild(listElement);
 });
+instance_settings.pending_following.forEach(e => {
+    const listElement = createElement('li', null, e);
+    const unfollowButton = createElement('button', null, 'Unfollow');
+    unfollowButton.addEventListener('click', async ve => {
+        const response = await fetchJSON("admin/unfollow_instance/?url="+e).catch(error=>console.error(error));
+	listElement.remove();
+    });
+    listElement.appendChild(unfollowButton);
+    followingList.appendChild(listElement);
+});
 const followingInput = createElement('input');
 const followingButton = createElement('button', null, 'Follow');
 followingButton.addEventListener('click', async e =>  {
     const inp = encodeURIComponent(followingInput.value);
     const response = await fetchJSON("admin/follow_instance/?url="+inp).catch(error=>console.error(error));
     const listElement = createElement('li', null, followingInput.value);
-    const unfollowButton = createElement('button', null, 'Unfollow');
+    const unfollowButton = createElement('button', null, 'Withdraw');
     unfollowButton.addEventListener('click', async e => {
         const response = await fetchJSON("admin/unfollow_instance/?url="+inp).catch(error=>console.error(error));
 	listElement.remove();
@@ -138,7 +148,19 @@ followFragment.append(followingButton);
 const followersHeading = createElement('h3', null, 'Followers');
 const followersList = createElement('ul');
 instance_settings.followers.forEach(e => {
-    followersList.appendChild(createElement('li', null, e));
+    const listElement = createElement('li', null, e);
+    const acceptButton = createElement('button', null, 'Accept');
+    acceptButton.addEventListener('click', async ve => {
+        const response = await fetchJSON("admin/accept_instance/?url="+e).catch(error=>console.error(error));
+    });
+    const rejectButton = createElement('button', null, 'Reject');
+    rejectButton.addEventListener('click', async ve => {
+        const response = await fetchJSON("admin/reject_instance/?url="+e).catch(error=>console.error(error));
+	listElement.remove();
+    });
+    listElement.appendChild(acceptButton);
+    listElement.appendChild(rejectButton);
+    followersList.appendChild(listElement);
 });
 followFragment.append(followersHeading);
 followFragment.append(followersList);

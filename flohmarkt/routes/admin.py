@@ -1,9 +1,12 @@
 from fastapi import APIRouter, Body, Depends, Request, HTTPException
 from fastapi.encoders import jsonable_encoder
 
+from flohmarkt.config import cfg
 from flohmarkt.auth import get_current_user
 from flohmarkt.models.instance_settings import InstanceSettingsSchema, UpdateInstanceSettingsModel
 from flohmarkt.models.user import UserSchema
+from flohmarkt.models.follow import FollowSchema
+from flohmarkt.http import HttpClient
 
 
 router = APIRouter()
@@ -29,26 +32,52 @@ async def follow_instance(url : str, current_user: UserSchema = Depends(get_curr
     if not current_user["admin"]:
         raise HTTPException(status_code=403, detail="Only admins may do this")
     instance_settings = await InstanceSettingsSchema.retrieve()
-    for follow in instance_settings["following"]:
+    for follow in instance_settings["pending_following"]:
         if follow == url:
-            return instance_settings["following"]
+            return instance_settings["pending_following"]
 
     #TODO: try to connect and webfinger the shit out of the other instance
 
-    instance_settings["following"].append(url)
+    instance_settings["pending_following"].append(url)
     await InstanceSettingsSchema.set(instance_settings)
 
-    return instance_settings["following"]
+    hostname = cfg["General"]["ExternalURL"]
 
+    follow = FollowSchema(
+        context= "https://www.w3.org/ns/activitystreams",
+        id= hostname + "/users/instance#follows/42",
+        type= "Follow",
+        actor= hostname+"/users/instance",
+        object= url+"/users/instance"
+    )
+
+    print(follow)
+
+    headers = {
+        "Content-Type":"application/json"
+    }
+    sign("post", url + "/inbox", headers, json.dumps(accept), user)
+    async with HttpClient().post(rcv_inbox, data=json.dumps(accept), headers = headers) as resp:
+        print(resp.status)
+        if resp.status != 200:
+            raise HTTPException(status_code=400, detail=f"Received {resp.status} upon accepting")
+    
+    return instance_settings["pending_following"]
 
 @router.get("/unfollow_instance/", response_description="The current list of followed instances")
 async def unfollow_instance(url : str, current_user: UserSchema = Depends(get_current_user)):
     if not current_user["admin"]:
         raise HTTPException(status_code=403, detail="Only admins may do this")
     instance_settings = await InstanceSettingsSchema.retrieve()
-    try:
+
+    found = False
+    if url in instance_settings["following"]:
         instance_settings["following"].remove(url)
-    except ValueError as e:
+        found = True
+    if url in instance_settings["pending_following"]:
+        instance_settings["pending_following"].remove(url)
+        found = True
+    if not found:
         raise HTTPException(status_code=404, detail="This instance is not being followed")
 
     await InstanceSettingsSchema.set(instance_settings)
