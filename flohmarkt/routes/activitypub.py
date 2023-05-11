@@ -186,7 +186,7 @@ async def get_inbox_list_from_activity(data: dict):
         hosts[inbox] = 1
     return hosts.keys()
 
-async def post_to_remote(item: ItemSchema, user: UserSchema):
+async def post_item_to_remote(item: ItemSchema, user: UserSchema):
     item = await item_to_activity(item, user)
     hostname = cfg["General"]["ExternalURL"]
     data = {
