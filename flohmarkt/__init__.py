@@ -125,6 +125,19 @@ async def setup_execute(request: Request, initkey : str,
 
     new_user = await UserSchema.add(new_user)
 
+    instance_user = {
+        "email":"",
+        "name":"instance",
+        "pwhash":"",
+        "active": False,
+        "admin": False,
+        "moderator": False,
+        "avatar":None,
+        "role":"User"
+    }
+
+    instance_user = await UserSchema.add(instance_user)
+
     instance_settings = await InstanceSettingsSchema.retrieve()
     instance_settings["name"] = instancename
     instance_settings["initialized"] = True
