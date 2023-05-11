@@ -36,6 +36,8 @@ async def follow_instance(url : str, current_user: UserSchema = Depends(get_curr
         if follow == url:
             return instance_settings["pending_following"]
 
+    instance_user = UserSchema.retrieve_single_name("instance")
+
     #TODO: try to connect and webfinger the shit out of the other instance
 
     instance_settings["pending_following"].append(url)
@@ -56,7 +58,7 @@ async def follow_instance(url : str, current_user: UserSchema = Depends(get_curr
     headers = {
         "Content-Type":"application/json"
     }
-    sign("post", url + "/inbox", headers, json.dumps(accept), user)
+    sign("post", url + "/inbox", headers, json.dumps(accept), instance_user)
     async with HttpClient().post(rcv_inbox, data=json.dumps(accept), headers = headers) as resp:
         print(resp.status)
         if resp.status != 200:
