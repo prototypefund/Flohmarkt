@@ -34,6 +34,10 @@ We wish you a pleasant stay on our backyard sale.
 Yours, {}
 """
 
+USERNAME_BLACKLIST = [
+    "instance"
+]
+
 #Registration
 @router.get("/register")
 async def _(request: Request):
@@ -51,6 +55,9 @@ async def _(request: Request,
                 ):
 
     email = email.replace(" ","+")
+
+    if username in USERNAME_BLACKLIST:
+        return {"error": "username is prohibited"}
 
     if username == "" or password == "":
         return {"error": "username or password empty"}
