@@ -201,7 +201,7 @@
             adminPass = config.services.flohmarkt.initialization.db_admin_pw;
           };
 
-          /*systemd.services.flohmarkt-init-db = {
+          systemd.services.flohmarkt-init-db = {
             description = "Flohmarkt CouchDB Primer - Fills flohmarkt DBs with indices and views";
             wantedBy = [ "flohmarkt.service" ];
             after = [ "couchdb.service" ]; # TODO: this might be a problem if couchdb is on remote host
@@ -215,7 +215,7 @@
               ${nixpkgs.legacyPackages.x86_64-linux.python3.withPackages (p: depfun p ++ [packages.x86_64-linux.default ])}/bin/python3 initialize_couchdb.py ${config.services.flohmarkt.initialization.db_admin_pw} ${config.services.flohmarkt.initialization.db_user_pw}
               echo "Initialized Database"
             '';
-          };*/
+          };
 
           systemd.services.flohmarkt-background = {
             description = "Flohmarkt Background Tasks";
