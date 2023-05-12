@@ -10,8 +10,11 @@ async def add_item(resource: str):
     username = resource.split("@")[0]
     username = username.replace("acct:","",1)
     user = await UserSchema.retrieve_single_name(username)
-    hostname = cfg["General"]["ExternalURL"]
+
     if user:
+        hostname = cfg["General"]["ExternalURL"]
+        hostname = hostname.replace("https://","",1).replace("http://","",1)
+
         return {
                 "subject" : f"acct:{user['name']}@{hostname}",
                 "aliases": [
