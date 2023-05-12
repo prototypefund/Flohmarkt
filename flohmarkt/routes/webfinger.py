@@ -12,28 +12,29 @@ async def add_item(resource: str):
     user = await UserSchema.retrieve_single_name(username)
 
     if user:
-        hostname = cfg["General"]["ExternalURL"]
+        url = cfg["General"]["ExternalURL"]
+        hostname = url.replace("https://","",1).replace("http://","",1)
 
         return {
                 "subject" : f"acct:{user['name']}@{hostname}",
                 "aliases": [
-                    f"{hostname}/~{user['name']}",
-                    f"{hostname}/users/{user['name']}",
+                    f"{url}/~{user['name']}",
+                    f"{url}/users/{user['name']}",
                 ],
                 "links": [
                     {
                         "rel": "http://webfinger.net/rel/profile-page",
                         "type": "text/html",
-                        "href": f"{hostname}/~{user['name']}"
+                        "href": f"{url}/~{user['name']}"
                     },
                     {
                         "rel": "self",
                         "type": "application/activity+json",
-                        "href": f"{hostname}/users/{user['name']}"
+                        "href": f"{url}/users/{user['name']}"
                     },
                     {
                         "rel": "http://ostatus.org/schema/1.0/subscribe",
-                        "template" : f"{hostname}/authorize_interaction?uri="+"{ uri }"
+                        "template" : f"{url}/authorize_interaction?uri="+"{ uri }"
                     }
                 ]
         }
