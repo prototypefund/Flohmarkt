@@ -15,23 +15,23 @@ async def add_item(resource: str):
         return {
                 "subject" : f"acct:{user['name']}@{hostname}",
                 "aliases": [
-                    f"https://{hostname}/~{user['name']}",
-                    f"https://{hostname}/users/{user['name']}",
+                    f"{hostname}/~{user['name']}",
+                    f"{hostname}/users/{user['name']}",
                 ],
                 "links": [
                     {
                         "rel": "http://webfinger.net/rel/profile-page",
                         "type": "text/html",
-                        "href": f"https://{hostname}/~{user['name']}"
+                        "href": f"{hostname}/~{user['name']}"
                     },
                     {
                         "rel": "self",
                         "type": "application/activity+json",
-                        "href": f"https://{hostname}/users/{user['name']}"
+                        "href": f"{hostname}/users/{user['name']}"
                     },
                     {
                         "rel": "http://ostatus.org/schema/1.0/subscribe",
-                        "template" : f"https://{hostname}/authorize_interaction?uri="+"{ uri }"
+                        "template" : f"{hostname}/authorize_interaction?uri="+"{ uri }"
                     }
                 ]
         }
