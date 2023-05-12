@@ -131,7 +131,6 @@ async def inbox_process_follow(req : Request, msg: dict):
     this is where instance follows are being handled
     """
     hostname = cfg["General"]["ExternalURL"]
-    print(msg)
     instance = msg["actor"].replace(f"/users/instance","")
     instance_settings = await InstanceSettingsSchema.retrieve()
     if instance not in instance_settings["pending_followers"]:
@@ -144,7 +143,6 @@ async def inbox_process_follow(req : Request, msg: dict):
 
 async def inbox_process_accept(req : Request, msg: dict):
     hostname = cfg["General"]["ExternalURL"]
-    print(msg)
     instance = msg["actor"].replace(f"/users/instance","",1)
     instance_settings = await InstanceSettingsSchema.retrieve()
     if instance not in instance_settings["pending_following"]:
@@ -160,7 +158,6 @@ async def inbox_process_accept(req : Request, msg: dict):
 
 async def inbox_process_reject(req : Request, msg: dict):
     hostname = cfg["General"]["ExternalURL"]
-    print(msg)
     instance = msg["actor"].replace(f"/users/instance","",1)
     instance_settings = await InstanceSettingsSchema.retrieve()
     if instance not in instance_settings["pending_following"]:
