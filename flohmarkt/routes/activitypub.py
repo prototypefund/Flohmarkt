@@ -237,16 +237,30 @@ async def user_inbox(req: Request, name: str, msg : dict = Body(...) ):
     return {}
 
 async def get_inbox_list_from_activity(data: dict):
+    hostname=cfg["General"]["ExternalURL"]
+
     urls = []
     urls.extend(data.get("to", []))
     urls.extend(data.get("cc", []))
 
     hosts = {}
 
+    if "https://www.w3.org/ns/activitystreams#Public" in urls:
+        urls.remove("https://www.w3.org/ns/activitystreams#Public")
+
+        instance_settings = await InstanceSettingsSchema.retrieve()
+        urls.extend([i + "/inbox" for i in instance_settings["followers"]])
+        
+        username = data["actor"].replace(hostname+"/users/", "", 1)
+        user = await UserSchema.retrieve_single_name(username)
+        for follower in user.get("followers",{}).values():
+            urls.append(follower["actor"])
+
     for url in urls:
         parsed = urlparse(url)
         inbox = f"{parsed.scheme}://{parsed.netloc}/inbox"
         hosts[inbox] = 1
+
     return list(hosts.keys())
 
 async def post_item_to_remote(item: ItemSchema, user: UserSchema):
@@ -279,8 +293,6 @@ async def post_item_to_remote(item: ItemSchema, user: UserSchema):
     }
 
     rcv_inboxes = await get_inbox_list_from_activity(data)
-    instance_settings = await InstanceSettingsSchema.retrieve()
-    rcv_inboxes.extend([i + "/inbox" for i in instance_settings["followers"]])
 
     tasks = []
     for rcv_inbox in rcv_inboxes:
