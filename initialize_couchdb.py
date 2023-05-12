@@ -36,7 +36,7 @@ req.headers = {
     "Authorization": "Basic "+credentials
 }
 try:
-    res = urllib.request.urlopen(req)
+    res = urllib.request.urlopen(req, timeout=10)
 except urllib.error.HTTPError as e:
     if "412" in str(e):
         print ("Database exists, skipping")
@@ -50,7 +50,7 @@ req.headers = {
     "Authorization": "Basic "+credentials
 }
 try:
-    res = urllib.request.urlopen(req)
+    res = urllib.request.urlopen(req, timeout=10)
 except urllib.error.HTTPError as e:
     if "412" in str(e):
         print ("Database exists, skipping")
@@ -71,7 +71,7 @@ req.headers = {
     "Authorization": "Basic "+credentials
 }
 try:
-    res = urllib.request.urlopen(req)
+    res = urllib.request.urlopen(req, timeout=10)
 except urllib.error.HTTPError as e:
     if "409" in str(e):
         print ("User flohmarkt exists. skipping")
@@ -90,7 +90,7 @@ req.headers = {
     "Content-type": "application/json",
     "Authorization": "Basic "+credentials
 }
-res = urllib.request.urlopen(req)
+res = urllib.request.urlopen(req, timeout=10)
 
 print("Trying to add date search index")
 req = urllib.request.Request(f"{db_url.scheme}://{hostname}/flohmarkt/_index")
@@ -108,7 +108,7 @@ req.headers = {
     "Content-type": "application/json",
     "Authorization": "Basic "+credentials
 }
-res = urllib.request.urlopen(req)
+res = urllib.request.urlopen(req, timeout=10)
 
 
 print("Trying to add instance settigs")
@@ -133,7 +133,7 @@ req.headers = {
     "Authorization": "Basic "+credentials
 }
 try:
-    res = urllib.request.urlopen(req)
+    res = urllib.request.urlopen(req, timeout=10)
 except urllib.error.HTTPError as e:
     if "409" in str(e):
         print ("Instance settings already exist. skipping")
