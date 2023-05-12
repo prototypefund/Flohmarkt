@@ -203,7 +203,7 @@
 
           systemd.services.flohmarkt-init-db = {
             description = "Flohmarkt CouchDB Primer - Fills flohmarkt DBs with indices and views";
-            wantedBy = [ "flohmarkt.service" ];
+            requiredBy = [ "flohmarkt.service" ];
             after = [ "couchdb.service" ]; # TODO: this might be a problem if couchdb is on remote host
             serviceConfig = {
               Type = "oneshot";

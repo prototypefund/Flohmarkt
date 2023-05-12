@@ -41,6 +41,9 @@ app.include_router(conversation_router, tags=["Conversation"], prefix=api_prefix
 async def ini():
     print ("Flohmarkt booting!")
     await HttpClient.initialize()
+    print ("Waiting until database gets ready…")
+    # TODO implement wait for database
+    print ("Database is ready. Proceeding…")
     try:
         instance_settings = await InstanceSettingsSchema.retrieve()
         if not instance_settings["initialized"]:
