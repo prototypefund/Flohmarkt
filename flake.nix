@@ -236,7 +236,7 @@
               User = "flohmarkt";
             };
             wantedBy = [ "multi-user.target" ];
-            after = [ "network.target" ];
+            after = [ "flohmarkt-init-db.service" "network.target" ];
             script = ''
               cd ${./.}
               ${nixpkgs.legacyPackages.x86_64-linux.python3.withPackages (p: depfun p ++ [packages.x86_64-linux.default ])}/bin/uvicorn flohmarkt:app --host 0.0.0.0 --port 8080
