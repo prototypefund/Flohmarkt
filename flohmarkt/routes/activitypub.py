@@ -83,7 +83,9 @@ async def create_new_item(req: Request, msg: dict):
 
 async def inbox_process_create(req: Request, msg: dict):
     hostname = cfg["General"]["ExternalURL"]
-    print(msg)
+    if msg["id"].startswith(hostname):
+        raise HTTPException(status_code=302, detail="Already exists")
+
     if "https://www.w3.org/ns/activitystreams#Public" in msg["to"]:
         return create_new_item(req, msg)
 
