@@ -13,7 +13,6 @@ async def add_item(resource: str):
 
     if user:
         hostname = cfg["General"]["ExternalURL"]
-        hostname = hostname.replace("https://","",1).replace("http://","",1)
 
         return {
                 "subject" : f"acct:{user['name']}@{hostname}",
