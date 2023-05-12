@@ -31,12 +31,15 @@ credentials = (base64.b64encode(credentials.encode('utf-8'))).decode()
 
 print("Trying to create user DB")
 req = PutRequest(f"{db_url.scheme}://{hostname}/_users")
+print("Writing headers")
 req.headers = {
     "Content-type": "application/json",
     "Authorization": "Basic "+credentials
 }
 try:
+    print("Sending request to "+f"{db_url.scheme}://{hostname}/_users")
     res = urllib.request.urlopen(req)
+    print("Done request to "+f"{db_url.scheme}://{hostname}/_users")
 except urllib.error.HTTPError as e:
     if "412" in str(e):
         print ("Database exists, skipping")
