@@ -78,8 +78,18 @@ async def unfollow(obj):
 async def create_new_item(req: Request, msg: dict):
     #TODO : implement
     hostname = cfg["General"]["ExternalURL"]
-    item = await ItemSchema.retrieve_single_id(item_id)
-    return Response(content="0", status_code=201)
+    item = {
+        "type":"item",
+        "name":msg["object"]["flohmarkt:data"]["name"],
+        "description":msg["object"]["flohmarkt:data"]["description"],
+        "price":msg["object"]["flohmarkt:data"]["price"],
+        "creation_date ": msg["object"]["published"],
+        "user ": msg["actor"],
+        "images ": [] # TODO: implement
+    }
+    await ItemSchema.add(item)
+
+    return Response(content="0", status_code=202)
 
 async def inbox_process_create(req: Request, msg: dict):
     hostname = cfg["General"]["ExternalURL"]
@@ -87,7 +97,7 @@ async def inbox_process_create(req: Request, msg: dict):
         raise HTTPException(status_code=302, detail="Already exists")
 
     if "https://www.w3.org/ns/activitystreams#Public" in msg["to"]:
-        return create_new_item(req, msg)
+        return await create_new_item(req, msg)
 
     if len(msg["to"]) != 1:
         raise HTTPException(status_code=400, detail="Can only accept private messages to 1 user")
@@ -199,7 +209,7 @@ async def followers(name: str, page : int = None):
             "@context":"https://www.w3.org/ns/activitystreams",
             "id":f"{hostname}/users/{user['name']}/followers",
             "type":"OrderedCollection",
-            "totalItems":len(user["followers"]),
+            "totalItems":len(user.get("followers",[])),
             "first":f"{hostname}/users/{user['name']}/followers?page=1"
         }
     else:
@@ -209,7 +219,7 @@ async def followers(name: str, page : int = None):
             "@context":"https://www.w3.org/ns/activitystreams",
             "id":f"{hostname}/users/{user['name']}/followers?page=1",
             "type":"OrderedCollectionPage",
-            "totalItems":len(user["followers"]),
+            "totalItems":len(user.get("followers",[])),
             "partOf":f"{hostname}/users/{user['name']}/followers",
             "orderedItems": [
                 x["actor"] for x in list(user["followers"].values())[(page-1)*10:page*10]
@@ -299,14 +309,14 @@ async def post_item_to_remote(item: ItemSchema, user: UserSchema):
         if rcv_inbox.startswith(hostname):
             continue
 
-        async def do():
+        async def do(rcv_inbox):
             sign("post", rcv_inbox, headers, json.dumps(data), user)
 
             async with HttpClient().post(rcv_inbox, data=json.dumps(data), headers = headers) as resp:
                 if resp.status != 202:
                     print ("Article has not been accepted by target system",rcv_inbox, resp.status)
                 return
-        tasks.append(do())
+        tasks.append(do(rcv_inbox))
     await asyncio.gather(*tasks)
 
 
@@ -388,6 +398,11 @@ async def item_to_activity(item: ItemSchema, user: UserSchema):
         "object": {
             "id": f"{hostname}/users/{user['name']}/items/{item['id']}",
             "type": "Note",
+            "flohmarkt:data": {
+                "price": item["price"],
+                "name": item["name"],
+                "description": item["description"],
+            },
             "summary": None,
             "inReplyTo": None,
             "published": item["creation_date"],

@@ -38,8 +38,10 @@ class ItemSchema(BaseModel):
     @staticmethod
     async def add(data: dict)->dict:
         data["type"] = "item"
-        data["id"] = str(uuid.uuid4())
-        data["creation_date"] = datetime.datetime.now()
+        if not "id" in data:
+            data["id"] = str(uuid.uuid4())
+        if not "creation_date" in data:
+            data["creation_date"] = datetime.datetime.now()
         ins = await Database.create(data)
         new = await Database.find_one({"id":ins})
         return new
