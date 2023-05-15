@@ -31,6 +31,7 @@
       mkShell {
         name = "flohmarkt devshell";
         buildInputs = [
+          silver-searcher
           python3
         ] ++ depfun python3Packages;
     };
