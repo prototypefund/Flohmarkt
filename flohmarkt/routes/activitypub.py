@@ -1,6 +1,8 @@
 import json
 import asyncio
-import aiohttp
+import re
+import os
+import uuid
 
 from urllib.parse import urlparse
 
@@ -19,6 +21,7 @@ from flohmarkt.models.conversation import ConversationSchema
 from flohmarkt.models.follow import AcceptSchema
 
 router = APIRouter()
+uuid_regex = re.compile('[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', re.I)
 
 async def get_userinfo(actor : str) -> dict:
     async with HttpClient().get(actor, headers = {
@@ -75,17 +78,69 @@ async def unfollow(obj):
         await UserSchema.update(user['id'], user, replace=True)
     return {}
 
+async def replicate_image(image_url : str) -> str:
+    ident = image_url.split("/")[-1]
+    if not uuid_regex.match (ident):
+        ident = str(uuid.uuid4())
+
+    imagepath = os.path.join(cfg["General"]["ImagePath"], ident+".jpg")
+
+    async with HttpClient().get(image_url, headers = {
+            "Accept":"image/jpeg"
+        }) as resp:
+        imagefile = open(imagepath, "wb")
+        imagefile.write(await resp.read())
+        imagefile.close()
+        return ident
+
+async def replicate_user(user_url: str) -> str:
+    ident = user_url.split("/")[-1]
+    if not uuid_regex.match (ident):
+        ident = str(uuid.uuid4())
+
+    async with HttpClient().get(user_url, headers = {
+            "Accept":"application/json"
+        }) as resp:
+        userinfo = await resp.json()
+        parsed = urlparse(user_url)
+
+        user = await UserSchema.retrieve_single_id(ident)
+        if user is not None:
+            return user
+
+        new_user = {
+            "id": ident,
+            "name": userinfo["preferredUsername"]+"@"+parsed.netloc,
+            "pwhash": "-",
+            "admin": False,
+            "moderator": False,
+            "active": False,
+            "activation_code": "-",
+            "avatar":None,
+        }
+        await UserSchema.add(new_user)
+        return new_user
+
+
+
 async def create_new_item(req: Request, msg: dict):
-    #TODO : implement
     hostname = cfg["General"]["ExternalURL"]
+
+    tasks = []
+    for attachment in msg["object"]["attachment"]:
+        tasks.append(replicate_image(attachment["url"]))
+    image_urls = await asyncio.gather(*tasks)
+
+    new_user = await replicate_user(msg["actor"])
+
     item = {
         "type":"item",
         "name":msg["object"]["flohmarkt:data"]["name"],
         "description":msg["object"]["flohmarkt:data"]["description"],
         "price":msg["object"]["flohmarkt:data"]["price"],
         "creation_date ": msg["object"]["published"],
-        "user ": msg["actor"],
-        "images ": [] # TODO: implement
+        "user": new_user["id"],
+        "images": image_urls
     }
     await ItemSchema.add(item)
 
