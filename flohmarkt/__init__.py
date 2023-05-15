@@ -52,8 +52,9 @@ async def ini():
             print (f"""Flohmarkt is not initialized yet. Please go to 
             {hostname}/setup/{key}
             in order to complete the setup process""")
-    except:
-        shutdown()
+    except Exception as e:
+        await shutdown()
+        raise e
 
     
 @app.on_event("shutdown")
