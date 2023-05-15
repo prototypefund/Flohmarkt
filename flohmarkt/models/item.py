@@ -40,7 +40,7 @@ class ItemSchema(BaseModel):
         data["type"] = "item"
         if not "id" in data:
             data["id"] = str(uuid.uuid4())
-        if not "creation_date" in data:
+        if not "creation_date" in data or data["creation_date"] is None:
             data["creation_date"] = datetime.datetime.now()
         ins = await Database.create(data)
         new = await Database.find_one({"id":ins})
