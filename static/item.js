@@ -14,6 +14,12 @@ const user = await fetchJSON('user/' + item.user);
 
 const itemFragment = document.createDocumentFragment();
 itemFragment.appendChild(createItem(item, user.name));
+const itemOperationContainer = createElement('div',null, '');
+const deleteButton = createElement('button', null, 'Delete');
+const reportButton = createElement('button', null, 'Report');
+itemOperationContainer.appendChild(deleteButton);
+itemOperationContainer.appendChild(reportButton);
+itemFragment.appendChild(itemOperationContainer);
 
 const conversationsFragment = document.createDocumentFragment();
 const conversationIndicatorContainer = createElement('div',null, '');
