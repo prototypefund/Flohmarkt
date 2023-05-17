@@ -104,13 +104,15 @@ async def replicate_user(user_url: str) -> str:
         userinfo = await resp.json()
         parsed = urlparse(user_url)
 
-        user = await UserSchema.retrieve_single_id(ident)
+        username = userinfo["preferredUsername"]+"@"+parsed.netloc
+
+        user = await UserSchema.retrieve_single_name(username)
         if user is not None:
             return user
 
         new_user = {
             "id": ident,
-            "name": userinfo["preferredUsername"]+"@"+parsed.netloc,
+            "name": username,
             "pwhash": "-",
             "admin": False,
             "moderator": False,
