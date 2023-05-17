@@ -122,7 +122,12 @@ async def create_message(item_id: str, msg: dict = Body(...), current_user: User
     item = await ItemSchema.retrieve_single_id(item_id)
     if item is None:
         raise HTTPException(status_code=404, detail="Item is not here :(")
+
     conversation = await ConversationSchema.retrieve_for_id(msg["conversation_id"])
+
+    if conversation is None:
+        conversation = await ConversationSchema.retrieve_for_item_remote_user(msg["item_id"], actor)
+
     if conversation is None:
         print(actor)
         conversation = {
