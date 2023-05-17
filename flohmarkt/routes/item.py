@@ -47,7 +47,6 @@ async def get_single_item(user_id: str):
 
 @router.get("/{ident}", response_description="A single item if any")
 async def get_item(ident:str):
-    print("IN ROUTE", ident)
     item = await ItemSchema.retrieve_single_id(ident)
     return item
 

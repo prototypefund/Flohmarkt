@@ -180,9 +180,7 @@ async def inbox_process_create(req: Request, msg: dict):
             raise HTTPException(status_code=404, detail="Targeted item not found")
         conversation = await ConversationSchema.retrieve_for_item_remote_user(item_id, msg["actor"])
     else:
-        print(msg["object"]["inReplyTo"])
         conversation = await ConversationSchema.retrieve_for_message_id(msg["object"]["inReplyTo"])
-        print(conversation)
 
     if conversation is None:
         conversation = {

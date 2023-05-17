@@ -129,7 +129,6 @@ async def create_message(item_id: str, msg: dict = Body(...), current_user: User
         conversation = await ConversationSchema.retrieve_for_item_remote_user(msg["item_id"], actor)
 
     if conversation is None:
-        print(actor)
         conversation = {
             "user_id" : item['user'],
             "remote_user" : actor,

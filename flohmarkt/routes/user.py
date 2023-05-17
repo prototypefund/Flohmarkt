@@ -26,7 +26,6 @@ async def update_user(ident: str, req: dict = Body(...),current_user : UserSchem
     if ident != current_user["id"]:
         return HTTPException(status_code=403, detail="Cant override other users properties")
     #req = {k: v for k,v in req.dict().users() if v is not None}
-    print(req)
     updated_user = await UserSchema.update(ident, req)
     if updated_user:
         return "YEEEH"

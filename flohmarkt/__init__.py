@@ -69,10 +69,8 @@ async def root(request: Request):
 
 @app.get("/~{user}/{item}")
 async def other(request: Request, user: str, item: str):
-    print(request.headers["accept"])
     if "application/activity+json" in request.headers["accept"]:
         item = await get_item_activity(item, user)
-        print(json.dumps(item))
         item = json.dumps(item)
         return Response(content=item, media_type="application/activity+json, application/ld+json")
     return templates.TemplateResponse("item.html", {"request": request, "user": user, "item": item})
