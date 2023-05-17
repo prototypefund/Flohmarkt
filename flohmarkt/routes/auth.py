@@ -56,6 +56,9 @@ async def _(request: Request,
 
     email = email.replace(" ","+")
 
+    if "@" in username:
+        return {"error": "'@' in username is prohibited"}
+
     if username in USERNAME_BLACKLIST:
         return {"error": "username is prohibited"}
 
