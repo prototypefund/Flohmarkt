@@ -51,16 +51,21 @@ async def convert_to_activitypub_message(msg, current_user, parent=None, item=No
             ]
         }
     else:
+        if "@" in item_user['name']:
+            username, remote_hostname = item_user['name'].split("@")
+            remote_hostname = "https://"+remote_hostname
+        else:
+            username = item_user['name']
         update = {
-            "inReplyTo": f"{hostname}/users/{item_user['name']}/items/{item['id']}",
+            "inReplyTo": f"{remote_hostname}/users/{username}/items/{item['id']}",
             "to": [
-                f"{hostname}/users/{item_user['name']}"
+                f"{remote_hostname}/users/{username}"
             ],
             "tag":[
                 {
                     "type": "Mention",
-                    "href": f"{hostname}/users/{item_user['name']}",
-                    "name": "@derpy@testcontainer.lan"
+                    "href": f"{remote_hostname}/users/{item_user['name']}",
+                    "name": f"{item_user['name']}"
                 }
             ]
         }
@@ -69,7 +74,7 @@ async def convert_to_activitypub_message(msg, current_user, parent=None, item=No
     message_uuid = str(uuid.uuid4())
 
     ret = {
-        "id": f"{hostname}/users/{item_user['name']}/statuses/{message_uuid}",
+        "id": f"{hostname}/users/{username}/statuses/{message_uuid}",
         "type": "Note",
         "summary": None,
         "published": date,
