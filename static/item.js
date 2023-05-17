@@ -4,7 +4,12 @@ import { createElement } from "./create/element.js";
 import { createImage } from "./create/image.js";
 
 const item = await fetchJSON('item/' + window.location.pathname.replace(/^.+?[/]/, ''));
-const conversations = await fetchJSON('conversation/by_item/' + window.location.pathname.replace(/^.+?[/]/, ''));
+const token = JSON.parse(window.sessionStorage.getItem('parsedToken'));
+var conversations = [];
+console.log(token);
+if (token !== null) {
+    conversations = await fetchJSON('conversation/by_item/' + window.location.pathname.replace(/^.+?[/]/, ''));
+}
 const user = await fetchJSON('user/' + item.user);
 
 const itemFragment = document.createDocumentFragment();
