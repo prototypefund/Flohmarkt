@@ -34,6 +34,16 @@ textArea.name="content";
 conversationFormContainer.appendChild(textArea);
 conversationFormContainer.appendChild(sendButton);
 
+const isCurrentUser = message => {
+    const token = JSON.parse(window.sessionStorage.getItem('parsedToken'));
+    const actor_url = new URL(message.attributedTo);
+    const own_url = new URL(window.location);
+    if (actor_url.host !=  own_url.host) {
+        return false;
+    }
+    return message.attributedTo.endsWith("/"+token.username);
+};
+
 const conversationContainer = createElement('div',null, '');
 conversations.forEach(conversation => {
     const indicator = createElement('a', null, conversation.remote_user);
@@ -56,7 +66,7 @@ conversations.forEach(conversation => {
         const messageElement = createElement('p', null, '');
         messageElement.innerHTML = message.content;
         messageElement.classList.add("message");
-        const cssclass = message.attributedTo.includes(token.username) ? "message_me" : "message_you";
+        const cssclass = isCurrentUser(message) ? "message_me" : "message_you";
         messageElement.classList.add(cssclass);
         conversationMessagesContainer.appendChild(messageElement);
     });
