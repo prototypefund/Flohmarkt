@@ -135,7 +135,13 @@ async def create_new_item(req: Request, msg: dict):
 
     new_user = await replicate_user(msg["actor"])
 
+    ident = msg["object"]["flohmarkt:data"]["original_id"]
+    item = await ItemSchema.retrieve_single_id(ident)
+    if item is not None:
+        raise Exception(f"Not allowed to override existing item: Double ID {ident}")
+
     item = {
+        "id": ident,
         "type":"item",
         "name":msg["object"]["flohmarkt:data"]["name"],
         "description":msg["object"]["flohmarkt:data"]["description"],
@@ -459,6 +465,7 @@ async def item_to_activity(item: ItemSchema, user: UserSchema):
                 "price": item["price"],
                 "name": item["name"],
                 "description": item["description"],
+                "original_id": item["id"],
             },
             "summary": None,
             "inReplyTo": None,

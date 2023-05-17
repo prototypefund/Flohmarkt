@@ -36,7 +36,6 @@ async def convert_to_activitypub_message(msg, current_user, parent=None, item=No
     hostname = cfg["General"]["ExternalURL"]
     item_user = await UserSchema.retrieve_single_id(item["user"])
 
-
     if parent["type"] != "item":
         update = {
             "inReplyTo": parent['id'],
