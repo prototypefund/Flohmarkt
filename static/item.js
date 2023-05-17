@@ -55,6 +55,11 @@ const isCurrentUser = message => {
     return message.attributedTo.endsWith("/"+token.username);
 };
 
+const conversationLoginHintContainer = createElement('div',null, '');
+const conversationLoginHintText = createElement('p',null, '');
+conversationLoginHintText.innerHTML = 'To participate in this conversation please <a href="/login">log in</a> or <a href="/register">create an account</a>.';
+conversationLoginHintContainer.appendChild(conversationLoginHintText);
+
 const conversationContainer = createElement('div',null, '');
 conversations.forEach(conversation => {
     const indicator = createElement('a', null, conversation.remote_user);
@@ -88,8 +93,11 @@ conversations.forEach(conversation => {
 });
 conversationsFragment.appendChild(conversationIndicatorContainer);
 conversationsFragment.appendChild(conversationContainer);
-conversationsFragment.appendChild(conversationFormContainer);
-
+if (token !== null) {
+    conversationsFragment.appendChild(conversationFormContainer);
+} else {
+    conversationsFragment.appendChild(conversationLoginHintContainer);
+}
 
 const colItem = document.querySelector('.col__item'),
       colChat = document.querySelector('.col__chat');
