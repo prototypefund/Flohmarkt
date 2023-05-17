@@ -37,6 +37,7 @@ async def convert_to_activitypub_message(msg, current_user, parent=None, item=No
     item_user = await UserSchema.retrieve_single_id(item["user"])
 
     if parent["type"] != "item":
+        username = current_user["name"]
         update = {
             "inReplyTo": parent['id'],
             "to": [
@@ -56,6 +57,7 @@ async def convert_to_activitypub_message(msg, current_user, parent=None, item=No
             remote_hostname = "https://"+remote_hostname
         else:
             username = item_user['name']
+            remote_hostname = hostname
         update = {
             "inReplyTo": f"{remote_hostname}/users/{username}/items/{item['id']}",
             "to": [
