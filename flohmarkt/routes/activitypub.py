@@ -198,8 +198,17 @@ async def inbox_process_create(req: Request, msg: dict):
     return Response(content="0", status_code=202)
 
 async def inbox_process_delete(req: Request, msg: dict):
-    # TODO implement
-    print(msg)
+    parsed_actor = urlparse(msg["actor"])
+    item_id = msg["object"]["id"].split("/")[-1]
+    item = await ItemSchema.retrieve_single_id(item_id)
+    username = parsed_actor.path.split("/")[-1]+"@"+parsed_actor.netloc
+    user = await UserSchema.retrieve_single_name(username)
+
+    if user["id"] != item["user"]:
+        raise HTTPException(status_code=403, detail="Not allowed to delete other users items")
+
+    await ItemSchema.delete(item["id"])
+    return Response(content="", status_code=204)
     
 async def inbox_process_follow(req : Request, msg: dict):
     """
