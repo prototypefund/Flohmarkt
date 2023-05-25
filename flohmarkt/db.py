@@ -41,7 +41,10 @@ class Database:
 
     @classmethod
     async def delete(cls, ident: str):
-        url = cfg["Database"]["Server"]+f"flohmarkt/{ident}"
+        doc = await cls.find_one(ident)
+        uuid = ident["id"]
+        rev = doc["_rev"]
+        url = cfg["Database"]["Server"]+f"flohmarkt/{uuid}?rev={rev}"
         try:
             async with HttpClient().delete(url) as resp:
                 return await resp.json()

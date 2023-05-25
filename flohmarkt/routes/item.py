@@ -1,10 +1,11 @@
 from fastapi import APIRouter, Body, Depends, Request
 from fastapi.encoders import jsonable_encoder
+from fastapi.responses import Response
 
 from flohmarkt.models.user import UserSchema
 from flohmarkt.models.item import ItemSchema, UpdateItemModel
 from flohmarkt.auth import get_current_user
-from flohmarkt.routes.activitypub import post_item_to_remote
+from flohmarkt.routes.activitypub import post_item_to_remote, delete_item_remote
 
 router = APIRouter()
 
@@ -58,7 +59,9 @@ async def update_item(ident: str, req: UpdateItemModel = Body(...)):
         return "YEEEH"
     return "NOOO"
 
-@router.delete("/{ident}", response_description="deleted")
-async def delete_item(ident: str):
+@router.delete("/{ident}", response_description="Marked Item for subsequent deletion")
+async def delete_item(ident: str, current_user: UserSchema = Depends(get_current_user)):
+    item = await ItemSchema.retrieve_single_id(ident)
     await ItemSchema.delete(ident)
-    return "SUS"
+    await delete_item_remote(item, current_user)
+    return Response(content="", status_code=204)

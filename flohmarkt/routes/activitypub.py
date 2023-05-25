@@ -197,6 +197,10 @@ async def inbox_process_create(req: Request, msg: dict):
 
     return Response(content="0", status_code=202)
 
+async def inbox_process_delete(req: Request, msg: dict):
+    # TODO implement
+    print(msg)
+    
 async def inbox_process_follow(req : Request, msg: dict):
     """
     this is where instance follows are being handled
@@ -250,6 +254,8 @@ async def inbox(req : Request, msg : dict = Body(...) ):
 
     if msg["type"] == "Create":
         return await inbox_process_create(req, msg)
+    if msg["type"] == "Delete":
+        return await inbox_process_delete(req, msg)
     elif msg["type"] == "Follow":
         return await inbox_process_follow(req, msg)
     elif msg["type"] == "Accept":
@@ -333,6 +339,42 @@ async def get_inbox_list_from_activity(data: dict):
         hosts[inbox] = 1
 
     return list(hosts.keys())
+
+async def delete_item_remote(item: ItemSchema, user: UserSchema):
+    hostname = cfg["General"]["ExternalURL"]
+    item = await item_to_delete_activity(item, user)
+    data = {
+        "@context": [
+            "https://www.w3.org/ns/activitystreams",
+            {
+                "ostatus": "http://ostatus.org#",
+                "atomUri": "ostatus:atomUri",
+            },
+        ]
+    }
+    data.update(item)
+
+    headers = {
+        "Content-Type":"application/json"
+    }
+
+    rcv_inboxes = await get_inbox_list_from_activity(data)
+
+    tasks = []
+    for rcv_inbox in rcv_inboxes:
+        if rcv_inbox.startswith(hostname):
+            continue
+
+        async def do(rcv_inbox):
+            sign("post", rcv_inbox, headers, json.dumps(data), user)
+
+            async with HttpClient().post(rcv_inbox, data=json.dumps(data), headers = headers) as resp:
+                if resp.status != 202:
+                    print ("Article has not been accepted by target system",rcv_inbox, resp.status)
+                return
+        tasks.append(do(rcv_inbox))
+    await asyncio.gather(*tasks)
+
 
 async def post_item_to_remote(item: ItemSchema, user: UserSchema):
     item = await item_to_activity(item, user)
@@ -425,6 +467,23 @@ async def item_to_note(item: ItemSchema, user: UserSchema):
                 "partOf":f"{hostname}/users/{user['id']}/items/{item['id']}/replies",
                 "items": []
             }
+        }
+    }
+
+async def item_to_delete_activity(item: ItemSchema, user: UserSchema):
+    hostname = cfg["General"]["ExternalUrl"]
+
+    return {
+        "id": f"{hostname}/users/{user['name']}/items/{item['id']}/delete",
+        "type": "Delete",
+        "actor": f"{hostname}/users/{user['name']}",
+        "to": [
+            "https://www.w3.org/ns/activitystreams#Public"
+        ],
+        "object": {
+            "id": f"{hostname}/users/{user['name']}/items/{item['id']}",
+            "type": "Tombstone",
+            "atomUri": f"{hostname}/users/{user['name']}/items/{item['id']}",
         }
     }
 

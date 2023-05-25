@@ -94,7 +94,7 @@ class ItemSchema(BaseModel):
     async def delete(ident : str):
         item = await Database.find_one({"id":ident})
         if item is not None:
-            await Database.delete_one({"id":ident})
+            await Database.delete({"id":ident})
             return True
 
 

@@ -1,4 +1,4 @@
-import { fetchJSON, postJSON } from "./utils.js";
+import { fetchJSON, postJSON, deleteCall } from "./utils.js";
 import { createItem } from "./create/item.js";
 import { createElement } from "./create/element.js";
 import { createImage } from "./create/image.js";
@@ -16,6 +16,10 @@ const itemFragment = document.createDocumentFragment();
 itemFragment.appendChild(createItem(item, user.name));
 const itemOperationContainer = createElement('div',null, '');
 const deleteButton = createElement('button', null, 'Delete');
+deleteButton.addEventListener('click', async event=> {
+    await deleteCall('/api/v1/item/' + item.id);
+    window.location.pathname = '/~' + user.name;
+});
 const reportButton = createElement('button', null, 'Report');
 itemOperationContainer.appendChild(deleteButton);
 itemOperationContainer.appendChild(reportButton);

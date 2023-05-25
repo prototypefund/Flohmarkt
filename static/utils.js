@@ -35,6 +35,16 @@ export async function postJSON(url, payload) {
     return await response.json();
 }
 
+export async function deleteCall(url) {
+    const response = await window.fetch(url, {
+        headers: {
+            'Authorization': 'Bearer ' + window.sessionStorage.getItem('token')
+        },
+        method: 'delete'
+    })
+    .catch(error => console.error(error));
+}
+
 export async function putJSON(url, payload) {
     const response = await window.fetch(url, {
         headers: {
