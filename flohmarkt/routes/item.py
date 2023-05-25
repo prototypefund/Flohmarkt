@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Body, Depends, Request
+from fastapi import APIRouter, Body, Depends, Request, HTTPException
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import Response
 
@@ -62,6 +62,11 @@ async def update_item(ident: str, req: UpdateItemModel = Body(...)):
 @router.delete("/{ident}", response_description="Marked Item for subsequent deletion")
 async def delete_item(ident: str, current_user: UserSchema = Depends(get_current_user)):
     item = await ItemSchema.retrieve_single_id(ident)
+
+    if item["user"] != current_user["id"]:
+        if not current_user["admin"] and not current_user["moderator"]:
+            raise HTTPException(status_code=403, detail="Only owners, admins or moderators may delete item")
+
     await ItemSchema.delete(ident)
     await delete_item_remote(item, current_user)
     return Response(content="", status_code=204)
