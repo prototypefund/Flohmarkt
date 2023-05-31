@@ -4,6 +4,7 @@ from fastapi import APIRouter, Body, Depends, Request, HTTPException
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import Response
 
+from flohmarkt.ratelimit import limiter
 from flohmarkt.models.user import UserSchema
 from flohmarkt.models.item import ItemSchema, UpdateItemModel
 from flohmarkt.models.conversation import ConversationSchema
@@ -14,6 +15,7 @@ from flohmarkt.routes.conversation import get_last_message, convert_to_activityp
 router = APIRouter()
 
 @router.post("/", response_description="Added")
+@limiter.limit("6/minute")
 async def add_item(request: Request, item: ItemSchema = Body(...), 
                    current_user: UserSchema = Depends(get_current_user)):
     item = jsonable_encoder(item)

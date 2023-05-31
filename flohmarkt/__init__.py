@@ -6,6 +6,10 @@ from fastapi import FastAPI, Request, Response, Depends, Form, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+
+from flohmarkt.ratelimit import limiter
 from flohmarkt.config import cfg
 from flohmarkt.routes.activitypub import get_item_activity
 from flohmarkt.models.user import UserSchema
@@ -24,6 +28,8 @@ from flohmarkt.http import HttpClient
 templates = Jinja2Templates(directory="templates")
 
 app = FastAPI()
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 api_prefix = "/api/v1"
@@ -36,6 +42,7 @@ app.include_router(auth_router, tags=["Auth"], prefix="")
 app.include_router(webfinger_router, tags=["Webfinger"], prefix="")
 app.include_router(activitypub_router, tags=["Activitypub"], prefix="")
 app.include_router(conversation_router, tags=["Conversation"], prefix=api_prefix+"/conversation")
+
 
 @app.on_event("startup")
 async def ini():
