@@ -28,9 +28,9 @@ itemFragment.appendChild(itemOperationContainer);
 const conversationsFragment = document.createDocumentFragment();
 const conversationIndicatorContainer = createElement('div',null, '');
 const conversationFormContainer = createElement('form',null, '');
-const sendButton = createElement('button', null, '');
+const sendButton = createElement('button', null, 'Send');
+const assignButton = createElement('button', null, 'Assign');
 var current_conversation = "";
-sendButton.innerHTML="Send";
 sendButton.addEventListener('click', event => {
     event.preventDefault();
 
@@ -44,10 +44,23 @@ sendButton.addEventListener('click', event => {
 	//console.log(data);
     });
 });
+assignButton.addEventListener('click', event=> {
+    event.preventDefault();
+    const formData = new FormData(conversationFormContainer);
+    postJSON("/api/v1/item/"+item.id+"/give", {
+        text: formData.get('content'),
+	conversation_id :  current_conversation,
+	item_id :  item.id
+    })
+    .then(async data => {
+	console.log(data);
+    });
+});
 const textArea = createElement('textarea', null, '');
 textArea.name="content";
 conversationFormContainer.appendChild(textArea);
 conversationFormContainer.appendChild(sendButton);
+conversationFormContainer.appendChild(assignButton);
 
 const isCurrentUser = message => {
     const token = JSON.parse(window.sessionStorage.getItem('parsedToken'));
