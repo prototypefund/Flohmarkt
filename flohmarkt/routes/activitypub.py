@@ -160,7 +160,10 @@ async def inbox_process_create(req: Request, msg: dict):
         raise HTTPException(status_code=302, detail="Already exists")
 
     if "https://www.w3.org/ns/activitystreams#Public" in msg["to"]:
-        return await create_new_item(req, msg)
+        if "object" in msg and "inReplyTo" in msg["object"]:
+            pass # print("not allowed to post publicly to item")
+        else:
+            return await create_new_item(req, msg)
 
     if len(msg["to"]) != 1:
         raise HTTPException(status_code=400, detail="Can only accept private messages to 1 user")
