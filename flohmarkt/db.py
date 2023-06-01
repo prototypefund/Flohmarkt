@@ -73,7 +73,6 @@ class Database:
         except Exception as e:
             raise(e)
 
-
     @classmethod
     async def find_one(cls, o: dict):
         res = await cls.find(o)
@@ -83,3 +82,27 @@ class Database:
             return res[0]
         else:
             return None
+
+    @classmethod
+    async def view(cls, ddoc, view, key:str=None, group_level:int=None, reduce:bool=None):
+        url = cfg["Database"]["Server"]+f"flohmarkt/_design/{ddoc}/_view/{view}?"
+        if key is not None:
+            url += f"key=%22{key}%22&"
+        if group_level is not None:
+            url += f"group_level={group_level}&"
+        if reduce is not None:
+            if reduce:
+                url += "reduce=true&"
+            else:
+                url += "reduce=false&"
+        try:
+            async with HttpClient().get(url, headers={"Content-type": "application/json"}) as resp:
+                res = await resp.json()
+                if resp.status == 400:
+                    print(res)
+                else:
+                    return res['rows']
+        except asyncio.exceptions.TimeoutError:
+            raise Exception("HTTP TIMEOUT DATABASE")
+        except Exception as e:
+            raise(e)
