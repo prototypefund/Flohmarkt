@@ -57,6 +57,16 @@ class ItemSchema(BaseModel):
         return await Database.find({"type":"item","user":userid})
 
     @staticmethod
+    async def retrieve_most_contested()->List[dict]:
+        item_ids = await Database.view("n_conversations_per_item", "conversations-per-item-index", group_level=1)
+        item_ids = sorted(item_ids, key=lambda x: x['value'], reverse=True)
+        items = []
+        for item_id in item_ids:
+            items.append(await ItemSchema.retrieve_single_id(item_id['key']))
+
+        return items
+
+    @staticmethod
     async def search(search:str)->dict:
         found_by_name = await Database.find({"type":"item", "name": {"$regex":search}},[{"creation_date":"desc"}])
         found_by_description = await Database.find({"type":"item", "description": {"$regex":search}},[{"creation_date":"desc"}])

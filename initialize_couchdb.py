@@ -110,6 +110,23 @@ req.headers = {
 }
 res = urllib.request.urlopen(req, timeout=10)
 
+print("Trying to add conversations-per-item view")
+req = PutRequest(f"{db_url.scheme}://{hostname}/flohmarkt/_design/n_conversations_per_item")
+req.data = json.dumps({
+    "_id": "_design/n_conversations_per_item",
+    "views": {
+        "conversations-per-item-index": {
+            "map": "function (doc) {\n  if (doc.type == \"conversation\") {\n    emit(doc.item_id, 1);\n  }\n}",
+            "reduce": "_count"
+        }
+    },
+    "language": "javascript"
+}).encode('utf-8')
+req.headers = {
+    "Content-type": "application/json",
+    "Authorization": "Basic "+credentials
+}
+res = urllib.request.urlopen(req, timeout=10)
 
 print("Trying to add instance settigs")
 req = PutRequest(f"{db_url.scheme}://{hostname}/flohmarkt/instance_settings")

@@ -32,9 +32,7 @@ async def get_items():
 #TODO: implement
 @router.get("/most_contested", response_description="All items")
 async def get_items():
-    #items = await ItemSchema.retrieve()
-    #TODO: implement
-    return []
+    return await ItemSchema.retrieve_most_contested()
 
 @router.get("/newest", response_description="Newest items")
 async def get_items():
