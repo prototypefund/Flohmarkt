@@ -151,6 +151,8 @@ async def create_message(item_id: str, msg: dict = Body(...), current_user: User
 
     await post_message_remote(message, current_user)
 
+    return conversation
+
 @router.delete("/{ident}", response_description="deleted")
 async def delete_user(ident: str):
     await UserSchema.delete(ident)

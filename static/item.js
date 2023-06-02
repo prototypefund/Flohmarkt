@@ -45,7 +45,8 @@ sendButton.addEventListener('click', event => {
 	item_id :  item.id
     })
     .then(async data => {
-	//console.log(data);
+        const messagesContainer = createConversation(data);
+	createMessage(messagesContainer, data["messages"].at(-1));
     });
 });
 assignButton.addEventListener('click', event=> {
@@ -76,13 +77,17 @@ const isCurrentUser = message => {
     return message.attributedTo.endsWith("/"+token.username);
 };
 
+const conversationContainers = {};
+
 const conversationLoginHintContainer = createElement('div',null, '');
 const conversationLoginHintText = createElement('p',null, '');
 conversationLoginHintText.innerHTML = 'To participate in this conversation please <a href="/login">log in</a> or <a href="/register">create an account</a>.';
 conversationLoginHintContainer.appendChild(conversationLoginHintText);
 
-const conversationContainer = createElement('div',null, '');
-conversations.forEach(conversation => {
+const createConversation = function(conversation) {
+    if (conversation.id in conversationContainers) {
+        return conversationContainers[conversation.id];
+    }
     const indicator = createElement('a', null, conversation.remote_user);
     indicator.name = conversation.id;
     indicator.onclick = (t) => {
@@ -97,21 +102,32 @@ conversations.forEach(conversation => {
     };
     const conversationMessagesContainer = createElement('div', null, "");
     conversationIndicatorContainer.appendChild(indicator);
-    const messages = "messages" in conversation ? conversation.messages : [];
-    const token = JSON.parse(window.sessionStorage.getItem('parsedToken'));
-    messages.forEach(message=> {
-        const messageElement = createElement('p', null, '');
-        messageElement.innerHTML = message.content;
-        messageElement.classList.add("message");
-        const cssclass = isCurrentUser(message) ? "message_me" : "message_you";
-        messageElement.classList.add(cssclass);
-        conversationMessagesContainer.appendChild(messageElement);
-    });
     conversationMessagesContainer.id = conversation.id;
     conversationMessagesContainer.style.display = "none";
     conversationMessagesContainer.classList.add('message_container');
     conversationContainer.appendChild(conversationMessagesContainer);
+    conversationContainers[conversation.id] = conversationMessagesContainer;
+    return conversationMessagesContainer;
+}
+
+const createMessage = function(container, message) {
+    const messageElement = createElement('p', null, '');
+    messageElement.innerHTML = message.content;
+    messageElement.classList.add("message");
+    const cssclass = isCurrentUser(message) ? "message_me" : "message_you";
+    messageElement.classList.add(cssclass);
+    container.appendChild(messageElement);
+}
+
+const conversationContainer = createElement('div',null, '');
+conversations.forEach(conversation => {
+    const container = createConversation(conversation);
+    const messages = "messages" in conversation ? conversation.messages : [];
+    messages.forEach(message=> {
+	    createMessage(container, message);
+    });
 });
+
 conversationsFragment.appendChild(conversationIndicatorContainer);
 conversationsFragment.appendChild(conversationContainer);
 if (token !== null) {
