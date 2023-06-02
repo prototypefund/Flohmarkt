@@ -13,6 +13,7 @@ from flohmarkt.ratelimit import limiter
 from flohmarkt.config import cfg
 from flohmarkt.routes.activitypub import get_item_activity
 from flohmarkt.models.user import UserSchema
+from flohmarkt.models.item import ItemSchema
 from flohmarkt.models.instance_settings import InstanceSettingsSchema
 from flohmarkt.routes.item import router as item_router
 from flohmarkt.routes.user import router as user_router
@@ -80,7 +81,9 @@ async def other(request: Request, user: str, item: str):
         item = await get_item_activity(item, user)
         item = json.dumps(item)
         return Response(content=item, media_type="application/activity+json, application/ld+json")
-    return templates.TemplateResponse("item.html", {"request": request, "user": user, "item": item})
+    else:
+        item = await ItemSchema.retrieve_single_id(item)
+        return templates.TemplateResponse("item.html", {"request": request, "user": user, "item": item})
 
 @app.get("/~{user}")
 async def other(request: Request, user: str):
