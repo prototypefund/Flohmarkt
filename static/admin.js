@@ -17,9 +17,19 @@ usersFragment.appendChild(menuMod);
 const menuControls = createElement('div', null, 'Controls');
 usersFragment.appendChild(menuControls);
 
+const createAvatar = function(user) {
+    if (user.avatar.startsWith("http")) {
+        return createImage(user.avatar, user.name, 'avatar circle');
+    } else if (user.avatar == null) {
+        return createImage("/static/img/user.svg", user.name, 'avatar circle');
+    } else {
+        return createImage("/api/v1/image/"+user.avatar, user.name, 'avatar circle');
+    }
+}
+
 users.forEach(user => {
     const userContainer = createElement('div', 'd-flex');
-    userContainer.appendChild(createImage(user.avatar || 'user.svg', user.name, 'avatar circle'));
+    userContainer.appendChild(createAvatar(user));
     userContainer.appendChild(createElement('div', null, user.name));
     usersFragment.appendChild(userContainer);
     
