@@ -1,3 +1,10 @@
 .avatar {
     vertical-align: middle;
+    height: 100px;
+    width: 100px;
+}
+.small_avatar {
+    vertical-align: middle;
+    height: 32px;
+    width: 32px;
 }

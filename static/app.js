@@ -1,4 +1,4 @@
-import { createImage } from "./create/image.js";
+import { createSmallAvatar } from "./create/avatar.js";
 
 const showElements = [];
 const token = window.sessionStorage.getItem('token');
@@ -10,7 +10,7 @@ if (token != undefined && token != null && typeof(token) === 'string') {
     detailsListItem.querySelector('.details-menu .l-profile').href = '/~' + username;
     detailsListItem.querySelector('.details-menu .l-site-admin').href = '/admin';
     const summaryElement = detailsListItem.querySelector('summary');
-    summaryElement.prepend(createImage(parsedToken.avatar || 'user.svg', username, 'avatar circle'));
+    summaryElement.prepend(createSmallAvatar(parsedToken));
 
     showElements.push(detailsListItem);
     showElements.push(document.getElementById('new-list-item'));

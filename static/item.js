@@ -2,6 +2,7 @@ import { fetchJSON, postJSON, deleteCall } from "./utils.js";
 import { createItem } from "./create/item.js";
 import { createElement } from "./create/element.js";
 import { createImage } from "./create/image.js";
+import { createAvatar,createSmallAvatar } from "./create/avatar.js";
 
 const item = await fetchJSON('item/' + window.location.pathname.replace(/^.+?[/]/, ''));
 const token = JSON.parse(window.sessionStorage.getItem('parsedToken'));
@@ -11,6 +12,9 @@ if (token !== null) {
     conversations = await fetchJSON('conversation/by_item/' + window.location.pathname.replace(/^.+?[/]/, ''));
 }
 const user = await fetchJSON('user/' + item.user);
+
+const heading = document.getElementById('heading');
+heading.prepend(createAvatar(user));
 
 const itemFragment = document.createDocumentFragment();
 itemFragment.appendChild(createItem(item, user.name));
