@@ -100,7 +100,7 @@ class UserSchema(BaseModel):
             user.update(data)
         if user is not None:
             updated = await Database.update(
-                    ident, data
+                    ident, user
             )
             if updated is not None:
                 return True
