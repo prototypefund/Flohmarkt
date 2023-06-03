@@ -126,7 +126,13 @@ req.headers = {
     "Content-type": "application/json",
     "Authorization": "Basic "+credentials
 }
-res = urllib.request.urlopen(req, timeout=10)
+try:
+    res = urllib.request.urlopen(req, timeout=10)
+except urllib.error.HTTPError as e:
+    if "409" in str(e):
+        print ("User flohmarkt exists. skipping")
+    else:
+        print(e)
 
 print("Trying to add instance settigs")
 req = PutRequest(f"{db_url.scheme}://{hostname}/flohmarkt/instance_settings")
