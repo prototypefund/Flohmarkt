@@ -200,6 +200,48 @@ async def inbox_process_create(req: Request, msg: dict):
 
     return Response(content="0", status_code=202)
 
+async def inbox_process_update(req: Request, msg: dict):
+    hostname = cfg["General"]["ExternalURL"]
+    if msg["id"].startswith(hostname):
+        raise HTTPException(status_code=302, detail="Already exists")
+
+    if len(msg["to"]) != 1:
+        raise HTTPException(status_code=400, detail="Can only accept private messages to 1 user")
+
+    username = msg["to"][0].replace(f"{hostname}/users/","")
+    user = await UserSchema.retrieve_single_name(username)
+
+    if user is None:
+        raise HTTPException(status_code=404, detail="Targeted user not found")
+
+    if f"{hostname}/users/{username}/items/" in msg["object"]["inReplyTo"]:
+        item_id = msg["object"]["inReplyTo"].replace(
+            f"{hostname}/users/{username}/items/", ""
+        )
+        item = await ItemSchema.retrieve_single_id(item_id)
+        if item is None:
+            raise HTTPException(status_code=404, detail="Targeted item not found")
+        conversation = await ConversationSchema.retrieve_for_item_remote_user(item_id, msg["actor"])
+    else:
+        conversation = await ConversationSchema.retrieve_for_message_id(msg["object"]["inReplyTo"])
+
+    if conversation is None:
+        raise HTTPException(status_code=404, detail="Trying to update a non-existing conversation")
+
+    found = False
+    for message in conversation["messages"]:
+        if message["id"] == msg["object"]["id"]:
+            message["overridden"] = found = True
+
+    if not found:
+        raise HTTPException(status_code=404, detail="Trying to update a non-existing message")
+
+    conversation["messages"].append(msg["object"])
+
+    await ConversationSchema.update(conversation['id'], conversation)
+
+    return Response(content="0", status_code=202)
+
 async def inbox_process_delete(req: Request, msg: dict):
     parsed_actor = urlparse(msg["actor"])
     item_id = msg["object"]["id"].split("/")[-1]
@@ -266,7 +308,9 @@ async def inbox(req : Request, msg : dict = Body(...) ):
 
     if msg["type"] == "Create":
         return await inbox_process_create(req, msg)
-    if msg["type"] == "Delete":
+    elif msg["type"] == "Update":
+        return await inbox_process_update(req, msg)
+    elif msg["type"] == "Delete":
         return await inbox_process_delete(req, msg)
     elif msg["type"] == "Follow":
         return await inbox_process_follow(req, msg)

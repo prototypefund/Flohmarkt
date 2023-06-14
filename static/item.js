@@ -116,6 +116,9 @@ const createMessage = function(container, message) {
     messageElement.classList.add("message");
     const cssclass = isCurrentUser(message) ? "message_me" : "message_you";
     messageElement.classList.add(cssclass);
+    if ("overridden" in message) {
+	messageElement.classList.add("message_overridden");
+    }
     container.appendChild(messageElement);
 }
 

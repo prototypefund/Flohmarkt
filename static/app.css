@@ -545,6 +545,10 @@ blockquote footer {
     padding: 10px;
 }
 
+.message_overridden {
+    text-decoration: line-through;
+}
+
 .message_me {
     background-color: var(--color-accent);
     text-align:right;
