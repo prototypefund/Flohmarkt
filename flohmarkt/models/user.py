@@ -29,6 +29,7 @@ class UserSchema(BaseModel):
     activation_code : str = Field(...)
     followers : dict[str, FollowSchema] = {}
     role : str = Field(...)
+    remote_url : Optional[str] = None
     
     class Config: 
         schema_extra = {
@@ -79,6 +80,12 @@ class UserSchema(BaseModel):
     @staticmethod
     async def retrieve_single_name(name: str)->dict:
         user = await Database.find_one({"type":"user", "name":name})
+        if user is not None:
+            return user
+
+    @staticmethod
+    async def retrieve_single_remote_url(remote_url: str)->dict:
+        user = await Database.find_one({"type":"user", "remote_url":remote_url})
         if user is not None:
             return user
 
