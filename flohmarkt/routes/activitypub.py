@@ -110,6 +110,17 @@ async def replicate_user(user_url: str) -> str:
         if user is not None:
             return user
 
+        avatar = None
+        if "icon" in userinfo:
+            async with HttpClient().get(userinfo["icon"]["url"]) as resp:
+                image = await resp.read()
+
+                avatar = str(uuid.uuid4())
+
+                imagefile = open(os.path.join(cfg["General"]["ImagePath"], avatar+".jpg"), "wb")
+                imagefile.write(image)
+                imagefile.close()
+
         new_user = {
             "id": ident,
             "name": username,
@@ -118,12 +129,11 @@ async def replicate_user(user_url: str) -> str:
             "moderator": False,
             "active": False,
             "activation_code": "-",
-            "avatar":None,
+            "avatar":avatar,
+            "remote_url": user_url,
         }
         await UserSchema.add(new_user)
         return new_user
-
-
 
 async def create_new_item(req: Request, msg: dict):
     hostname = cfg["General"]["ExternalURL"]
