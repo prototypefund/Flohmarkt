@@ -54,6 +54,8 @@ async def _(request: Request,
                 password:str=Form(),
                 ):
 
+    hostname = cfg["General"]["ExternalURL"]
+
     email = email.replace(" ","+")
 
     if "@" in username:
@@ -86,7 +88,8 @@ async def _(request: Request,
         "active": False,
         "activation_code": str(uuid.uuid4()),
         "avatar":None,
-        "role":"User"
+        "role":"User",
+        "remote_url": f"{hostname}/users/{username}"
     }
 
     new_user = await UserSchema.add(new_user)
