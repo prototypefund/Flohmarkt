@@ -765,7 +765,7 @@ async def user(name: str):
     username = user["name"]
     public_key = user.get("public_key", "")
     hostname = cfg["General"]["ExternalURL"]
-    return {
+    ret = {
       "@context": [
         "https://www.w3.org/ns/activitystreams",
         "https://w3id.org/security/v1",
@@ -848,4 +848,12 @@ async def user(name: str):
         "sharedInbox": f"{hostname}/inbox"
       }
     }
+    if user["avatar"] is not None:
+      ret["icon"] = {
+        "type":"Image",
+        "mediaType": "image/jpeg",
+        "url": f"{hostname}/api/v1/image/{user['avatar']}"
+      }
+
+    return ret
 
