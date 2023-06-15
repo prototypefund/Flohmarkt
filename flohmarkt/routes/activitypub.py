@@ -325,8 +325,6 @@ async def inbox_process_reject(req : Request, msg: dict):
 async def inbox(req : Request, msg : dict = Body(...) ):
     if not await verify(req):
         raise HTTPException(status_code=401, detail="request signature could not be validated")
-    else:
-        print("Valid signature")
 
     if msg["type"] == "Create":
         return await inbox_process_create(req, msg)
