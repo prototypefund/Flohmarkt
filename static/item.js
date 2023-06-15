@@ -7,11 +7,19 @@ import { createAvatar,createSmallAvatar } from "./create/avatar.js";
 const item = await fetchJSON('item/' + window.location.pathname.replace(/^.+?[/]/, ''));
 const token = JSON.parse(window.sessionStorage.getItem('parsedToken'));
 var conversations = [];
-console.log(token);
 if (token !== null) {
     conversations = await fetchJSON('conversation/by_item/' + window.location.pathname.replace(/^.+?[/]/, ''));
 }
 const user = await fetchJSON('user/' + item.user);
+const conversation_users = {};
+
+for (const conversation in conversations) {
+    const c = conversations[conversation];
+    const conv_user = await fetchJSON('user/by_remote/?url='+c.remote_user);
+    if ("avatar" in user) {
+	conversation_users[c.remote_user] = conv_user;
+    }
+}
 
 const heading = document.getElementById('heading');
 heading.prepend(createAvatar(user));
@@ -88,7 +96,19 @@ const createConversation = function(conversation) {
     if (conversation.id in conversationContainers) {
         return conversationContainers[conversation.id];
     }
-    const indicator = createElement('a', null, conversation.remote_user);
+    const indicator = createElement('a', null, '');
+    if (conversation.remote_user in conversation_users) {
+	const av = createSmallAvatar(conversation_users[conversation.remote_user]);
+	indicator.appendChild(av);
+    } else {
+	const av = createElement('div', null, '');
+	av.style.height="100px";		
+	av.style.width="100px";		
+	av.style.display="inline-block";		
+	av.style.backgroundColor="crimson";		
+	indicator.appendChild(av);
+    }
+
     indicator.name = conversation.id;
     indicator.onclick = (t) => {
         const mcs = document.getElementsByClassName('message_container');
