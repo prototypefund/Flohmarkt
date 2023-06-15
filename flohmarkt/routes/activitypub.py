@@ -246,14 +246,26 @@ async def inbox_process_delete(req: Request, msg: dict):
     parsed_actor = urlparse(msg["actor"])
     item_id = msg["object"]["id"].split("/")[-1]
     item = await ItemSchema.retrieve_single_id(item_id)
-    username = parsed_actor.path.split("/")[-1]+"@"+parsed_actor.netloc
-    user = await UserSchema.retrieve_single_name(username)
 
-    if user["id"] != item["user"]:
-        raise HTTPException(status_code=403, detail="Not allowed to delete other users items")
+    if item is not None:
+        # Try to delete item
+        username = parsed_actor.path.split("/")[-1]+"@"+parsed_actor.netloc
+        user = await UserSchema.retrieve_single_name(username)
 
-    await ItemSchema.delete(item["id"])
-    return Response(content="", status_code=204)
+        if user["id"] != item["user"]:
+            raise HTTPException(status_code=403, detail="Not allowed to delete other users items")
+
+        await ItemSchema.delete(item["id"])
+        return Response(content="", status_code=204)
+    else:
+        # Try to determine message
+        conv = await ConversationSchema.retrieve_for_message_id(msg["object"]["id"])
+        for message in conv["messages"]:
+            if message["id"] == msg["object"]["id"]:
+                message["overridden"] = True
+
+        await ConversationSchema.update(conv['id'], conv)
+
     
 async def inbox_process_follow(req : Request, msg: dict):
     """
