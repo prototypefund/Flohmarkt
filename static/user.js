@@ -3,6 +3,7 @@ import { createImg } from "./create/img.js";
 import { createSVG } from "./create/svg.js";
 import { createItem } from "./create/item.js";
 import { createElement } from "./create/element.js";
+import { updateAvatar } from "./app.js";
 
 const MAX_WIDTH = 128,
       MAX_HEIGHT = 128;
@@ -45,8 +46,9 @@ createBtn.addEventListener('click', event => {
         avatar: formData.get('avatar'),
     })
     .then(async data => {
-        const user = await fetchJSON('user/' + data.user);
-        window.location.pathname = '/~' + user.name + '/' + data.id;
+        const new_user = await fetchJSON('user/' + user.id);
+	updateAvatar(new_user.avatar);
+	window.location.pathname = '/~' + new_user.name;
     });
 });
 
