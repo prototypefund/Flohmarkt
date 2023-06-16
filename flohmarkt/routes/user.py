@@ -36,8 +36,8 @@ async def update_user(ident: str, req: dict = Body(...),current_user : UserSchem
     #req = {k: v for k,v in req.dict().users() if v is not None}
     updated_user = await UserSchema.update(ident, req)
     if updated_user:
-        return "YEEEH"
-    return "NOOO"
+        return updated_user
+    raise HTTPException(status_code=500, detail="Something went wrong :(")
 
 @router.delete("/{ident}", response_description="deleted")
 async def delete_user(ident: str):
