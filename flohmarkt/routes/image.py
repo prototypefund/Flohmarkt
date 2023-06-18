@@ -15,8 +15,9 @@ router = APIRouter()
 @router.post("/", response_description="Image upload")
 async def upload_image(current_user : UserSchema = Depends(get_current_user), image: bytes = Body(...)):
     users = await UserSchema.retrieve()
-    image = image.replace(b"data:image/jpeg;base64,",b"")
-    image = base64.b64decode(image)
+    if image.startswith(b"data:image/jpeg;base64,"):
+        image = image.replace(b"data:image/jpeg;base64,",b"")
+        image = base64.b64decode(image)
 
     image_id = str(uuid.uuid4())
 
