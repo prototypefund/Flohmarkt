@@ -110,6 +110,60 @@ req.headers = {
 }
 res = urllib.request.urlopen(req, timeout=10)
 
+print("Trying to add name search index")
+req = urllib.request.Request(f"{db_url.scheme}://{hostname}/flohmarkt/_index")
+req.data = json.dumps({
+    "ddoc": "text-index",
+    "index": {
+        "fields": [{
+             "name":"asc"
+        }]
+    },
+    "name": "name-index",
+    "type": "json"
+}).encode('utf-8')
+req.headers = {
+    "Content-type": "application/json",
+    "Authorization": "Basic "+credentials
+}
+res = urllib.request.urlopen(req, timeout=10)
+
+print("Trying to add name search index")
+req = urllib.request.Request(f"{db_url.scheme}://{hostname}/flohmarkt/_index")
+req.data = json.dumps({
+    "ddoc": "text-index",
+    "index": {
+        "fields": [{
+             "description":"asc"
+        }]
+    },
+    "name": "description-index",
+    "type": "json"
+}).encode('utf-8')
+req.headers = {
+    "Content-type": "application/json",
+    "Authorization": "Basic "+credentials
+}
+res = urllib.request.urlopen(req, timeout=10)
+
+print("Trying to add name search index")
+req = urllib.request.Request(f"{db_url.scheme}://{hostname}/flohmarkt/_index")
+req.data = json.dumps({
+    "ddoc": "text-index",
+    "index": {
+        "fields": [{
+             "item_id":"asc"
+        }]
+    },
+    "name": "item_id-index",
+    "type": "json"
+}).encode('utf-8')
+req.headers = {
+    "Content-type": "application/json",
+    "Authorization": "Basic "+credentials
+}
+res = urllib.request.urlopen(req, timeout=10)
+
 print("Trying to add conversations-per-item view")
 req = PutRequest(f"{db_url.scheme}://{hostname}/flohmarkt/_design/n_conversations_per_item")
 req.data = json.dumps({
