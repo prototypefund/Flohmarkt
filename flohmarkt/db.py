@@ -75,6 +75,18 @@ class Database:
 
     @classmethod
     async def find_one(cls, o: dict):
+        if len(o.keys()) == 1 and list(o.keys())[0] in ("id","_id"):
+            if "id" in o:
+                o["_id"] = o["id"]
+                del(o["id"])
+            url = cfg["Database"]["Server"]+f"flohmarkt/{o['_id']}"
+            async with HttpClient().get(url, headers = {"Content-type": "application/json"}) as resp:
+                res = await resp.json()
+                if resp.status == 404:
+                    print(res)
+                    return
+                else:
+                    return res
         res = await cls.find(o)
         if len(res) > 1:
             raise Exception("More than one object")
