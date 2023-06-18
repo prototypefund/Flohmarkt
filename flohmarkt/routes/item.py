@@ -20,7 +20,7 @@ async def add_item(request: Request, item: ItemSchema = Body(...),
                    current_user: UserSchema = Depends(get_current_user)):
     item = jsonable_encoder(item)
     item["user"] = current_user["id"]
-    new_item = await ItemSchema.add(item)
+    new_item = await ItemSchema.add(item, current_user)
     await post_item_to_remote(new_item, current_user)
     return new_item
 

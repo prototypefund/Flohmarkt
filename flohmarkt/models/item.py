@@ -17,6 +17,7 @@ class ItemSchema(BaseModel):
     price : str = Field(...)
     images : List[str] = Field(...)
     description : str = Field(...)
+    url : Optional[str]
     conversations : Optional[set]
     creation_date : Optional[datetime.datetime]
     
@@ -36,12 +37,15 @@ class ItemSchema(BaseModel):
         return items
 
     @staticmethod
-    async def add(data: dict)->dict:
+    async def add(data: dict, user:dict=None)->dict:
         data["type"] = "item"
         if not "id" in data:
             data["id"] = str(uuid.uuid4())
         if not "creation_date" in data or data["creation_date"] is None:
             data["creation_date"] = datetime.datetime.now()
+
+        if user is not None:
+            data["url"] = "/~"+user["name"]+"/"+data["id"]
         ins = await Database.create(data)
         new = await Database.find_one({"id":ins})
         return new
