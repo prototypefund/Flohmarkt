@@ -6,11 +6,12 @@
 .grid__newest,
 .grid__contested,
 .grid__user-items,
-.grid__results,
 .grid__images {
     grid-template-columns: repeat(2, 1fr);
 }
-
+.grid__results{
+    grid-template-columns: repeat(4, 1fr);
+}
 .grid__images:not(:empty) {
     /*height: 256px;
     overflow-y: auto;*/
