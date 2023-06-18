@@ -10,15 +10,13 @@ const gridNewest = document.querySelector('.grid__newest'),
       gridContested = document.querySelector('.grid__contested');
 
 itemsNewest.forEach(async item => {
-    const user = await fetchJSON('user/' + item.user);
     window.requestAnimationFrame(() => {
-        gridNewest.appendChild(createItem(item, user.name));
+        gridNewest.appendChild(createItem(item, false));
     });
 });
 
 itemsContested.forEach(async item => {
-    const user = await fetchJSON('user/' + item.user);
     window.requestAnimationFrame(() => {
-        gridContested.appendChild(createItem(item, user.name));
+        gridContested.appendChild(createItem(item, false));
     });
 });

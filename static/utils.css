@@ -1,6 +1,41 @@
 .card-img-top {
     border-top-left-radius: var(--border-radius);
     border-top-right-radius: var(--border-radius);
+    height: 200px;
+    object-fit: cover;
+}
+.card-item {
+    width: 250px;
+}
+.card-item-big {
+    width: 100%;
+}
+
+.card-item-text {
+    height:200px;
+    overflow: hidden;
+}
+.card-item-big-text {
+    overflow: hidden;
+}
+
+.galery_left,
+.galery_right {
+    position: absolute;
+    top: 100px;
+    background-color: rgba(3,3,3,0.5);
+    width:24px;
+    height:24px;
+    text-align:center;
+    vertical-align: middle;
+    z-index: 200;
+}
+
+.galery_left {
+    left: 10px;
+}
+.galery_right {
+    right: 10px;
 }
 
 .circle {
