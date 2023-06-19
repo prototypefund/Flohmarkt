@@ -38,6 +38,33 @@
     right: 10px;
 }
 
+.badge {
+    box-shadow: 1px 1px 3px #000;
+    padding-top:12px;
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    rotate: -30deg;
+    height: 50px;
+    width: 50px;
+    text-align: center;
+    vertical-align: baseline;
+}
+
+.badge_newest {
+    background-color: #dc322f;
+    font-size: 12pt;
+}
+.badge_oldest {
+    background-color: #859900;
+    font-size: 12pt;
+}
+.badge_most_contested {
+    background-color: #b58900;
+    font-size: 8pt;
+    padding-top:15px;
+}
+
 .circle {
     border-radius: 50%;
 }

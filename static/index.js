@@ -1,22 +1,47 @@
 import { fetchJSON } from "./utils.js";
 import { createItem } from "./create/item.js";
+import { createElement } from "./create/element.js";
 
-const [itemsNewest, itemsContested] = await Promise.all([
+const [itemsNewest, itemsContested, itemsOldest] = await Promise.all([
     fetchJSON('item/newest'),
-    fetchJSON('item/most_contested')
+    fetchJSON('item/most_contested'),
+    fetchJSON('item/oldest')
 ]);
 
-const gridNewest = document.querySelector('.grid__newest'),
-      gridContested = document.querySelector('.grid__contested');
+const reason_mapping = {
+    "newest": itemsNewest,
+    "most_contested": itemsContested,
+    "oldest": itemsOldest
+}
 
-itemsNewest.forEach(async item => {
-    window.requestAnimationFrame(() => {
-        gridNewest.appendChild(createItem(item, false));
+const label_mapping = {
+    "newest": "NEW!",
+    "most_contested": "POPULAR",
+    "oldest": "OLD!",
+    "zufall": "RANDOM!",
+}
+
+for (let key in reason_mapping) {
+    reason_mapping[key].forEach(async item=> {
+        item["reason"] = key;
     });
-});
+}
 
-itemsContested.forEach(async item => {
+itemsNewest.push(...itemsContested);
+itemsNewest.push(...itemsOldest);
+
+
+const shuffled = itemsNewest
+    .map(value => ({ value, sort: Math.random() }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ value }) => value)
+
+const gridResults = document.querySelector('.grid__results');
+
+shuffled.forEach(async item => {
     window.requestAnimationFrame(() => {
-        gridContested.appendChild(createItem(item, false));
+	const htmlItem = createItem(item, false);
+	htmlItem.appendChild(createElement("div", 'circle badge badge_'+item.reason, label_mapping[item.reason]));
+        gridResults.appendChild(htmlItem);
     });
 });
