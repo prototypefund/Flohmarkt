@@ -15,7 +15,7 @@ const [items, user] = await Promise.all([
 
 const itemsFragment = document.createDocumentFragment();
 items.forEach(item => {
-    itemsFragment.appendChild(createItem(item, user.name));
+    itemsFragment.appendChild(createItem(item, false));
 });
 
 const userFragment = document.createDocumentFragment();
