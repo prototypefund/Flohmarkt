@@ -25,7 +25,7 @@ const heading = document.getElementById('heading');
 heading.prepend(createAvatar(user));
 
 const itemFragment = document.createDocumentFragment();
-itemFragment.appendChild(createItem(item, user.name));
+itemFragment.appendChild(createItem(item, true));
 const itemOperationContainer = createElement('div',null, '');
 const deleteButton = createElement('button', null, 'Delete');
 deleteButton.addEventListener('click', async event=> {
