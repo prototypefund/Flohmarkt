@@ -4,6 +4,9 @@ document.getElementById('reset-btn').addEventListener('click', event => {
     event.preventDefault();
 
     const resetForm = document.getElementById('reset-form');
-    const data = postForm(resetForm);
-    console.log(data);
+    postForm(resetForm).then(data=>{
+	if (data["result"] == true) {
+	    window.location.pathname = '/reset_initiated';
+	}
+    });
 });

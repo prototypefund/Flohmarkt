@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+<script defer type="module" src="/static/resetpw.js"></script>
+{% endblock %}
+
+{% block main %}
+<section>
+    <header>
+        <h1>Reset password</h1>
+    </header>
+    <form id="resetpw-form" action="/resetpassword" method="post" type="multipart/form-data">
+	<input type="hidden" name="code" value="{{ code }}">
+        <label for="password">Password</label>
+        <input type="password" name="password" autocomplete="new-password">
+        <label for="password-repeat">Repeat password</label>
+        <input type="password" name="password-repeat" autocomplete="new-password">
+        <button type="submit" class="w-100" id="resetpw-btn" disabled>Set Password</button>
+    </form>
+</section>
+{% endblock %}

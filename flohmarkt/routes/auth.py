@@ -34,6 +34,20 @@ We wish you a pleasant stay on our backyard sale.
 Yours, {}
 """
 
+PW_RESET_MAIL = """
+
+Heyho {},
+
+you seem to have forgotten your password and asked us to reset it!
+If you did, follow this link to reset your password:
+
+{}/resetpassword/{}
+
+If you did not, please ignore this mail!
+
+Yours, {}
+"""
+
 USERNAME_BLACKLIST = [
     "instance"
 ]
@@ -116,6 +130,57 @@ async def _(request: Request,
     )
 
     return {"result": True}
+
+@router.get("/resetpassword/{code}")
+async def _(request: Request, code : str):
+    return templates.TemplateResponse("resetpw.html", {"request": request, "code": code})
+
+@router.post("/resetpassword")
+async def _(request: Request, code : str = Form(), password : str = Form()):
+    user = await UserSchema.retrieve_single_resetcode(code)
+    user["pwhash"] = crypt.crypt(password, crypt.mksalt(method=crypt.METHOD_SHA512,rounds=10000))
+    user["reset_token"] = ""
+    await UserSchema.update(user["id"], user)
+
+    return {"result": True}
+
+@router.get("/reset_initiated")
+async def _(request: Request):
+    return templates.TemplateResponse("reset_initiated.html", {"request": request})
+
+@router.get("/forgotpassword")
+async def _(request: Request):
+    return templates.TemplateResponse("reset.html", {"request": request})
+
+@router.post("/forgotpassword")
+async def _(request: Request, email: str = Form()):
+    print(email)
+    user = await UserSchema.retrieve_single_email(email)
+    if user is not None:
+        user["reset_token"] = str(uuid.uuid4())
+        await UserSchema.update(user["id"], user)
+
+        server = smtplib.SMTP(cfg["SMTP"]["Server"], int(cfg["SMTP"]["Port"]))
+
+        server.ehlo()
+        server.starttls(context=ssl_context)
+        server.ehlo()
+        server.login(cfg["SMTP"]["User"], cfg["SMTP"]["Password"])
+        text = PW_RESET_MAIL.format(
+                user["name"],
+                cfg["General"]["ExternalURL"],
+                user["reset_token"],
+                cfg["General"]["InstanceName"]
+            )
+        message = MIMEText(text.encode('utf-8'), _charset='utf-8')
+        message["Subject"] = "Password reset on {}".format(cfg["General"]["InstanceName"])
+        server.sendmail(
+            cfg["SMTP"]["From"], 
+            email, 
+            message.as_string()
+        )
+    return {"result": True}
+
 
 @router.get("/activation/{activation_code}")
 async def _(request : Request, activation_code : str):

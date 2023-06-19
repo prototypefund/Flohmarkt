@@ -27,6 +27,7 @@ class UserSchema(BaseModel):
     public_key : str = Field(...)
     moderator : bool = Field(...)
     activation_code : str = Field(...)
+    reset_token : str = ""
     followers : dict[str, FollowSchema] = {}
     role : str = Field(...)
     remote_url : Optional[str] = None
@@ -92,6 +93,12 @@ class UserSchema(BaseModel):
     @staticmethod
     async def retrieve_single_email(email: str)->dict:
         user = await Database.find_one({"type":"user", "email":email})
+        if user is not None:
+            return user
+
+    @staticmethod
+    async def retrieve_single_resetcode(email: str)->dict:
+        user = await Database.find_one({"type":"user", "reset_token":email})
         if user is not None:
             return user
 
