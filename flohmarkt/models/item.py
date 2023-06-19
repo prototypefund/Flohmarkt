@@ -84,11 +84,11 @@ class ItemSchema(BaseModel):
 
     @staticmethod
     async def retrieve_newest()->dict:
-        return await Database.find({"type":"item"},sort=[{"creation_date":"desc"}], limit=2)
+        return await Database.find({"type":"item"},sort=[{"creation_date":"desc"}], limit=10)
     
     @staticmethod
     async def retrieve_oldest()->dict:
-        return await Database.find({"type":"item"},sort=[{"creation_date":"asc"}], limit=2)
+        return await Database.find({"type":"item"},sort=[{"creation_date":"asc"}], limit=10)
 
     @staticmethod
     async def update(ident: str, data: dict):
