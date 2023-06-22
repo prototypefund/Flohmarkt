@@ -160,7 +160,7 @@ async def create_new_item(req: Request, msg: dict):
         "user": new_user["id"],
         "images": image_urls
     }
-    await ItemSchema.add(item)
+    await ItemSchema.add(item, new_user)
 
     return Response(content="0", status_code=202)
 
