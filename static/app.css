@@ -556,3 +556,20 @@ blockquote footer {
 .message_you {
     background-color: var(--color-link);
 }
+
+.tabs {
+}
+
+.tabpage {
+    border: 1px solid var(--color-accent);
+    display: none;
+}
+.tab {
+    padding: 10px;
+    text-decoration: none;
+    display: inline;
+    border: 1px solid var(--color-accent);
+    border-bottom: none;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
