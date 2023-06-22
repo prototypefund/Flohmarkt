@@ -23,14 +23,6 @@ async def get_user(ident:str):
     await UserSchema.filter(user)
     return user
 
-@router.get("/by_remote/", response_description="The url of a user avatar")
-async def get_avatar(url:str = ""):
-    user = await UserSchema.retrieve_single_remote_url(url)
-    if user is None:
-        raise HTTPException(status_code=404, detail="User is not here :(")
-    await UserSchema.filter(user)
-    return user
-
 @router.put("/{ident}", response_description="Update stuff")
 async def update_user(ident: str, req: dict = Body(...),current_user : UserSchema = Depends(get_current_user)):
     if ident != current_user["id"]:

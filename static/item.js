@@ -15,10 +15,8 @@ const conversation_users = {};
 
 for (const conversation in conversations) {
     const c = conversations[conversation];
-    const conv_user = await fetchJSON('user/by_remote/?url='+c.remote_user);
-    if ("avatar" in user) {
-	conversation_users[c.remote_user] = conv_user;
-    }
+    const conv_user = await fetchJSON('avatar/by_remote?url='+encodeURIComponent(c.remote_user));
+    conversation_users[c.remote_user] = conv_user;
 }
 
 const heading = document.getElementById('heading');
@@ -49,8 +47,8 @@ sendButton.addEventListener('click', event => {
     const formData = new FormData(conversationFormContainer);
     postJSON("/api/v1/conversation/to_item/"+item.id, {
         text: formData.get('content'),
-	conversation_id :  current_conversation,
-	item_id :  item.id
+        conversation_id :  current_conversation,
+        item_id :  item.id
     })
     .then(async data => {
         const messagesContainer = createConversation(data);
@@ -62,11 +60,11 @@ assignButton.addEventListener('click', event=> {
     const formData = new FormData(conversationFormContainer);
     postJSON("/api/v1/item/"+item.id+"/give", {
         text: formData.get('content'),
-	conversation_id :  current_conversation,
-	item_id :  item.id
+        conversation_id :  current_conversation,
+        item_id :  item.id
     })
     .then(async data => {
-	console.log(data);
+        console.log(data);
     });
 });
 const textArea = createElement('textarea', null, '');
@@ -96,19 +94,7 @@ const createConversation = function(conversation) {
     if (conversation.id in conversationContainers) {
         return conversationContainers[conversation.id];
     }
-    const indicator = createElement('a', null, '');
-    if (conversation.remote_user in conversation_users) {
-	const av = createSmallAvatar(conversation_users[conversation.remote_user]);
-	indicator.appendChild(av);
-    } else {
-	const av = createElement('div', null, '');
-	av.style.height="100px";		
-	av.style.width="100px";		
-	av.style.display="inline-block";		
-	av.style.backgroundColor="crimson";		
-	indicator.appendChild(av);
-    }
-
+    const indicator = createSmallAvatar(conversation_users[conversation.remote_user]);
     indicator.name = conversation.id;
     indicator.onclick = (t) => {
         const mcs = document.getElementsByClassName('message_container');
