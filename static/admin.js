@@ -1,28 +1,27 @@
 import { fetchJSON, postJSON } from "./utils.js";
+import { initTabs } from "./tabs.js";
 import { createElement } from "./create/element.js";
 import { createSmallAvatar } from "./create/avatar.js";
+
+initTabs();
 
 const users = await fetchJSON('user/');
 
 const instance_settings = await fetchJSON('admin/');
 
-const usersFragment = document.createDocumentFragment();
-
-const menuUsername = createElement('div', null, 'Username');
-usersFragment.appendChild(menuUsername);
-const menuAdmin = createElement('div', null, 'Admin');
-usersFragment.appendChild(menuAdmin);
-const menuMod = createElement('div', null, 'Mod');
-usersFragment.appendChild(menuMod);
-const menuControls = createElement('div', null, 'Controls');
-usersFragment.appendChild(menuControls);
+const userTable = document.getElementById('userTable');
 
 users.forEach(user => {
-    const userContainer = createElement('div', 'd-flex');
-    userContainer.appendChild(createSmallAvatar(user));
-    userContainer.appendChild(createElement('div', null, user.name));
-    usersFragment.appendChild(userContainer);
+    if (user.name == "instance") {
+        return;
+    }
+    const row = createElement('tr', '');
+    const nameCell = createElement('td', '');
+    nameCell.appendChild(createSmallAvatar(user));
+    nameCell.appendChild(createElement('span', null, user.name));
+    row.appendChild(nameCell);
     
+    const adminCell = createElement('td', '');
     const adminInput = createElement('input');
     adminInput.type = 'checkbox';
     adminInput.checked = user.admin;
@@ -30,8 +29,10 @@ users.forEach(user => {
         const response = (await fetchJSON("admin/toggle_admin/"+user.id));
         adminInput.checked = response.admin;
     });
-    usersFragment.appendChild(adminInput);
+    adminCell.appendChild(adminInput);
+    row.appendChild(adminCell);
 
+    const modCell = createElement('td', '');
     const modInput = createElement('input');
     modInput.type = 'checkbox';
     modInput.checked = user.moderator;
@@ -39,30 +40,30 @@ users.forEach(user => {
         const response = (await fetchJSON("admin/toggle_moderator/"+user.id));
         modInput.checked = response.moderator;
     });
-    usersFragment.appendChild(modInput);
+    modCell.appendChild(modInput);
+    row.appendChild(modCell);
     
+    const ctrlCell = createElement('td', '');
     const controlsContainer = createElement('div', 'd-flex');
     controlsContainer.appendChild(createElement('button', null, 'Ban'));
     controlsContainer.appendChild(createElement('button', null, 'Delete'));
-    usersFragment.appendChild(controlsContainer);
+    ctrlCell.appendChild(controlsContainer);
+    row.appendChild(ctrlCell);
+
+    userTable.appendChild(row);
 });
 
-const instanceFragment = document.createDocumentFragment();
-
-const instanceHeading = createElement('h2', null, 'Site Settings');
-instanceFragment.appendChild(instanceHeading);
-const instanceForm = createElement('form', null, '');
-const instanceRulesTextArea = createElement('textarea');
-instanceRulesTextArea.name = "instance_rules";
+const instanceForm = document.getElementById('settings_form');
+const instanceRulesTextArea = document.getElementById('instance_rules');
 instanceRulesTextArea.value = instance_settings.rules;
-const instanceAboutTextArea = createElement('textarea');
-instanceAboutTextArea.name = "instance_about";
+const instanceAboutTextArea = document.getElementById('instance_about');
 instanceAboutTextArea.value = instance_settings.about;
-const instanceRulesLabel = createElement('label', null, 'Rules');
-const instanceAboutLabel = createElement('label', null, 'About');
-instanceRulesLabel.for = "instance_rules";
-instanceAboutLabel.for = "instance_about";
-const instanceSaveButton = createElement('button', null, 'Save');
+const instanceCoordinatesInput = document.getElementById('instance_coordinates');
+instanceCoordinatesInput.value = instance_settings.coordinates;
+const instanceRangeInput = document.getElementById('instance_perimeter');
+instanceRangeInput.value = instance_settings.perimeter;
+
+const instanceSaveButton = document.getElementById('save_settings');
 instanceSaveButton.addEventListener('click', event => {
     event.preventDefault();
 
@@ -77,88 +78,77 @@ instanceSaveButton.addEventListener('click', event => {
 	// reload
     });
 });
-const instanceCoordinatesInput = createElement('input');
-instanceCoordinatesInput.name = "instance_coordinates";
-instanceCoordinatesInput.value = instance_settings.coordinates;
-const instanceRangeInput = createElement('input');
-instanceRangeInput.name = "instance_perimeter";
-instanceRangeInput.value = instance_settings.perimeter;
-const instanceCoordinatesLabel = createElement('label', null, 'Location of your Site (lat:lon e.g. 51.213:23.24)');
-const instanceRangeLabel = createElement('label', null, 'Range for your Site in km'
-);
-instanceCoordinatesLabel.for = "instance_coordinates";
-instanceRangeLabel.for = "instance_perimeter";
 
-instanceForm.appendChild(instanceCoordinatesLabel);
-instanceForm.appendChild(instanceCoordinatesInput);
-instanceForm.appendChild(instanceRangeLabel);
-instanceForm.appendChild(instanceRangeInput);
-instanceForm.appendChild(instanceRulesLabel);
-instanceForm.appendChild(instanceRulesTextArea);
-instanceForm.appendChild(instanceAboutLabel);
-instanceForm.appendChild(instanceAboutTextArea);
-instanceForm.appendChild(instanceSaveButton);
-instanceFragment.appendChild(instanceForm);
+const followingTable = document.getElementById('followingTable');
+const followerTable = document.getElementById('followerTable');
 
-const followFragment = document.createDocumentFragment();
-
-const followHeading = createElement('h2', null, 'Instance Federation');
-
-const followingHeading = createElement('h3', null, 'Following');
-const followingList = createElement('ul');
 instance_settings.following.forEach(e => {
-    const listElement = createElement('li', null, e);
+    const row = createElement('tr','');
+    const nameCell = createElement('td', null, e);
+    const commandCell = createElement('td', null, '');
     const unfollowButton = createElement('button', null, 'Unfollow');
     unfollowButton.addEventListener('click', async ve => {
         const response = await fetchJSON("admin/unfollow_instance/?url="+e).catch(error=>console.error(error));
-	listElement.remove();
+        row.remove();
     });
-    listElement.appendChild(unfollowButton);
-    followingList.appendChild(listElement);
+    commandCell.appendChild(unfollowButton);
+    row.appendChild(nameCell);
+    row.appendChild(commandCell);
+    followingTable.appendChild(row);
 });
+
 instance_settings.pending_following.forEach(e => {
-    const listElement = createElement('li', null, e);
-    const unfollowButton = createElement('button', null, 'Withdraw');
-    unfollowButton.addEventListener('click', async ve => {
+    const row = createElement('tr','');
+    const nameCell = createElement('td', null, e);
+    const commandCell = createElement('td', null, '');
+    const withdrawButton = createElement('button', null, 'Withdraw');
+    withdrawButton.addEventListener('click', async ve => {
         const response = await fetchJSON("admin/unfollow_instance/?url="+e).catch(error=>console.error(error));
-	listElement.remove();
+        row.remove();
     });
-    listElement.appendChild(unfollowButton);
-    followingList.appendChild(listElement);
+    commandCell.appendChild(withdrawButton);
+    row.appendChild(nameCell);
+    row.appendChild(commandCell);
+    followingTable.appendChild(row);
 });
-const followingInput = createElement('input');
-const followingButton = createElement('button', null, 'Follow');
+const followingInput = document.getElementById('followingInput');
+const followingButton = document.getElementById('followingButton');
 followingButton.addEventListener('click', async e =>  {
     const inp = encodeURIComponent(followingInput.value);
     const response = await fetchJSON("admin/follow_instance/?url="+inp).catch(error=>console.error(error));
-    const listElement = createElement('li', null, followingInput.value);
+    const row = createElement('tr','');
+    const nameCell = createElement('td', null, followingInput.value);
+    const commandCell = createElement('td', null, '');
     const unfollowButton = createElement('button', null, 'Withdraw');
     unfollowButton.addEventListener('click', async e => {
         const response = await fetchJSON("admin/unfollow_instance/?url="+inp).catch(error=>console.error(error));
-	listElement.remove();
+        row.remove();
     });
-    listElement.appendChild(unfollowButton);
-    followingList.appendChild(listElement);
+    commandCell.appendChild(unfollowButton);
+    row.appendChild(nameCell);
+    row.appendChild(commandCell);
+    followingTable.appendChild(row);
 });
-followFragment.append(followingHeading);
-followFragment.append(followingList);
-followFragment.append(followingInput);
-followFragment.append(followingButton);
 
-const followersHeading = createElement('h3', null, 'Followers');
-const followersList = createElement('ul');
 instance_settings.followers.forEach(e => {
-    const listElement = createElement('li', null, e);
+    const row = createElement('tr','');
+    const nameCell = createElement('td', null, e);
+    const commandCell = createElement('td', null, '');
+
     const removeButton = createElement('button', null, 'Remove');
     removeButton.addEventListener('click', async ve => {
         const response = await fetchJSON("admin/remove_instance/?url="+e).catch(error=>console.error(error));
-	listElement.remove();
+        row.remove();
     });
-    listElement.appendChild(removeButton);
-    followersList.appendChild(listElement);
+    commandCell.appendChild(removeButton);
+    row.appendChild(nameCell);
+    row.appendChild(commandCell);
+    followerTable.appendChild(row);
 });
 instance_settings.pending_followers.forEach(e => {
-    const listElement = createElement('li', null, e);
+    const row = createElement('tr','');
+    const nameCell = createElement('td', null, e);
+    const commandCell = createElement('td', null, '');
     const acceptButton = createElement('button', null, 'Accept');
     acceptButton.addEventListener('click', async ve => {
         const response = await fetchJSON("admin/accept_instance/?url="+e).catch(error=>console.error(error));
@@ -166,18 +156,11 @@ instance_settings.pending_followers.forEach(e => {
     const rejectButton = createElement('button', null, 'Reject');
     rejectButton.addEventListener('click', async ve => {
         const response = await fetchJSON("admin/reject_instance/?url="+e).catch(error=>console.error(error));
-	listElement.remove();
+        row.remove();
     });
-    listElement.appendChild(acceptButton);
-    listElement.appendChild(rejectButton);
-    followersList.appendChild(listElement);
-});
-followFragment.append(followersHeading);
-followFragment.append(followersList);
-
-const gridAdmin = document.querySelector('.grid__admin');
-window.requestAnimationFrame(() => {
-    gridAdmin.appendChild(usersFragment);
-    gridAdmin.appendChild(instanceFragment);
-    gridAdmin.appendChild(followFragment);
+    commandCell.appendChild(acceptButton);
+    commandCell.appendChild(rejectButton);
+    row.appendChild(nameCell);
+    row.appendChild(commandCell);
+    followerTable.appendChild(row);
 });

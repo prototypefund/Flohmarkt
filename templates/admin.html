@@ -6,5 +6,50 @@
 
 {% block main %}
 <h1>Admin</h1>
-<div class="grid grid__admin"></div>
+<div class="tabcontext">
+    <ul class="tabs">
+        <li class="tab" name="settings"> Settings </li>
+        <li class="tab" name="users"> Users </li>
+        <li class="tab" name="federation"> Federation </li>
+    </ul>
+    <div class="tabpage tab_default" name="settings">
+        <form id="settings_form">
+            <label for="instance_coordinates">Coordinates of your Site (lat:lon e.g. 51.213:23.24)</label>
+            <input name="instance_coordinates" id="instance_coordinates">
+            <label for="instance_perimeter">Range</label>
+            <input name="instance_perimeter" id="instance_perimeter">
+            <label for="instance_rules">Rules</label>
+            <textarea name="instance_rules" id="instance_rules"></textarea>
+            <label for="instance_about">About</label>
+            <textarea name="instance_about" id="instance_about"></textarea>
+            <button id="save_settings">Save</button>
+        </form>
+    </div>
+    <div class="tabpage" name="users">
+        <table id="userTable" style="width:100%;">
+            <thead>
+                <td style="width: 70%;">Name</td>
+                <td>Admin</td>
+                <td>Mod</td>
+                <td>Controls</td>
+            </thead>
+        </table>
+    </div>
+    <div class="tabpage" name="federation">
+        <h2>Follow new Instance</h2>
+        <input id="followingInput" style="width:80%;display:inline;" placeholder="https://some.flohmarkt.instance.nil"><button id="followingButton">Follow Instance</button>
+        <table id="followerTable" style="width: 100%">
+            <thead>
+                <td style="width: 80%;">Follower Instance</td>
+                <td></td>
+            </thead>
+        </table>
+        <table id="followingTable" style="width: 100%">
+            <thead>
+                <td style="width: 80%;">Following Instance</td>
+                <td></td>
+            </thead>
+        </table>
+    </div>
+</div>
 {% endblock %}

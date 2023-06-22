@@ -21,6 +21,3 @@
     grid-column-end: span 2;
 }
 
-.grid__admin {
-    grid-template-columns: repeat(4, 1fr);
-}
