@@ -26,7 +26,7 @@ console.log(user.name);
 if (token.username == user.name) {
     document.getElementById('profile').style.display="none";
 } else {
-    document.getElementById('form').style.display="none";
+    document.getElementById('profile-form').style.display="none";
 }
 
 const gridUserItems = document.querySelector('.grid__user-items'),
