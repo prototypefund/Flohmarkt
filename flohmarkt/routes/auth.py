@@ -12,6 +12,7 @@ from fastapi import APIRouter, Body, Request, Form, HTTPException
 from fastapi.templating import Jinja2Templates
 from fastapi.encoders import jsonable_encoder
 
+from flohmarkt.ratelimit import limiter
 from flohmarkt.config import cfg
 from flohmarkt.ssl import ssl_context
 from flohmarkt.models.user import UserSchema, UpdateUserModel
@@ -61,6 +62,7 @@ async def _(request: Request):
 async def _(request: Request):
     return templates.TemplateResponse("registered.html", {"request": request})
 
+@limiter.limit("1/minute")
 @router.post("/register")
 async def _(request: Request,
                 email:str=Form(),
@@ -152,6 +154,7 @@ async def _(request: Request):
 async def _(request: Request):
     return templates.TemplateResponse("reset.html", {"request": request})
 
+@limiter.limit("1/day")
 @router.post("/forgotpassword")
 async def _(request: Request, email: str = Form()):
     print(email)
