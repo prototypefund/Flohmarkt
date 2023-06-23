@@ -210,6 +210,8 @@ async def _(username: str = Form(), password: str = Form()):
                 "user_id": found_user["id"],
                 "username": found_user["name"],
                 "avatar": found_user["avatar"] if found_user["avatar"] != "" else None,
+                "admin": found_user["admin"],
+                "moderator": found_user["moderator"],
             },
             cfg["General"]["JwtSecret"],
             algorithm = "HS512"
