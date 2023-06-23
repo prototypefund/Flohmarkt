@@ -1,11 +1,10 @@
 import uuid
-import datetime
 
 from fastapi import APIRouter, Body, Depends, HTTPException
 from fastapi.encoders import jsonable_encoder
 
 from flohmarkt.config import cfg
-from flohmarkt.routes.activitypub import post_message_remote
+from flohmarkt.routes.activitypub import post_message_remote, convert_to_activitypub_message
 from flohmarkt.models.item import ItemSchema
 from flohmarkt.models.user import UserSchema
 from flohmarkt.models.conversation import ConversationSchema, MessageSchema
@@ -31,78 +30,6 @@ async def _(item_id:str, current_user: UserSchema = Depends(get_current_user)):
         ]
 
     return conversations
-
-async def convert_to_activitypub_message(msg, current_user, parent=None, item=None):
-    hostname = cfg["General"]["ExternalURL"]
-    item_user = await UserSchema.retrieve_single_id(item["user"])
-
-    if parent["type"] != "item":
-        username = current_user["name"]
-        update = {
-            "inReplyTo": parent['id'],
-            "to": [
-                parent["attributedTo"]
-            ],
-            "tag":[
-                {
-                    "type": "Mention",
-                    "href": parent["attributedTo"],
-                    "name": "@derpy@testcontainer.lan"
-                }
-            ]
-        }
-    else:
-        if "@" in item_user['name']:
-            username, remote_hostname = item_user['name'].split("@")
-            remote_hostname = "https://"+remote_hostname
-        else:
-            username = item_user['name']
-            remote_hostname = hostname
-        update = {
-            "inReplyTo": f"{remote_hostname}/users/{username}/items/{item['id']}",
-            "to": [
-                f"{remote_hostname}/users/{username}"
-            ],
-            "tag":[
-                {
-                    "type": "Mention",
-                    "href": f"{remote_hostname}/users/{item_user['name']}",
-                    "name": f"{item_user['name']}"
-                }
-            ]
-        }
-
-    date = datetime.datetime.now(tz=datetime.timezone.utc).isoformat().split(".")[0]+"Z"
-    message_uuid = str(uuid.uuid4())
-
-    ret = {
-        "id": f"{hostname}/users/{username}/statuses/{message_uuid}",
-        "type": "Note",
-        "summary": None,
-        "published": date,
-        "url": f"{hostname}/~{item_user['name']}/{item['id']}#{message_uuid}",
-        "attributedTo": f"{hostname}/users/{current_user['name']}",
-        "cc": [],
-        "sensitive": False,
-        "conversation": "tag:mastodo.lan,2023-03-29:objectId=27:objectType=Conversation",
-        "content": "<p>"+msg["text"]+"</p>",
-        "contentMap": {
-            "en": "<p>"+msg["text"]+"</p>"
-        },
-        "attachment": [],
-        "replies": {
-            "id": f"{hostname}/users/{item_user['name']}/statuses/{message_uuid}/replies",
-            "type": "Collection",
-            "first": {
-                "type": "CollectionPage",
-                "next": f"{hostname}/users/{item_user['name']}/statuses/{message_uuid}/replies?only_other_accounts=true&page=true",
-                "partOf": f"{hostname}/users/{item_user['name']}/statuses/{message_uuid}/replies",
-                "items": []
-            }
-        }
-    }
-    ret.update(update)
-    return ret
 
 async def get_last_message(conversation, current_user):
     hostname = cfg["General"]["ExternalURL"]

@@ -9,8 +9,8 @@ from flohmarkt.models.user import UserSchema
 from flohmarkt.models.item import ItemSchema, UpdateItemModel
 from flohmarkt.models.conversation import ConversationSchema
 from flohmarkt.auth import get_current_user
-from flohmarkt.routes.activitypub import post_item_to_remote, delete_item_remote, post_message_remote
-from flohmarkt.routes.conversation import get_last_message, convert_to_activitypub_message
+from flohmarkt.routes.activitypub import post_item_to_remote, delete_item_remote, post_message_remote,convert_to_activitypub_message
+from flohmarkt.routes.conversation import get_last_message
 
 router = APIRouter()
 

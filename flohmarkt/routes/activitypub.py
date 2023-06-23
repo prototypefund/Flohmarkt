@@ -3,6 +3,7 @@ import asyncio
 import re
 import os
 import uuid
+import datetime
 
 from urllib.parse import urlparse
 
@@ -22,6 +23,78 @@ from flohmarkt.models.follow import AcceptSchema
 
 router = APIRouter()
 uuid_regex = re.compile('[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', re.I)
+
+async def convert_to_activitypub_message(msg, current_user, parent=None, item=None):
+    hostname = cfg["General"]["ExternalURL"]
+    item_user = await UserSchema.retrieve_single_id(item["user"])
+
+    if parent["type"] != "item":
+        username = current_user["name"]
+        update = {
+            "inReplyTo": parent['id'],
+            "to": [
+                parent["attributedTo"]
+            ],
+            "tag":[
+                {
+                    "type": "Mention",
+                    "href": parent["attributedTo"],
+                    "name": "@derpy@testcontainer.lan"
+                }
+            ]
+        }
+    else:
+        if "@" in item_user['name']:
+            username, remote_hostname = item_user['name'].split("@")
+            remote_hostname = "https://"+remote_hostname
+        else:
+            username = item_user['name']
+            remote_hostname = hostname
+        update = {
+            "inReplyTo": f"{remote_hostname}/users/{username}/items/{item['id']}",
+            "to": [
+                f"{remote_hostname}/users/{username}"
+            ],
+            "tag":[
+                {
+                    "type": "Mention",
+                    "href": f"{remote_hostname}/users/{item_user['name']}",
+                    "name": f"{item_user['name']}"
+                }
+            ]
+        }
+
+    date = datetime.datetime.now(tz=datetime.timezone.utc).isoformat().split(".")[0]+"Z"
+    message_uuid = str(uuid.uuid4())
+
+    ret = {
+        "id": f"{hostname}/users/{username}/statuses/{message_uuid}",
+        "type": "Note",
+        "summary": None,
+        "published": date,
+        "url": f"{hostname}/~{item_user['name']}/{item['id']}#{message_uuid}",
+        "attributedTo": f"{hostname}/users/{current_user['name']}",
+        "cc": [],
+        "sensitive": False,
+        "conversation": "tag:mastodo.lan,2023-03-29:objectId=27:objectType=Conversation",
+        "content": "<p>"+msg["text"]+"</p>",
+        "contentMap": {
+            "en": "<p>"+msg["text"]+"</p>"
+        },
+        "attachment": [],
+        "replies": {
+            "id": f"{hostname}/users/{item_user['name']}/statuses/{message_uuid}/replies",
+            "type": "Collection",
+            "first": {
+                "type": "CollectionPage",
+                "next": f"{hostname}/users/{item_user['name']}/statuses/{message_uuid}/replies?only_other_accounts=true&page=true",
+                "partOf": f"{hostname}/users/{item_user['name']}/statuses/{message_uuid}/replies",
+                "items": []
+            }
+        }
+    }
+    ret.update(update)
+    return ret
 
 async def get_userinfo(actor : str) -> dict:
     async with HttpClient().get(actor, headers = {
@@ -164,6 +237,19 @@ async def create_new_item(req: Request, msg: dict):
 
     return Response(content="0", status_code=202)
 
+async def send_noreply_message(msg):
+    item_id = msg["object"]["inReplyTo"].split("/")[-1]
+    item = await ItemSchema.retrieve_single_id(item_id)
+    user = await UserSchema.retrieve_single_id(item["user"])
+    
+    msg["text"] = """You've made a public post to a item on flohmarkt.
+ <b>This post is going to be ignored by the system.</b>
+ Please use private posting e.g. 'Only mentioned' in mastodon.
+ (This is a system-generated message)"""
+ 
+    message = await convert_to_activitypub_message(msg, user, parent=msg["object"], item=item)
+    await post_message_remote(message, user)
+
 async def inbox_process_create(req: Request, msg: dict):
     hostname = cfg["General"]["ExternalURL"]
     if msg["id"].startswith(hostname):
@@ -171,7 +257,8 @@ async def inbox_process_create(req: Request, msg: dict):
 
     if "https://www.w3.org/ns/activitystreams#Public" in msg["to"]:
         if "object" in msg and "inReplyTo" in msg["object"] and msg["object"]["inReplyTo"] is not None:
-            pass # print("not allowed to post publicly to item")
+            await send_noreply_message(msg)
+            return Response(content="0", status_code=202)
         else:
             return await create_new_item(req, msg)
 
