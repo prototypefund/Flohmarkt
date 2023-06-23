@@ -1,6 +1,7 @@
 import os
 import jwt
 import json
+import datetime
 
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
@@ -11,10 +12,12 @@ from flohmarkt.models.user import UserSchema
 oauth2 = OAuth2PasswordBearer(tokenUrl="token")
 
 token_blacklist = []
-blacklistfile = open(os.path.join(cfg["General"]["DataPath"], "tokenblacklist.json"),"r")
-for token in json.loads(blacklistfile.read()):
-    token_blacklist.append(token)
-blacklistfile.close()
+blacklistpath = os.path.join(cfg["General"]["DataPath"], "tokenblacklist.json")
+if os.path.exists(blacklistpath):
+    blacklistfile = open(blacklistpath,"r")
+    for token in json.loads(blacklistfile.read()):
+        token_blacklist.append(token)
+    blacklistfile.close()
 
 def update_token_blacklist(token):
     """
@@ -29,7 +32,6 @@ def update_token_blacklist(token):
     blacklistfile = open(os.path.join(cfg["General"]["DataPath"], "tokenblacklist.json"),"w")
     blacklistfile.write(json.dumps(token_blacklist))
     blacklistfile.close()
-            
 
 async def get_current_user(token : str = Depends(oauth2)):
     try:
@@ -45,6 +47,6 @@ async def blacklist_token(token : str = Depends(oauth2)):
     try:
         dec = jwt.decode(token, cfg["General"]["JwtSecret"], algorithms=["HS512"])
         update_token_blacklist(dec)
-        return True
     except Exception as e:
-        raise HTTPException(status_code=401, detail=str(e))
+        print(e)
+    return True

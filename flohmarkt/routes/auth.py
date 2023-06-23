@@ -223,7 +223,11 @@ async def _(username: str = Form(), password: str = Form()):
 async def _(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
 
+@router.get("/blacklist_token")
+async def _(request: Request, current_user : UserSchema = Depends(blacklist_token)):
+    return {"success":True}
+
 #Logout
 @router.get("/logout")
-async def _(request: Request, token_eliminated : bool = Depends(blacklist_token)):
+async def _(request: Request):
     return templates.TemplateResponse("logout.html", {"request": request})
