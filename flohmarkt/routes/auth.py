@@ -8,12 +8,13 @@ import uuid
 
 from email.mime.text import MIMEText
 
-from fastapi import APIRouter, Body, Request, Form, HTTPException
+from fastapi import APIRouter, Body, Request, Depends, Form, HTTPException
 from fastapi.templating import Jinja2Templates
 from fastapi.encoders import jsonable_encoder
 
 from flohmarkt.ratelimit import limiter
 from flohmarkt.config import cfg
+from flohmarkt.auth import blacklist_token
 from flohmarkt.ssl import ssl_context
 from flohmarkt.models.user import UserSchema, UpdateUserModel
 templates = Jinja2Templates(directory="templates")
@@ -224,5 +225,5 @@ async def _(request: Request):
 
 #Logout
 @router.get("/logout")
-async def _(request: Request):
+async def _(request: Request, token_eliminated : bool = Depends(blacklist_token)):
     return templates.TemplateResponse("logout.html", {"request": request})
