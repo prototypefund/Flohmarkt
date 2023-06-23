@@ -15,6 +15,7 @@ from typing import List
 from flohmarkt.config import cfg
 from flohmarkt.signatures import verify, sign
 from flohmarkt.http import HttpClient
+from flohmarkt.routes.image import assert_imagepath
 from flohmarkt.models.user import UserSchema
 from flohmarkt.models.item import ItemSchema
 from flohmarkt.models.instance_settings import InstanceSettingsSchema
@@ -156,7 +157,8 @@ async def replicate_image(image_url : str) -> str:
     if not uuid_regex.match (ident):
         ident = str(uuid.uuid4())
 
-    imagepath = os.path.join(cfg["General"]["ImagePath"], ident+".jpg")
+    await assert_imagepath()
+    imagepath = os.path.join(cfg["General"]["DataPath"], "images", ident+".jpg")
 
     async with HttpClient().get(image_url, headers = {
             "Accept":"image/jpeg"
@@ -186,11 +188,12 @@ async def replicate_user(user_url: str) -> str:
         avatar = None
         if "icon" in userinfo:
             async with HttpClient().get(userinfo["icon"]["url"]) as resp:
+                await assert_imagepath()
                 image = await resp.read()
 
                 avatar = str(uuid.uuid4())
 
-                imagefile = open(os.path.join(cfg["General"]["ImagePath"], avatar+".jpg"), "wb")
+                imagefile = open(os.path.join(cfg["General"]["DataPath"],"images", avatar+".jpg"), "wb")
                 imagefile.write(image)
                 imagefile.close()
 

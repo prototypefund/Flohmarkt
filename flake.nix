@@ -98,11 +98,11 @@
                     JWT generation and validation.
                   '';
                 };
-                imagePath = lib.mkOption {
+                dataPath = lib.mkOption {
                   default = "/var/lib/flohmarkt";
                   type = lib.types.str;
                   description = ''
-                    The path where uploaded images land.
+                    The path where flohmarkts userdata is stored. (Not including Database)
                   '';
                 };
               };
@@ -170,7 +170,7 @@
         config = lib.mkIf config.services.flohmarkt.enable {
           users.users.flohmarkt = {
             isNormalUser = true;
-            home = config.services.flohmarkt.settings.general.imagePath;
+            home = config.services.flohmarkt.settings.general.dataPath;
             description = "Flohmarkt Webserver User";
           };
           environment.etc."flohmarkt.conf" = {
@@ -180,7 +180,7 @@
               ExternalURL = ${config.services.flohmarkt.settings.general.externalUrl}
               DebugMode = ${toString config.services.flohmarkt.settings.general.debugMode}
               JwtSecret =  ${config.services.flohmarkt.settings.general.jwtSecret}
-              ImagePath =  ${config.services.flohmarkt.settings.general.imagePath}
+              DataPath =  ${config.services.flohmarkt.settings.general.dataPath}
 
               [Database]
               Server = ${config.services.flohmarkt.settings.database.server}

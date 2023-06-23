@@ -3,7 +3,7 @@ InstanceName = Fluffys Flohmarkt
 ExternalURL = http://example.org
 DebugMode = 0
 JwtSecret = S0op3rs3cr3t
-ImagePath = /var/lib/flohmarkt
+DataPath = /var/lib/flohmarkt
 
 [Database]
 Server = https://user:password@some.couchdb.server.nil:1345/

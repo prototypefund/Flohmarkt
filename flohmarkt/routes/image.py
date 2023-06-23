@@ -12,8 +12,14 @@ from flohmarkt.config import cfg
 
 router = APIRouter()
 
+async def assert_imagepath():
+    imagepath = os.path.join(cfg["General"]["DataPath"], "images")
+    if not os.path.exists(imagepath):
+        os.mkdir(imagepath)
+
 @router.post("/", response_description="Image upload")
 async def upload_image(current_user : UserSchema = Depends(get_current_user), image: bytes = Body(...)):
+    await assert_imagepath()
     users = await UserSchema.retrieve()
     if image.startswith(b"data:image/jpeg;base64,"):
         image = image.replace(b"data:image/jpeg;base64,",b"")
@@ -21,7 +27,7 @@ async def upload_image(current_user : UserSchema = Depends(get_current_user), im
 
     image_id = str(uuid.uuid4())
 
-    imagefile = open(os.path.join(cfg["General"]["ImagePath"], image_id+".jpg"), "wb")
+    imagefile = open(os.path.join(cfg["General"]["DataPath"], "images", image_id+".jpg"), "wb")
     imagefile.write(image)
     imagefile.close()
 
@@ -29,7 +35,8 @@ async def upload_image(current_user : UserSchema = Depends(get_current_user), im
 
 @router.get("/{ident}", response_description="Get an image")
 async def get_image(ident: str):
-    path = os.path.join(cfg["General"]["ImagePath"],ident+".jpg")
+    await assert_imagepath()
+    path = os.path.join(cfg["General"]["DataPath"], "images", ident+".jpg")
     if not os.path.exists(path):
         raise HTTPException(status_code=404, detail="Image not found :(")
     imagefile = open(path, "rb")
