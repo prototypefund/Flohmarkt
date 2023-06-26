@@ -72,8 +72,8 @@ class ItemSchema(BaseModel):
 
     @staticmethod
     async def search(search:str)->dict:
-        found_by_name = await Database.find({"type":"item", "name": {"$regex":"(?i)"+search}},[{"creation_date":"desc"}])
-        found_by_description = await Database.find({"type":"item", "description": {"$regex":"(?i)"+search}},[{"creation_date":"desc"}])
+        found_by_name = await Database.find({"type":"item", "name": {"$regex":"(?i)"+search}},[{"creation_date":"desc"}], limit=120)
+        found_by_description = await Database.find({"type":"item", "description": {"$regex":"(?i)"+search}},[{"creation_date":"desc"}], limit=120)
         results = {}
         for item in found_by_name:
             results[item["id"]] = item
