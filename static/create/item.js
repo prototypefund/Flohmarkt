@@ -1,8 +1,9 @@
 import { createImage } from "./image.js";
 import { createLink } from "./link.js";
 import { createElement } from "./element.js";
+import { fetchJSON } from "../utils.js";
 
-export function createItem(item, details=false) {
+export function createItem(item, details=false, watching=[]) {
     var element = null;
     if (details) {
         element = createElement('aside', 'position-relative card-item-big');
@@ -66,6 +67,21 @@ export function createItem(item, details=false) {
     wrapper.appendChild(container);
     wrapper.appendChild(createElement('p', null, item.description));
     element.appendChild(wrapper);
+    
+    const watch_button = createElement('span', 'watch_button', '👁');
+    if (watching.includes(item.id)) {
+        watch_button.classList.add("watch_button_active");
+    }
+    watch_button.addEventListener('click', async e => {
+        if (watch_button.classList.contains("watch_button_active")) {
+            await fetchJSON('item/'+item.id+'/unwatch');
+            watch_button.classList.remove("watch_button_active");
+        } else {
+            await fetchJSON('item/'+item.id+'/watch');
+            watch_button.classList.add("watch_button_active");
+        }
+    });
+    container.appendChild(watch_button);
 
     return element;
 }

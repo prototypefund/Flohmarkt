@@ -29,7 +29,10 @@ async def get_items():
     items = await ItemSchema.retrieve()
     return items
 
-#TODO: implement
+@router.get("/get_watched", response_description="list of watched items")
+async def get_watched_items(req : Request, current_user : UserSchema = Depends(get_current_user)):
+    return await ItemSchema.retrieve_many(current_user["watching"])
+
 @router.get("/most_contested", response_description="All items")
 async def get_items():
     return await ItemSchema.retrieve_most_contested()
@@ -62,6 +65,38 @@ async def update_item(ident: str, req: UpdateItemModel = Body(...)):
     if updated_item:
         return "YEEEH"
     return "NOOO"
+
+@router.get("/{ident}/watch")
+async def watch_item(ident: str, current_user: UserSchema = Depends(get_current_user)):
+    item = await ItemSchema.retrieve_single_id(ident)
+    if item is None:
+        raise HTTPException(status_code=404, detail="Item not here :(")
+
+    if not "watching" in current_user:
+        current_user["watching"] = []
+
+    print("boody")
+    if not ident in current_user["watching"]:
+        print("bgi bigboody")
+        current_user["watching"].append(ident)
+        await UserSchema.update(current_user["id"], current_user)
+
+    return {}
+
+@router.get("/{ident}/unwatch")
+async def unwatch_item(ident: str, current_user: UserSchema = Depends(get_current_user)):
+    item = await ItemSchema.retrieve_single_id(ident)
+    if item is None:
+        raise HTTPException(status_code=404, detail="Item not here :(")
+
+    if not "watching" in current_user:
+        current_user["watching"] = []
+
+    if ident in current_user["watching"]:
+        current_user["watching"].remove(ident)
+        await UserSchema.update(current_user["id"], current_user)
+
+    return {}
 
 @router.post("/{ident}/give")
 async def give_item(ident: str, msg: dict = Body(...), current_user: UserSchema = Depends(get_current_user)):

@@ -1,12 +1,20 @@
 import { fetchJSON } from "./utils.js";
 import { createItem } from "./create/item.js";
 import { createElement } from "./create/element.js";
+import { getCurrentUser } from "./current_user.js";
 
-const [itemsNewest, itemsContested, itemsOldest] = await Promise.all([
+
+const [itemsNewest, itemsContested, itemsOldest, user] = await Promise.all([
     fetchJSON('item/newest'),
     fetchJSON('item/most_contested'),
-    fetchJSON('item/oldest')
+    fetchJSON('item/oldest'),
+    getCurrentUser
 ]);
+
+var watching = [];
+if (user != null && 'watching' in user) {
+    watching = user["watching"];
+}
 
 const reason_mapping = {
     "newest": itemsNewest,
@@ -38,9 +46,9 @@ const shuffled = itemsNewest
 
 const gridResults = document.querySelector('.grid__results');
 
-shuffled.forEach(async item => {
+shuffled.forEach(item => {
     window.requestAnimationFrame(() => {
-	const htmlItem = createItem(item, false);
+	const htmlItem = createItem(item, false, watching);
 	htmlItem.appendChild(createElement("div", 'circle badge badge_'+item.reason, label_mapping[item.reason]));
         gridResults.appendChild(htmlItem);
     });

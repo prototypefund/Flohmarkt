@@ -31,6 +31,7 @@ class UserSchema(BaseModel):
     followers : dict[str, FollowSchema] = {}
     role : str = Field(...)
     remote_url : Optional[str] = None
+    watching : list = []
     
     class Config: 
         schema_extra = {

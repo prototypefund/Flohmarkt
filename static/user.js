@@ -4,18 +4,25 @@ import { createSVG } from "./create/svg.js";
 import { createItem } from "./create/item.js";
 import { createElement } from "./create/element.js";
 import { updateAvatar } from "./app.js";
+import { getCurrentUser } from "./current_user.js"
 
 const MAX_WIDTH = 128,
       MAX_HEIGHT = 128;
 
-const [items, user] = await Promise.all([
+const [items, user, currentUser] = await Promise.all([
     fetchJSON('item/by_user/' + window.USER_ID),
-    fetchJSON('user/' + window.USER_ID)
+    fetchJSON('user/' + window.USER_ID),
+    getCurrentUser
 ]);
 
+var watching = [];
+if (currentUser != null && 'watching' in currentUser) {
+    watching = currentUser["watching"];
+}
+
 const itemsFragment = document.createDocumentFragment();
-items.forEach(item => {
-    itemsFragment.appendChild(createItem(item, false));
+items.forEach(async item => {
+    itemsFragment.appendChild(createItem(item, false, watching));
 });
 
 const userFragment = document.createDocumentFragment();
@@ -23,8 +30,14 @@ const userFragment = document.createDocumentFragment();
 const token = JSON.parse(window.sessionStorage.getItem('parsedToken'));
 console.log(token.username);
 console.log(user.name);
+var watched_items = [];
+const watchedFragment = document.createDocumentFragment();
 if (token.username == user.name) {
     document.getElementById('profile').style.display="none";
+    watched_items = await fetchJSON('item/get_watched');
+    watched_items.forEach(async item => {
+        watchedFragment.appendChild(createItem(item, false, watching));
+    });
 } else {
     document.getElementById('profile-form').style.display="none";
 }
@@ -33,6 +46,7 @@ const gridUserItems = document.querySelector('.grid__user-items'),
       colAbout = document.querySelector('.col__about');
 window.requestAnimationFrame(() => {
     gridUserItems.appendChild(itemsFragment);
+    gridUserItems.appendChild(watchedFragment);
     colAbout.appendChild(userFragment);
 });
 

@@ -37,6 +37,14 @@ class ItemSchema(BaseModel):
         return items
 
     @staticmethod
+    async def retrieve_many(ids: List[str] = []):
+        ret = []
+        result = await Database.view("many_items", "items-view", key=ids, include_docs=True)
+        for row in result:
+            ret.append(row["doc"])
+        return ret
+
+    @staticmethod
     async def add(data: dict, user:dict=None)->dict:
         data["type"] = "item"
         if not "id" in data:

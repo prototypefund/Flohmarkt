@@ -123,6 +123,8 @@ for i in index_cols:
     add_index(*i)
 
 
+
+
 print("Trying to add conversations-per-item view")
 req = PutRequest(f"{db_url.scheme}://{hostname}/flohmarkt/_design/n_conversations_per_item")
 req.data = json.dumps({
@@ -131,6 +133,29 @@ req.data = json.dumps({
         "conversations-per-item-index": {
             "map": "function (doc) {\n  if (doc.type == \"conversation\") {\n    emit(doc.item_id, 1);\n  }\n}",
             "reduce": "_count"
+        }
+    },
+    "language": "javascript"
+}).encode('utf-8')
+req.headers = {
+    "Content-type": "application/json",
+    "Authorization": "Basic "+credentials
+}
+try:
+    res = urllib.request.urlopen(req, timeout=10)
+except urllib.error.HTTPError as e:
+    if "409" in str(e):
+        print ("User flohmarkt exists. skipping")
+    else:
+        print(e)
+
+print("Trying to add multiple-items view")
+req = PutRequest(f"{db_url.scheme}://{hostname}/flohmarkt/_design/many-items")
+req.data = json.dumps({
+    "_id": "_design/many_items",
+    "views": {
+        "items-view": {
+            "map": "function (doc) {\n  if (doc.type == \"item\") {\n    emit(doc.item_id, 1);\n  }\n}"
         }
     },
     "language": "javascript"

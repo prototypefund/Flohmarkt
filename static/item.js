@@ -3,8 +3,18 @@ import { createItem } from "./create/item.js";
 import { createElement } from "./create/element.js";
 import { createImage } from "./create/image.js";
 import { createAvatar,createSmallAvatar } from "./create/avatar.js";
+import { getCurrentUser } from "./current_user.js";
 
-const item = await fetchJSON('item/' + window.location.pathname.replace(/^.+?[/]/, ''));
+const [item, currentUser] = await Promise.all([
+    fetchJSON('item/' + window.location.pathname.replace(/^.+?[/]/, '')),
+    getCurrentUser
+]);
+
+var watching = [];
+if (currentUser != null && 'watching' in currentUser) {
+    watching = currentUser["watching"];
+}
+
 const token = JSON.parse(window.sessionStorage.getItem('parsedToken'));
 var conversations = [];
 if (token !== null) {
@@ -23,7 +33,7 @@ const heading = document.getElementById('heading');
 heading.prepend(createAvatar(user));
 
 const itemFragment = document.createDocumentFragment();
-itemFragment.appendChild(createItem(item, true));
+itemFragment.appendChild(createItem(item, true, watching));
 const itemOperationContainer = createElement('div',null, '');
 const deleteButton = createElement('button', null, 'Delete');
 deleteButton.addEventListener('click', async event=> {

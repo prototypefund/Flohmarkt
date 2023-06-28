@@ -1,6 +1,7 @@
 import uuid
 import json
 import asyncio
+import urllib.parse
 
 from fastapi.encoders import jsonable_encoder
 
@@ -96,17 +97,23 @@ class Database:
             return None
 
     @classmethod
-    async def view(cls, ddoc, view, key:str=None, group_level:int=None, reduce:bool=None):
+    async def view(cls, ddoc, view, key=None, group_level:int=None, reduce:bool=None, include_docs:bool = None):
         url = cfg["Database"]["Server"]+f"flohmarkt/_design/{ddoc}/_view/{view}?"
-        if key is not None:
+
+        if type(key) == str:
             url += f"key=%22{key}%22&"
+        elif type(key) == list:
+            url += f"keys="+urllib.parse.quote(json.dumps(key))+"&"
+
         if group_level is not None:
             url += f"group_level={group_level}&"
+
         if reduce is not None:
-            if reduce:
-                url += "reduce=true&"
-            else:
-                url += "reduce=false&"
+            url += "reduce=" + ("false", "true")[int(reduce)]
+
+        if include_docs is not None:
+            url += "include_docs=" + ("False", "True")[int(include_docs)]
+
         try:
             async with HttpClient().get(url, headers={"Content-type": "application/json"}) as resp:
                 res = await resp.json()
