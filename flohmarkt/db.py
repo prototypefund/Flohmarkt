@@ -55,12 +55,14 @@ class Database:
             raise(e)
 
     @classmethod
-    async def find(cls, o: dict, sort: dict = [], limit: int = None):
+    async def find(cls, o: dict, sort: dict = [], limit: int = None, skip: int = None):
         url = cfg["Database"]["Server"]+f"flohmarkt/_find"
         o = {"selector":o,
              "sort": sort}
         if limit is not None and type(limit) == int:
             o["limit"] = limit
+        if skip is not None and type(skip) == int:
+            o["skip"] = skip
         o = jsonable_encoder(o)
         try:
             async with HttpClient().post(url, data=json.dumps(o), headers = {"Content-type": "application/json"}) as resp:

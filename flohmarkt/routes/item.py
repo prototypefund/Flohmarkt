@@ -42,8 +42,8 @@ async def get_items():
     return await ItemSchema.retrieve_newest()
 
 @router.get("/search/{searchterm}", response_description="Search results")
-async def get_items(searchterm: str):
-    return await ItemSchema.search(searchterm)
+async def get_items(req: Request, searchterm: str, skip: int = 0):
+    return await ItemSchema.search(searchterm, skip)
 
 @router.get("/oldest", response_description="Oldest items")
 async def get_items():
@@ -75,9 +75,7 @@ async def watch_item(ident: str, current_user: UserSchema = Depends(get_current_
     if not "watching" in current_user:
         current_user["watching"] = []
 
-    print("boody")
     if not ident in current_user["watching"]:
-        print("bgi bigboody")
         current_user["watching"].append(ident)
         await UserSchema.update(current_user["id"], current_user)
 
