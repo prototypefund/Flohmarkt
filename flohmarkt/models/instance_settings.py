@@ -2,6 +2,7 @@ from typing import Optional, List
 from pydantic import BaseModel, Field
 
 from flohmarkt.db import Database
+from flohmarkt.config import cfg
 
 class InstanceSettingsSchema(BaseModel):
     id : str = "instance_settings"
@@ -56,3 +57,9 @@ class UpdateInstanceSettingsModel(BaseModel):
             }
     }
 
+async def get_instance_name():
+    settings = await InstanceSettingsSchema.retrieve()
+    if settings["name"] is not None and settings["name"] != "":
+        return settings["name"]
+    else:
+        return cfg["General"]["InstanceName"]

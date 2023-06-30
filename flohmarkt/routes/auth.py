@@ -17,6 +17,7 @@ from flohmarkt.config import cfg
 from flohmarkt.auth import blacklist_token
 from flohmarkt.ssl import ssl_context
 from flohmarkt.models.user import UserSchema, UpdateUserModel
+from flohmarkt.models.instance_settings import get_instance_name
 templates = Jinja2Templates(directory="templates")
 router = APIRouter()
 
@@ -110,6 +111,7 @@ async def _(request: Request,
     }
 
     new_user = await UserSchema.add(new_user)
+    instance_name = await get_instance_name()
 
     server = smtplib.SMTP(cfg["SMTP"]["Server"], int(cfg["SMTP"]["Port"]))
 
@@ -119,13 +121,13 @@ async def _(request: Request,
     server.login(cfg["SMTP"]["User"], cfg["SMTP"]["Password"])
     text = ACTIVATION_MAIL.format(
             new_user["name"],
-            cfg["General"]["InstanceName"],
+            instance_name,
             cfg["General"]["ExternalURL"],
             new_user["activation_code"],
-            cfg["General"]["InstanceName"]
+            instance_name
         )
     message = MIMEText(text.encode('utf-8'), _charset='utf-8')
-    message["Subject"] = "Registration with {}".format(cfg["General"]["InstanceName"])
+    message["Subject"] = "Registration with {}".format(instance_name)
     server.sendmail(
         cfg["SMTP"]["From"], 
         email, 
@@ -158,7 +160,7 @@ async def _(request: Request):
 @limiter.limit("1/day")
 @router.post("/forgotpassword")
 async def _(request: Request, email: str = Form()):
-    print(email)
+    instance_name = await get_instance_name()
     user = await UserSchema.retrieve_single_email(email)
     if user is not None:
         user["reset_token"] = str(uuid.uuid4())
@@ -174,10 +176,10 @@ async def _(request: Request, email: str = Form()):
                 user["name"],
                 cfg["General"]["ExternalURL"],
                 user["reset_token"],
-                cfg["General"]["InstanceName"]
+                instance_name
             )
         message = MIMEText(text.encode('utf-8'), _charset='utf-8')
-        message["Subject"] = "Password reset on {}".format(cfg["General"]["InstanceName"])
+        message["Subject"] = "Password reset on {}".format(instance_name)
         server.sendmail(
             cfg["SMTP"]["From"], 
             email, 
