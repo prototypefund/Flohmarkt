@@ -2,6 +2,8 @@
 
 {% block scripts %}
 <script defer type="module" src="/static/admin.js"></script>
+<link rel="stylesheet" href="/static/leaflet.css" />
+<script src="/static/leaflet.js"></script>
 {% endblock %}
 
 {% block main %}
@@ -14,6 +16,7 @@
     </ul>
     <div class="tabpage tab_default" name="settings">
         <form id="settings_form">
+            <div id="map"></div>
             <label for="instance_coordinates">Coordinates of your Site (lat:lon e.g. 51.213:23.24)</label>
             <input name="instance_coordinates" id="instance_coordinates">
             <label for="instance_perimeter">Range</label>
