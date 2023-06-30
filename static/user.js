@@ -33,13 +33,13 @@ console.log(user.name);
 var watched_items = [];
 const watchedFragment = document.createDocumentFragment();
 if (token.username == user.name) {
-    document.getElementById('profile').style.display="none";
+    document.getElementById('profile-form').style.display="block";
     watched_items = await fetchJSON('item/get_watched');
     watched_items.forEach(async item => {
         watchedFragment.appendChild(createItem(item, false, watching));
     });
 } else {
-    document.getElementById('profile-form').style.display="none";
+    document.getElementById('profile').style.display="block";
 }
 
 const gridUserItems = document.querySelector('.grid__user-items'),

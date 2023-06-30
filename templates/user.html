@@ -14,7 +14,7 @@
     </div>
     <div class="col-md-6 col__about">
         <h1>{{ user.name }}'s profile</h1>
-        <div id="profile-form">
+        <div id="profile-form" style="display:none;">
             <form id="create-form" action="/api/v1/user" method="put" type="multipart/form-data" id="form">
                 <ul class="grid grid__images m-0 list-unstyled"></ul>
                 <header class="m-0">
@@ -31,7 +31,7 @@
                 <button type="submit" class="w-100" id="create-btn">Save</button>
             </form>
         </div>
-        <div id="profile">
+        <div id="profile" style="display:none;">
             <img src="/api/v1/image/{{user.avatar}}" alt="avatar of {{user.name}}">
             <p> {{ user.bio }} </p>
         </div>
