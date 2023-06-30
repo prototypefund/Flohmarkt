@@ -150,7 +150,7 @@ except urllib.error.HTTPError as e:
         print(e)
 
 print("Trying to add multiple-items view")
-req = PutRequest(f"{db_url.scheme}://{hostname}/flohmarkt/_design/many-items")
+req = PutRequest(f"{db_url.scheme}://{hostname}/flohmarkt/_design/many_items")
 req.data = json.dumps({
     "_id": "_design/many_items",
     "views": {
