@@ -12,6 +12,26 @@ setupBtn.addEventListener('click', async event => {
     }
 });
 
+const map = L.map('map').setView(instance_settings.coordinates, 9);
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+}).addTo(map);
+const map_circle = L.circle(instance_settings.coordinates, {
+    color: 'red',
+    fillColor: '#f03',
+    fillOpacity: 0.5,
+    radius: instance_settings.perimeter*1000
+}).addTo(map);
+instanceRangeInput.addEventListener('change', e=> {
+    map_circle.setRadius(instanceRangeInput.value * 1000);
+});
+const setCoordinates = e => {
+    map_coords = e.latlng;
+    map_circle.setLatLng(e.latlng);
+}
+map.on('click', setCoordinates);
+
 /*let inputValid = 0,
     password;
 

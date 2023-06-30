@@ -2,6 +2,8 @@
 
 {% block scripts %}
 <script defer type="module" src="/static/setup.js"></script>
+<link rel="stylesheet" href="/static/leaflet.css" />
+<script src="/static/leaflet.js"></script>
 {% endblock %}
 
 {% block main %}
@@ -25,6 +27,10 @@
 	    <h2> Instance Info </h2>
 		<label for="instancename">Instance Name</label>
 		<input type="text" name="instancename" autocomplete="instancename">
+        <h3> Coordinates </h3>
+        <div id="map" style="height:200px;"></div>
+		<label for="range">Range (in km)</label>
+		<input type="text" name="range" placeholder="10">
 		<button id="setupbutton" class="w-100">Set up</button>
     </form>
 </section>
