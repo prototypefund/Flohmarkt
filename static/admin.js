@@ -11,7 +11,12 @@ const instance_settings = await fetchJSON('admin/');
 
 const userTable = document.getElementById('userTable');
 
-users.forEach(user => {
+const usersPerPage = 25;
+var userPage = 0;
+const nextButton = document.getElementById('user_next_button');
+const prevButton = document.getElementById('user_prev_button');
+
+const renderUserList = async user => {
     if (user.name == "instance") {
         return;
     }
@@ -50,7 +55,41 @@ users.forEach(user => {
     ctrlCell.appendChild(controlsContainer);
     row.appendChild(ctrlCell);
 
+    row.classList.add("user_row");
+
     userTable.appendChild(row);
+};
+
+users.forEach(renderUserList);
+
+if (users.length == 10) {
+    nextButton.style.display="inline-block";
+}
+
+nextButton.addEventListener('click', async e=>{
+    userPage++;
+    const users = await fetchJSON('user/?skip='+userPage*usersPerPage);
+    userTable.querySelectorAll('.user_row').forEach(e=>e.remove());
+    users.forEach(renderUserList);
+    if (userPage > 0) {
+        prevButton.style.display="inline-block";
+    }
+    if (users.length < 10) {
+        nextButton.style.display="none";
+    }
+});
+
+prevButton.addEventListener('click', async e=>{
+    userPage--;
+    const users = await fetchJSON('user/?skip='+userPage*usersPerPage);
+    userTable.querySelectorAll('.user_row').forEach(e=>e.remove());
+    users.forEach(renderUserList);
+    if (userPage == 0) {
+        prevButton.style.display="none";
+    }
+    if (users.length == 10) {
+        nextButton.style.display="inline-block";
+    }
 });
 
 const instanceForm = document.getElementById('settings_form');

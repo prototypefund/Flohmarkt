@@ -14,6 +14,8 @@ class ModeEnum:
     SELL = 0
     GIVEAWAY = 1
 
+USERS_PER_PAGE = 25
+
 class UserSchema(BaseModel):
     id : str = Field(...)
     type : str = Field(...)
@@ -42,11 +44,19 @@ class UserSchema(BaseModel):
             }
         }
     @staticmethod
-    async def retrieve():
-        users = []
-        for user in await Database.find({"type":"user"}):
-            users.append(user)
-        return users
+    async def retrieve(skip: int = 0):
+        return await Database.find({"type":"user"}, 
+                            limit=USERS_PER_PAGE,
+                            skip=skip)
+
+    @staticmethod
+    async def retrieve_local(skip: int = 0):
+        return await Database.find({
+                                "type":"user",
+                                "name": {"$not": { "$regex":"@"}}
+                            }, 
+                            limit=USERS_PER_PAGE,
+                            skip=skip)
 
     @staticmethod
     async def add(data: dict)->dict:

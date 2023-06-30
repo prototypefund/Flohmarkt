@@ -7,10 +7,10 @@ from flohmarkt.auth import oauth2, get_current_user
 router = APIRouter()
 
 @router.get("/", response_description="All users")
-async def get_users(current_user : UserSchema = Depends(get_current_user)):
+async def get_users(skip: int = 0, current_user : UserSchema = Depends(get_current_user)):
     if not (current_user["admin"] or current_user["moderator"]):
         raise HTTPException(status_code=403, detail="Only admins/mods :(")
-    users = await UserSchema.retrieve()
+    users = await UserSchema.retrieve_local(skip)
     for user in users:
         await UserSchema.filter(user)
     return users
