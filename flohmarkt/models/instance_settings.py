@@ -4,12 +4,16 @@ from pydantic import BaseModel, Field
 from flohmarkt.db import Database
 from flohmarkt.config import cfg
 
+class Coordinates(BaseModel):
+    lat: float = 52.00
+    lng: float = 13.00
+
 class InstanceSettingsSchema(BaseModel):
     id : str = "instance_settings"
     type : str = "instance_settings"
     rules : str = ""
     about : str = ""
-    coordinates : str = Field(...)
+    coordinates : Coordinates = Field(...)
     range : str = Field(...)
     following : List[str] = []
     pending_following : List[str] = []
@@ -47,7 +51,7 @@ class UpdateInstanceSettingsModel(BaseModel):
     name: Optional[str]
     about: Optional[str]
     rules: Optional[str]
-    coordinates: Optional[str]
+    coordinates: Optional[Coordinates]
     perimeter: Optional[int]
 
     class Config: 

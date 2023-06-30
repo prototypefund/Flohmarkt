@@ -92,13 +92,13 @@ prevButton.addEventListener('click', async e=>{
     }
 });
 
+var map_coords = instance_settings.coordinates;
+
 const instanceForm = document.getElementById('settings_form');
 const instanceRulesTextArea = document.getElementById('instance_rules');
 instanceRulesTextArea.value = instance_settings.rules;
 const instanceAboutTextArea = document.getElementById('instance_about');
 instanceAboutTextArea.value = instance_settings.about;
-const instanceCoordinatesInput = document.getElementById('instance_coordinates');
-instanceCoordinatesInput.value = instance_settings.coordinates;
 const instanceRangeInput = document.getElementById('instance_perimeter');
 instanceRangeInput.value = instance_settings.perimeter;
 
@@ -108,7 +108,7 @@ instanceSaveButton.addEventListener('click', event => {
 
     const formData = new FormData(instanceForm);
     postJSON("/api/v1/admin/", {
-        coordinates: formData.get('instance_coordinates'),
+        coordinates: map_coords,
         perimeter: formData.get('instance_perimeter'),
         rules: formData.get('instance_rules'),
         about: formData.get('instance_about'),
@@ -117,6 +117,28 @@ instanceSaveButton.addEventListener('click', event => {
 	// reload
     });
 });
+
+const map = L.map('map').setView(instance_settings.coordinates, 9);
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+}).addTo(map);
+const map_circle = L.circle(instance_settings.coordinates, {
+    color: 'red',
+    fillColor: '#f03',
+    fillOpacity: 0.5,
+    radius: instance_settings.perimeter*1000
+}).addTo(map);
+instanceRangeInput.addEventListener('change', e=> {
+    map_circle.setRadius(instanceRangeInput.value * 1000);
+});
+const setCoordinates = e => {
+    map_coords = e.latlng;
+    map_circle.setLatLng(e.latlng);
+}
+map.on('click', setCoordinates);
+
+
 
 const followingTable = document.getElementById('followingTable');
 const followerTable = document.getElementById('followerTable');
