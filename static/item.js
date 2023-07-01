@@ -3,7 +3,7 @@ import { createItem } from "./create/item.js";
 import { createElement } from "./create/element.js";
 import { createImage } from "./create/image.js";
 import { createAvatar,createSmallAvatar } from "./create/avatar.js";
-import { getCurrentUser } from "./current_user.js";
+import { getCurrentUser, isCurrentUser } from "./current_user.js";
 
 const [item, currentUser] = await Promise.all([
     fetchJSON('item/' + window.location.pathname.replace(/^.+?[/]/, '')),
@@ -82,16 +82,6 @@ textArea.name="content";
 conversationFormContainer.appendChild(textArea);
 conversationFormContainer.appendChild(sendButton);
 conversationFormContainer.appendChild(assignButton);
-
-const isCurrentUser = message => {
-    const token = JSON.parse(window.sessionStorage.getItem('parsedToken'));
-    const actor_url = new URL(message.attributedTo);
-    const own_url = new URL(window.location);
-    if (actor_url.host !=  own_url.host) {
-        return false;
-    }
-    return message.attributedTo.endsWith("/"+token.username);
-};
 
 const conversationContainers = {};
 

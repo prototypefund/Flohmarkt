@@ -105,6 +105,11 @@ async def setup_page(request: Request, initkey : str):
 async def other(request: Request):
     return templates.TemplateResponse("admin.html", {"request": request})
 
+#Messaging
+@app.get("/messages")
+async def other(request: Request):
+    return templates.TemplateResponse("messages.html", {"request": request})
+
 #New
 @app.get("/new")
 async def other(request: Request):

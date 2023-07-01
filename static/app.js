@@ -8,6 +8,7 @@ if (token != undefined && token != null && typeof(token) === 'string') {
     const detailsListItem = document.getElementById('details-list-item');
     detailsListItem.querySelector('.details-menu span').append(username);
     detailsListItem.querySelector('.details-menu .l-profile').href = '/~' + username;
+    detailsListItem.querySelector('.details-menu .l-messaging').href = '/messages';
     if (parsedToken.admin === true) {
         detailsListItem.querySelector('.details-menu .l-site-admin').href = '/admin';
     } else {

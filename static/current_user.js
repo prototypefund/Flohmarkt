@@ -9,3 +9,13 @@ if (token != null) {
 }
 
 export const getCurrentUser = get_user_func;
+
+export const isCurrentUser = message => {
+    const actor_url = new URL(message.attributedTo);
+    const own_url = new URL(window.location);
+    if (actor_url.host !=  own_url.host) {
+        return false;
+    }
+    return message.attributedTo.endsWith("/"+token.username);
+};
+
