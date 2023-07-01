@@ -236,6 +236,12 @@ async def setup_execute(request: Request, initkey : str,
                 coordinates: Coordinates = Body(),
                 perimeter: int = Body(),
     ):
+
+    instance_settings = await InstanceSettingsSchema.retrieve()
+
+    if instance_settings["initialization_key"] != initkey:
+        raise HTTPException(status_code=403, detail="Not the corrent initialization key :(")
+
     email = email.replace(" ","+")
 
     if username == "" or password == "":
@@ -279,7 +285,6 @@ async def setup_execute(request: Request, initkey : str,
 
     instance_user = await UserSchema.add(instance_user)
 
-    instance_settings = await InstanceSettingsSchema.retrieve()
     instance_settings["name"] = instancename
     instance_settings["initialized"] = True
     instance_settings["initialization_key"] = ""
