@@ -573,3 +573,18 @@ blockquote footer {
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
 }
+
+footer {
+    background-color: #111;
+}
+
+.footerline {
+    margin-left: auto;
+    margin-right: auto;
+    text-align:center;
+}
+.footerline a {
+    color: #555;
+    font-weight: normal;
+    font-size: small;
+}
