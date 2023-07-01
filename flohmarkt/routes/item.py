@@ -1,6 +1,7 @@
 import asyncio
+from typing import List
 
-from fastapi import APIRouter, Body, Depends, Request, HTTPException
+from fastapi import APIRouter, Body, Depends, Request, HTTPException, Query
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import Response
 
@@ -28,6 +29,10 @@ async def add_item(request: Request, item: ItemSchema = Body(...),
 async def get_items():
     items = await ItemSchema.retrieve()
     return items
+
+@router.get("/many", response_description="list of watched items")
+async def get_many_items(req : Request, item : List[str] = Query(), current_user : UserSchema = Depends(get_current_user)):
+    return await ItemSchema.retrieve_many(item)
 
 @router.get("/get_watched", response_description="list of watched items")
 async def get_watched_items(req : Request, current_user : UserSchema = Depends(get_current_user)):
