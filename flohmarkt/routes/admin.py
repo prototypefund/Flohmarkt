@@ -1,11 +1,13 @@
 import json
+import crypt
+import email_validator
 
 from fastapi import APIRouter, Body, Depends, Request, HTTPException
 from fastapi.encoders import jsonable_encoder
 
 from flohmarkt.config import cfg
 from flohmarkt.auth import get_current_user
-from flohmarkt.models.instance_settings import InstanceSettingsSchema, UpdateInstanceSettingsModel
+from flohmarkt.models.instance_settings import InstanceSettingsSchema, UpdateInstanceSettingsModel, Coordinates
 from flohmarkt.models.user import UserSchema
 from flohmarkt.models.follow import FollowSchema, AcceptSchema
 from flohmarkt.http import HttpClient
@@ -224,3 +226,67 @@ async def toogle_moderator(user_id, current_user : UserSchema = Depends(get_curr
         return {"moderator": user["moderator"]}
     else:
         return {"moderator": not user["moderator"]}
+
+@router.post("/setup/{initkey}/")
+async def setup_execute(request: Request, initkey : str,
+                email:str=Body(),
+                instancename:str=Body(),
+                username:str=Body(),
+                password:str=Body(),
+                coordinates: Coordinates = Body(),
+                perimeter: int = Body(),
+    ):
+    email = email.replace(" ","+")
+
+    if username == "" or password == "":
+        return {"error": "username or password empty"}
+    try:
+        email_validator.validate_email(email)
+    except email_validator.EmailNotValidError as e:
+        return {"error": "email invalid "+str(e)+"'"+email+"'"}
+
+    found_for_email = await UserSchema.retrieve_single_email(email)
+    found_for_name = await UserSchema.retrieve_single_email(username)
+    
+    if found_for_name is not None or found_for_email is not None:
+        return {"error": "user already exists"}
+
+    pwhash = crypt.crypt(password, crypt.mksalt(method=crypt.METHOD_SHA512,rounds=10000))
+
+    new_user = {
+        "email":email,
+        "name":username,
+        "pwhash":pwhash,
+        "active": True,
+        "admin": True,
+        "moderator": True,
+        "avatar":None,
+        "role":"User"
+    }
+
+    new_user = await UserSchema.add(new_user)
+
+    instance_user = {
+        "email":"",
+        "name":"instance",
+        "pwhash":"",
+        "active": False,
+        "admin": False,
+        "moderator": False,
+        "avatar":None,
+        "role":"User"
+    }
+
+    instance_user = await UserSchema.add(instance_user)
+
+    instance_settings = await InstanceSettingsSchema.retrieve()
+    instance_settings["name"] = instancename
+    instance_settings["initialized"] = True
+    instance_settings["initialization_key"] = ""
+    instance_settings["perimeter"] = perimeter
+    instance_settings["coordinates"] = coordinates
+
+    await InstanceSettingsSchema.set(instance_settings)
+
+    return {"ok": True}
+
