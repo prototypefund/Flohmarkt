@@ -12,7 +12,7 @@ function createNoAvatarCircle(small) {
 }
 
 export function createAvatar(user) {
-    if (user.avatar == null) {
+    if (user == undefined || user.avatar == null) {
         return createNoAvatarCircle(false);
     } else if (user.avatar.startsWith("http")) {
         return createImage(user.avatar, user.name, 'avatar circle');
@@ -21,7 +21,7 @@ export function createAvatar(user) {
     }
 }
 export function createSmallAvatar(user) {
-    if (user.avatar == null) {
+    if (user == undefined || user.avatar == null) {
         return createNoAvatarCircle(true);
     } else if (user.avatar.startsWith("http")) {
         return createImage(user.avatar, user.name, 'small_avatar circle');
