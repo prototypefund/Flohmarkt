@@ -78,6 +78,17 @@ class ConversationSchema(BaseModel):
             raise Exception(f"Found multiple conversations for {remote_user} on  {item_id}")
 
     @staticmethod
+    async def retrieve_by_user(user: dict, skip=0):
+        selector = {
+            "type": "conversation",
+            "$or": [
+                { "remote_user": user.get("remote_url", "") },
+                { "user_id": user["id"] }
+            ]
+        }
+        return await Database.find(selector, [{"update_date":"desc"}], limit=10, skip=skip)
+
+    @staticmethod
     async def update(ident: str, data: dict, replace=False):
         if len(data) < 1:
             return False

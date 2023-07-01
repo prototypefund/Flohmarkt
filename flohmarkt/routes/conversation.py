@@ -1,6 +1,6 @@
 import uuid
 
-from fastapi import APIRouter, Body, Depends, HTTPException
+from fastapi import APIRouter, Body, Depends, HTTPException, Request
 from fastapi.encoders import jsonable_encoder
 
 from flohmarkt.config import cfg
@@ -12,6 +12,9 @@ from flohmarkt.auth import oauth2, get_current_user
 
 router = APIRouter()
 
+@router.get("/own")
+async def _(req : Request, skip: int = 0,  current_user: UserSchema = Depends(get_current_user)):
+    return await ConversationSchema.retrieve_by_user(current_user, skip)
 
 @router.get("/by_item/{item_id}", response_description="Get all conversation objects belonging to an item")
 async def _(item_id:str, current_user: UserSchema = Depends(get_current_user)):
