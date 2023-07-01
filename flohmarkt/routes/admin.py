@@ -237,6 +237,8 @@ async def setup_execute(request: Request, initkey : str,
                 perimeter: int = Body(),
     ):
 
+    hostname = cfg["General"]["ExternalURL"]
+
     instance_settings = await InstanceSettingsSchema.retrieve()
 
     if instance_settings["initialization_key"] != initkey:
@@ -267,7 +269,8 @@ async def setup_execute(request: Request, initkey : str,
         "admin": True,
         "moderator": True,
         "avatar":None,
-        "role":"User"
+        "role":"User",
+        "remote_url": f"{hostname}/users/{username}"
     }
 
     new_user = await UserSchema.add(new_user)
