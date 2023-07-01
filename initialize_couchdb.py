@@ -173,6 +173,30 @@ except urllib.error.HTTPError as e:
     else:
         print(e)
 
+print("Trying to add multiple-users view")
+req = PutRequest(f"{db_url.scheme}://{hostname}/flohmarkt/_design/many_users")
+req.data = json.dumps({
+    "_id": "_design/many_users",
+    "views": {
+        "users-view": {
+            "map": "function (doc) {\n  if (doc.type == \"user\") {\n    emit(doc._id, 1);\n  }\n}"
+        }
+    },
+    "language": "javascript"
+}).encode('utf-8')
+req.headers = {
+    "Content-type": "application/json",
+    "Authorization": "Basic "+credentials
+}
+try:
+    res = urllib.request.urlopen(req, timeout=10)
+except urllib.error.HTTPError as e:
+    if "409" in str(e):
+        print ("User flohmarkt exists. skipping")
+    else:
+        print(e)
+
+
 print("Trying to add instance settigs")
 req = PutRequest(f"{db_url.scheme}://{hostname}/flohmarkt/instance_settings")
 req.data = json.dumps({
