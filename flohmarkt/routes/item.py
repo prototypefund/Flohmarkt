@@ -31,7 +31,10 @@ async def get_items():
 
 @router.get("/get_watched", response_description="list of watched items")
 async def get_watched_items(req : Request, current_user : UserSchema = Depends(get_current_user)):
-    return await ItemSchema.retrieve_many(current_user["watching"])
+    if "watching" in current_user:
+        return await ItemSchema.retrieve_many(current_user["watching"])
+    else:
+        return []
 
 @router.get("/most_contested", response_description="All items")
 async def get_items():
