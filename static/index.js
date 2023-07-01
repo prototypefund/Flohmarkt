@@ -3,6 +3,12 @@ import { createItem } from "./create/item.js";
 import { createElement } from "./create/element.js";
 import { getCurrentUser } from "./current_user.js";
 
+const instanceInfo = document.getElementById("instance-info");
+const currentUser = await getCurrentUser;
+console.log(currentUser);
+if (!("id" in currentUser)) {
+    instanceInfo.style.display="block";
+}
 
 const [itemsNewest, itemsContested, itemsOldest, user] = await Promise.all([
     fetchJSON('item/newest'),
