@@ -83,6 +83,7 @@ class ConversationSchema(BaseModel):
             return False
 
         conversation = await Database.find_one({"id":ident})
+        data["update_date"] = datetime.datetime.now()
         if replace:
             conversation = data
         else:
@@ -101,6 +102,7 @@ class ConversationSchema(BaseModel):
         data["id"] = str(uuid.uuid4())
         data["messages"] = []
         data["creation_date"] = datetime.datetime.now()
+        data["update_date"] = datetime.datetime.now()
         ins = await Database.create(data)
         new = await Database.find_one({"id":ins})
         return new

@@ -112,6 +112,7 @@ def add_index(column, direction):
     res = urllib.request.urlopen(req, timeout=10)
 
 index_cols = [
+    ("update_date", "desc"),
     ("creation_date", "desc"),
     ("name", "asc"),
     ("description", "asc"),
