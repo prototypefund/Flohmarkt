@@ -156,7 +156,7 @@ req.data = json.dumps({
     "_id": "_design/many_items",
     "views": {
         "items-view": {
-            "map": "function (doc) {\n  if (doc.type == \"item\") {\n    emit(doc.item_id, 1);\n  }\n}"
+            "map": "function (doc) {\n  if (doc.type == \"item\") {\n    emit(doc._id, 1);\n  }\n}"
         }
     },
     "language": "javascript"
