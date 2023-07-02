@@ -11,7 +11,7 @@ setupBtn.addEventListener('click', async event => {
     const key = document.getElementById('initkey').value;
 
     const formData = new FormData(setupForm);
-    postJSON("/api/v1/admin/setup/"+key, {
+    postJSON("/api/v1/admin/setup/"+key+"/", {
         username: formData.get('username'),
         email: formData.get('email'),
         password:formData.get('password'),
