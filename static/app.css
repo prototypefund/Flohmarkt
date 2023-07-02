@@ -173,6 +173,7 @@ nav details > summary {
 nav details[open] .details-menu,
 nav ul li:hover ul {
     display: block;
+    z-index: 10;
 }
 
 details .details-menu,
