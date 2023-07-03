@@ -2,6 +2,7 @@ import sys
 import base64
 import json
 import uuid
+import time
 import urllib.request
 import urllib.parse
 import urllib.error
@@ -37,6 +38,7 @@ while True:
         res = urllib.request.urlopen(req, timeout=10)
     except urllib.error.URLError as e:
         print("Failed attempt: "+str(e))
+        time.sleep(0.2)
     else:
         break
 
