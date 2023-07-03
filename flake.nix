@@ -224,9 +224,10 @@
             serviceConfig = {
               User = "flohmarkt";
             };
-            after = [ "network.target" ];
+            after = [ "couchdb.target" ];
             wantedBy = [ "multi-user.target" ];
             script = ''
+              sleep 3
               cd ${./.}
               ${nixpkgs.legacyPackages.x86_64-linux.python3.withPackages (p: depfun p ++ [packages.x86_64-linux.default ])}/bin/python3 background.py
             '';
