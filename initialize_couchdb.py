@@ -32,8 +32,8 @@ credentials = (base64.b64encode(credentials.encode('utf-8'))).decode()
 probe_url = f"{db_url.scheme}://{hostname}"
 while True:
     try:
-        print(f"Attempting to connect to DB at: {probeurl}")
-        req = urllib.request.Request(probeurl)
+        print(f"Attempting to connect to DB at: {probe_url}")
+        req = urllib.request.Request(probe_url)
         res = urllib.request.urlopen(req, timeout=10)
     except urllib.error.URLError as e:
         print("Failed attempt: "+str(e))
