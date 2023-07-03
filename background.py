@@ -37,13 +37,18 @@ async def get_remote_outbox(instance):
 
 async def get_remote_postings():
     while True:
-        instance_settings = await InstanceSettingsSchema.retrieve()
-        tasks = []
-        for instance in instance_settings["following"]:
-            tasks.append(asyncio.create_task(get_remote_outbox(instance)))
+        try:
+            instance_settings = await InstanceSettingsSchema.retrieve()
+        except:
+            print("Couldn't find instance settings")
+        else:
+            tasks = []
+            for instance in instance_settings["following"]:
+                tasks.append(asyncio.create_task(get_remote_outbox(instance)))
 
-        await asyncio.gather(*tasks)
-        await asyncio.sleep(1)
+            await asyncio.gather(*tasks)
+        finally:
+            await asyncio.sleep(1)
 
 async def main():
     await HttpClient.initialize()
