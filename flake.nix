@@ -36,7 +36,7 @@
           python3
         ] ++ depfun python3Packages;
     };
-    dockerImage.default = nixpkgs.dockerTools.buildLayeredImage {
+    dockerImage.default = nixpkgs.legacyPackages.x86_64-linux.dockerTools.buildLayeredImage {
       name = "flohmarkt";
       tag = "latest";
       contents = [ packages.x86_64-linux.default ];
