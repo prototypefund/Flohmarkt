@@ -19,3 +19,4 @@ A decentral federated small trade platform
 ## License
 
 This project is licensed under the GNU Affero General Public License 3.
+
