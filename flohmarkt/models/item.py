@@ -11,15 +11,15 @@ class ModeEnum:
     GIVEAWAY = 1
 
 class ItemSchema(BaseModel):
-    type : Optional[str]
+    type : Optional[str] = "item"
     name : str = Field(...)
-    user : Optional[str]
+    user : Optional[str] = ""
     price : str = Field(...)
     images : List[str] = Field(...)
     description : str = Field(...)
-    url : Optional[str]
-    conversations : Optional[set]
-    creation_date : Optional[datetime.datetime]
+    url : Optional[str] = ""
+    conversations : Optional[set] = []
+    creation_date : Optional[datetime.datetime] = datetime.datetime.now()
     
     class Config: 
         schema_extra = {
