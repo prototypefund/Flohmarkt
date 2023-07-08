@@ -10,7 +10,7 @@
       p.pycryptodome
       p.email-validator
       p.slowapi
-      p.shapely
+      p.haversine
     ];
   in
   rec

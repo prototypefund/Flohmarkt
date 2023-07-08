@@ -12,6 +12,7 @@ from fastapi.responses import JSONResponse, Response
 from fastapi.encoders import jsonable_encoder
 from typing import List
 
+from flohmarkt.geo import is_inside_perimeter
 from flohmarkt.config import cfg
 from flohmarkt.signatures import verify, sign
 from flohmarkt.http import HttpClient
@@ -221,10 +222,14 @@ async def create_new_item(req: Request, msg: dict):
 
     new_user = await replicate_user(msg["actor"])
 
+    if not is_inside_perimeter(msg["object"]["flohmarkt:data"]["coordinates"]):
+        raise HTTPException(status_code=403, detail="Cannot accept item beyond perimeter")
+
     ident = msg["object"]["flohmarkt:data"]["original_id"]
     item = await ItemSchema.retrieve_single_id(ident)
     if item is not None:
         raise Exception(f"Not allowed to override existing item: Double ID {ident}")
+
 
     item = {
         "id": ident,
@@ -659,6 +664,7 @@ async def item_to_activity(item: ItemSchema, user: UserSchema):
     """
     hostname = cfg["General"]["ExternalURL"]
 
+    settings = await InstanceSettingsSchema.retrieve()
 
     attachments = []
     for image in item["images"]:
@@ -689,6 +695,7 @@ async def item_to_activity(item: ItemSchema, user: UserSchema):
                 "name": item["name"],
                 "description": item["description"],
                 "original_id": item["id"],
+                "coordinates": settings["coordinates"],
             },
             "summary": None,
             "inReplyTo": None,
