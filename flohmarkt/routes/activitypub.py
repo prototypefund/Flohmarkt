@@ -222,7 +222,7 @@ async def create_new_item(req: Request, msg: dict):
 
     new_user = await replicate_user(msg["actor"])
 
-    if not is_inside_perimeter(msg["object"]["flohmarkt:data"]["coordinates"]):
+    if not (await is_inside_perimeter(msg["object"]["flohmarkt:data"]["coordinates"])):
         raise HTTPException(status_code=403, detail="Cannot accept item beyond perimeter")
 
     ident = msg["object"]["flohmarkt:data"]["original_id"]

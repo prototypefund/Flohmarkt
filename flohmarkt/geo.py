@@ -2,7 +2,7 @@ import haversine
 
 from flohmarkt.models.instance_settings import InstanceSettingsSchema
 
-def is_inside_perimeter(c):
+async def is_inside_perimeter(c):
     """
         Returns true if the given lanlng coords are located
         inside this instance's range. False otherwise.
