@@ -2,6 +2,7 @@ import os
 import configparser
 
 CONFIGPATH = [
+    '/etc/flohmarkt',
     '/etc',
     '.'
 ]
