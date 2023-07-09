@@ -42,8 +42,8 @@ class Database:
 
     @classmethod
     async def delete(cls, ident: str):
-        doc = await cls.find_one(ident)
         uuid = ident["id"]
+        doc = await cls.find_one(ident)
         rev = doc["_rev"]
         url = cfg["Database"]["Server"]+f"flohmarkt/{uuid}?rev={rev}"
         try:
