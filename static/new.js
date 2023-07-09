@@ -28,7 +28,7 @@ createBtn.addEventListener('click', event => {
 const createForm = document.getElementById('create-form');
 let inputValid = 0;
 createForm.querySelectorAll('input, textarea').forEach((input, index) => {
-    input.addEventListener('change', function() {
+    input.addEventListener('keyup', function() {
         let valid;
         switch (this.id) {
             case 'title':
@@ -45,7 +45,7 @@ createForm.querySelectorAll('input, textarea').forEach((input, index) => {
         const mask = 1 << index;
         inputValid = valid ? inputValid | mask : inputValid & ~mask;
         console.log(inputValid);
-        createBtn.disabled = inputValid !== 15; // 1111
+        createBtn.disabled = inputValid !== 14; // 1111
     });
 });
 
