@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from fastapi.encoders import jsonable_encoder
 
+from flohmarkt.config import cfg
 from flohmarkt.models.user import UserSchema
 from flohmarkt.routes.activitypub import replicate_user
 
@@ -8,8 +9,10 @@ router = APIRouter()
 
 @router.get("/by_remote", response_description="The url of a user avatar")
 async def get_avatar(url:str):
-    user = await UserSchema.retrieve_single_remote_url(url)
+    user = await UserSchema.retrieve_single_id(url)
     if user is None:
+        user = await UserSchema.retrieve_single_remote_url(url)
+    if user is None and not url.startswith(cfg["General"]["ExternalURL"]):
         try:
             # TODO: replace with eventual consistency
             #       implement a background service that 
