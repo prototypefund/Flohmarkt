@@ -1,0 +1,86 @@
+import { fetchJSON, postJSON } from "./../utils.js";
+import { createElement } from "./element.js";
+import { getCurrentUser, isCurrentUser } from "./../current_user.js";
+
+const current_user = await getCurrentUser;
+
+const conversation_users = {};
+
+export const getUser = async user_url => {
+    if (user_url in conversation_users) {
+        return conversation_users[user_url];
+    } else {
+        const u = await fetchJSON('avatar/by_remote?url='+encodeURIComponent(user_url));
+        conversation_users[user_url] = u;
+        return u;
+    }
+}
+
+export const createMessage = message => {
+    const messageElement = createElement('p', null, '');
+    messageElement.innerHTML = message.content;
+    messageElement.classList.add("message");
+    const cssclass = isCurrentUser(message) ? "message_me" : "message_you";
+    messageElement.classList.add(cssclass);
+    if ("overridden" in message) {
+	messageElement.classList.add("message_overridden");
+    }
+    return messageElement;
+}
+
+export const createConversation = async conversation => {
+    const conversationAllContainer = createElement('div', null, "");
+    const conversationMessagesContainer = createElement('div', null, "");
+    conversationMessagesContainer.id = conversation.id;
+    conversationMessagesContainer.classList.add('message_container');
+    const messages = "messages" in conversation ? conversation.messages : [];
+    messages.forEach(message=> {
+	    conversationMessagesContainer.appendChild(createMessage(message));
+    });
+
+    const conversationFormContainer = createElement('form',null, '');
+    const sendButton = createElement('button', null, 'Send');
+    const assignButton = createElement('button', null, 'Assign');
+    assignButton.style.display="none";
+    if (current_user.id == conversation.user_id) {
+        assignButton.style.display="inline";
+    }
+    const textArea = createElement('textarea', null, '');
+    textArea.name="content";
+    conversationFormContainer.appendChild(textArea);
+    conversationFormContainer.appendChild(sendButton);
+    conversationFormContainer.appendChild(assignButton);
+    sendButton.addEventListener('click', event => {
+        event.preventDefault();
+
+        const formData = new FormData(conversationFormContainer);
+        postJSON("/api/v1/conversation/to_item/"+conversation.item_id, {
+            text: formData.get('content'),
+            conversation_id :  conversation.id,
+            item_id :  conversation.item_id
+        })
+        .then(async data => {
+            const m = createMessage(data["messages"].at(-1));
+            conversationMessagesContainer.appendChild(m);
+        });
+    });
+    assignButton.addEventListener('click', event=> {
+        event.preventDefault();
+
+        const formData = new FormData(conversationFormContainer);
+        postJSON("/api/v1/item/"+conversation.item_id+"/give", {
+            text: formData.get('content'),
+            conversation_id :  conversation.id,
+            item_id :  conversation.item_id
+        })
+        .then(async data => {
+            const m = createMessage(data["messages"].at(-1));
+            conversationMessagesContainer.appendChild(m);
+        });
+    });
+
+    conversationAllContainer.appendChild(conversationMessagesContainer);
+    conversationAllContainer.appendChild(conversationFormContainer);
+
+    return conversationAllContainer;
+}

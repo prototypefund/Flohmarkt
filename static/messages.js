@@ -2,6 +2,7 @@ import { fetchJSON, postJSON } from "./utils.js";
 import { createSmallAvatar } from "./create/avatar.js";
 import { getCurrentUser, isCurrentUser } from "./current_user.js";
 import { createElement } from "./create/element.js";
+import { createMessage, createConversation } from "./create/message.js";
 
 const [conversations, currentUser] = await Promise.all([
     fetchJSON('conversation/own'),
@@ -34,51 +35,7 @@ if (conversations.length == 10) {
     });
 }
 
-var current_conversation = null;
-
 const convDisplay = document.getElementById('conversation-display');
-
-const createMessage = function(container, message) {
-    const messageElement = createElement('p', null, '');
-    messageElement.innerHTML = message.content;
-    messageElement.classList.add("message");
-    const cssclass = isCurrentUser(message) ? "message_me" : "message_you";
-    messageElement.classList.add(cssclass);
-    if ("overridden" in message) {
-        messageElement.classList.add("message_overridden");
-    }
-    container.appendChild(messageElement);
-}
-
-const renderConversation = convo => {
-    convDisplay.innerHTML = "";
-    convo.messages.forEach( m=> {
-        createMessage(convDisplay, m);
-    });
-
-    const conversationFormContainer = createElement('form',null, '');
-    const sendButton = createElement('button', null, 'Send');
-    //const assignButton = createElement('button', null, 'Assign');
-    const textArea = createElement('textarea', null, '');
-    textArea.name="content";
-    conversationFormContainer.appendChild(textArea);
-    conversationFormContainer.appendChild(sendButton);
-    //conversationFormContainer.appendChild(assignButton);
-    sendButton.addEventListener('click', event => {
-        event.preventDefault();
-
-        const formData = new FormData(conversationFormContainer);
-        postJSON("/api/v1/conversation/to_item/"+convo.item_id, {
-            text: formData.get('content'),
-            conversation_id :  current_conversation.id,
-            item_id :  convo.item_id
-        })
-        .then(async data => {
-            const messagesContainer = renderConversation(data);
-        });
-    });
-    convDisplay.append(conversationFormContainer);
-}
 
 const convSelector = document.getElementById('conversation-selector');
 
@@ -93,7 +50,6 @@ const renderConversationButton = async convo => {
     if (convo.user_id == currentUser.id) {
         direction = DIR_IN;
     }
-
 
     const row = createElement('tr', 'convo_row', '');
     const cell = createElement('td', 'convo_cell', '');
@@ -113,9 +69,10 @@ const renderConversationButton = async convo => {
     cell.appendChild(createSmallAvatar(currentUser));
     cell.appendChild(createElement('span','', items[convo.item_id].name));
     row.appendChild(cell);
-    row.addEventListener('click', e=>  {
-        current_conversation = convo;
-        renderConversation(convo)
+    row.addEventListener('click', async e=>  {
+        const c = await createConversation(convo);
+        convDisplay.innerHTML = "";
+        convDisplay.appendChild(c);
     });
     convSelector.appendChild(row);
 }

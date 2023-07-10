@@ -2,8 +2,9 @@ import { fetchJSON, postJSON, deleteCall } from "./utils.js";
 import { createItem } from "./create/item.js";
 import { createElement } from "./create/element.js";
 import { createImage } from "./create/image.js";
-import { createAvatar,createSmallAvatar } from "./create/avatar.js";
-import { getCurrentUser, isCurrentUser } from "./current_user.js";
+import { createMessage, createConversation, getUser } from "./create/message.js";
+import { createAvatar, createSmallAvatar } from "./create/avatar.js";
+import { getCurrentUser } from "./current_user.js";
 
 const [item, currentUser] = await Promise.all([
     fetchJSON('item/' + window.location.pathname.replace(/^.+?[/]/, '')),
@@ -21,13 +22,6 @@ if (token !== null) {
     conversations = await fetchJSON('conversation/by_item/' + window.location.pathname.replace(/^.+?[/]/, ''));
 }
 const user = await fetchJSON('user/' + item.user);
-const conversation_users = {};
-
-for (const conversation in conversations) {
-    const c = conversations[conversation];
-    const conv_user = await fetchJSON('avatar/by_remote?url='+encodeURIComponent(c.remote_user));
-    conversation_users[c.remote_user] = conv_user;
-}
 
 const heading = document.getElementById('heading');
 heading.prepend(createAvatar(user));
@@ -47,41 +41,6 @@ itemFragment.appendChild(itemOperationContainer);
 
 const conversationsFragment = document.createDocumentFragment();
 const conversationIndicatorContainer = createElement('div',null, '');
-const conversationFormContainer = createElement('form',null, '');
-const sendButton = createElement('button', null, 'Send');
-const assignButton = createElement('button', null, 'Assign');
-var current_conversation = "";
-sendButton.addEventListener('click', event => {
-    event.preventDefault();
-
-    const formData = new FormData(conversationFormContainer);
-    postJSON("/api/v1/conversation/to_item/"+item.id, {
-        text: formData.get('content'),
-        conversation_id :  current_conversation,
-        item_id :  item.id
-    })
-    .then(async data => {
-        const messagesContainer = createConversation(data);
-	createMessage(messagesContainer, data["messages"].at(-1));
-    });
-});
-assignButton.addEventListener('click', event=> {
-    event.preventDefault();
-    const formData = new FormData(conversationFormContainer);
-    postJSON("/api/v1/item/"+item.id+"/give", {
-        text: formData.get('content'),
-        conversation_id :  current_conversation,
-        item_id :  item.id
-    })
-    .then(async data => {
-        console.log(data);
-    });
-});
-const textArea = createElement('textarea', null, '');
-textArea.name="content";
-conversationFormContainer.appendChild(textArea);
-conversationFormContainer.appendChild(sendButton);
-conversationFormContainer.appendChild(assignButton);
 
 const conversationContainers = {};
 
@@ -90,58 +49,25 @@ const conversationLoginHintText = createElement('p',null, '');
 conversationLoginHintText.innerHTML = 'To participate in this conversation please <a href="/login">log in</a> or <a href="/register">create an account</a>.';
 conversationLoginHintContainer.appendChild(conversationLoginHintText);
 
-const createConversation = function(conversation) {
-    if (conversation.id in conversationContainers) {
-        return conversationContainers[conversation.id];
-    }
-    const indicator = createSmallAvatar(conversation_users[conversation.remote_user]);
+const conversationContainer = createElement('div',null, '');
+conversations.forEach(async conversation => {
+    const container = await createConversation(conversation);
+    conversationContainers[conversation.id] = container;
+    const indicator = createSmallAvatar(getUser(conversation.remote_user));
     indicator.name = conversation.id;
     indicator.onclick = (t) => {
-        const mcs = document.getElementsByClassName('message_container');
-	for (const mc of mcs) {
-	    const is_current = mc.id == t.srcElement.name;
-	    mc.style.display = is_current ? "block" : "none";
-	    if (is_current) {
-		current_conversation = mc.id
-	    }
-	}
+        conversationContainer.innerHTML = "";
+        const c = conversationContainers[t.srcElement.name];
+        conversationContainer.appendChild(c);
+        current_conversation = t.srcElement.name;
     };
-    const conversationMessagesContainer = createElement('div', null, "");
     conversationIndicatorContainer.appendChild(indicator);
-    conversationMessagesContainer.id = conversation.id;
-    conversationMessagesContainer.style.display = "none";
-    conversationMessagesContainer.classList.add('message_container');
-    conversationContainer.appendChild(conversationMessagesContainer);
-    conversationContainers[conversation.id] = conversationMessagesContainer;
-    return conversationMessagesContainer;
-}
-
-const createMessage = function(container, message) {
-    const messageElement = createElement('p', null, '');
-    messageElement.innerHTML = message.content;
-    messageElement.classList.add("message");
-    const cssclass = isCurrentUser(message) ? "message_me" : "message_you";
-    messageElement.classList.add(cssclass);
-    if ("overridden" in message) {
-	messageElement.classList.add("message_overridden");
-    }
-    container.appendChild(messageElement);
-}
-
-const conversationContainer = createElement('div',null, '');
-conversations.forEach(conversation => {
-    const container = createConversation(conversation);
-    const messages = "messages" in conversation ? conversation.messages : [];
-    messages.forEach(message=> {
-	    createMessage(container, message);
-    });
 });
 
 conversationsFragment.appendChild(conversationIndicatorContainer);
 conversationsFragment.appendChild(conversationContainer);
-if (token !== null) {
-    conversationsFragment.appendChild(conversationFormContainer);
-} else {
+
+if (token === null) {
     conversationsFragment.appendChild(conversationLoginHintContainer);
 }
 
