@@ -540,11 +540,16 @@ blockquote footer {
 }
 
 .message {
+    margin-bottom:5px;
     border-radius: 5px;
     border-spacing: 0px;
     border: 1px solid #333;
     padding: 10px;
     width:80%;
+}
+
+.messagedate {
+    font-size:10px;
 }
 
 .message_overridden {
@@ -559,6 +564,18 @@ blockquote footer {
 .message_you {
     background-color: var(--color-link);
     margin-right: 20%;
+}
+
+.message_ava {
+    margin:10px;
+    margin-left:20px;
+}
+
+.message_ava_me {
+    float: right;;
+}
+.message_ava_you {
+    float: left;;
 }
 
 .active_convo_selector {

@@ -1,6 +1,7 @@
 import { fetchJSON, postJSON } from "./../utils.js";
 import { createElement } from "./element.js";
 import { getCurrentUser, isCurrentUser } from "./../current_user.js";
+import { createSmallAvatar } from "./avatar.js";
 
 const current_user = await getCurrentUser;
 
@@ -16,15 +17,28 @@ export const getUser = async user_url => {
     }
 }
 
-export const createMessage = message => {
-    const messageElement = createElement('p', null, '');
-    messageElement.innerHTML = message.content;
+const makedate = ds => {
+    const d = new Date(Date.parse(ds.replace("Z","+0000")));
+    return d.toLocaleString();
+}
+
+export const createMessage = async message => {
+    const messageElement = createElement('div', null, '');
+    const dateElement = createElement('div', 'messagedate', makedate(message.published));
+    const textElement = createElement('p', null, '');
+    textElement.innerHTML = message.content;
     messageElement.classList.add("message");
     const cssclass = isCurrentUser(message) ? "message_me" : "message_you";
     messageElement.classList.add(cssclass);
     if ("overridden" in message) {
-	messageElement.classList.add("message_overridden");
+        messageElement.classList.add("message_overridden");
     }
+    const ava = createSmallAvatar(await getUser(message.attributedTo));
+    ava.classList.add("message_ava");
+    ava.classList.add(isCurrentUser(message) ? "message_ava_me" : "message_ava_you");
+    messageElement.appendChild(ava);
+    messageElement.appendChild(dateElement);
+    messageElement.appendChild(textElement);
     return messageElement;
 }
 
@@ -34,8 +48,8 @@ export const createConversation = async conversation => {
     conversationMessagesContainer.id = conversation.id;
     conversationMessagesContainer.classList.add('message_container');
     const messages = "messages" in conversation ? conversation.messages : [];
-    messages.forEach(message=> {
-	    conversationMessagesContainer.appendChild(createMessage(message));
+    messages.forEach(async message=> {
+	    conversationMessagesContainer.appendChild(await createMessage(message));
     });
 
     const conversationFormContainer = createElement('form',null, '');
@@ -50,7 +64,7 @@ export const createConversation = async conversation => {
     conversationFormContainer.appendChild(textArea);
     conversationFormContainer.appendChild(sendButton);
     conversationFormContainer.appendChild(assignButton);
-    sendButton.addEventListener('click', event => {
+    sendButton.addEventListener('click', async event => {
         event.preventDefault();
 
         const formData = new FormData(conversationFormContainer);
@@ -60,11 +74,11 @@ export const createConversation = async conversation => {
             item_id :  conversation.item_id
         })
         .then(async data => {
-            const m = createMessage(data["messages"].at(-1));
+            const m = await createMessage(data["messages"].at(-1));
             conversationMessagesContainer.appendChild(m);
         });
     });
-    assignButton.addEventListener('click', event=> {
+    assignButton.addEventListener('click', async event=> {
         event.preventDefault();
 
         const formData = new FormData(conversationFormContainer);
@@ -74,7 +88,7 @@ export const createConversation = async conversation => {
             item_id :  conversation.item_id
         })
         .then(async data => {
-            const m = createMessage(data["messages"].at(-1));
+            const m = await createMessage(data["messages"].at(-1));
             conversationMessagesContainer.appendChild(m);
         });
     });
