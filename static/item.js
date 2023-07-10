@@ -63,8 +63,7 @@ conversations.forEach(async conversation => {
     };
     conversationIndicatorContainer.appendChild(indicator);
 });
-console.log(conversations);
-if (conversations.length == 0) {
+if (conversations.length == 0 && item.user != currentUser.id) {
     const container = await createConversation({"item_id": item.id, "id": null, "messages":[]});
     conversationContainer.appendChild(container);
     
