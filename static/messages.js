@@ -2,7 +2,7 @@ import { fetchJSON, postJSON } from "./utils.js";
 import { createSmallAvatar } from "./create/avatar.js";
 import { getCurrentUser, isCurrentUser } from "./current_user.js";
 import { createElement } from "./create/element.js";
-import { createMessage, createConversation } from "./create/message.js";
+import { createMessage, createConversation, getUser } from "./create/message.js";
 
 const [conversations, currentUser] = await Promise.all([
     fetchJSON('conversation/own'),
@@ -42,6 +42,8 @@ const convSelector = document.getElementById('conversation-selector');
 const DIR_IN = 0;
 const DIR_OUT = 1;
 
+var currentConversationButton = null;
+
 const renderConversationButton = async convo => {
     var direction = null;
     if (convo.remote_url == currentUser.remote_url) {
@@ -66,15 +68,33 @@ const renderConversationButton = async convo => {
     } else {
         cell.appendChild(createElement('span','',' 📨 '));
     }
-    cell.appendChild(createSmallAvatar(currentUser));
+    if (direction == DIR_IN) {
+        cell.appendChild(createSmallAvatar(await getUser(convo.remote_user)));
+    } else {
+        cell.appendChild(createSmallAvatar(await getUser(convo.user_id)));
+    }
     cell.appendChild(createElement('span','', items[convo.item_id].name));
     row.appendChild(cell);
     row.addEventListener('click', async e=>  {
         const c = await createConversation(convo);
         convDisplay.innerHTML = "";
         convDisplay.appendChild(c);
+        cell.classList.add("active_convo_selector");
+        if (currentConversationButton !== null) {
+            currentConversationButton.classList.remove("active_convo_selector");
+        }
+        currentConversationButton = cell;
     });
+    if (conversations.indexOf(convo) == 0) {
+        cell.classList.add("active_convo_selector");
+        currentConversationButton = cell;
+    }
     convSelector.appendChild(row);
 }
 
-conversations.forEach(renderConversationButton);
+await conversations.forEach(renderConversationButton);
+
+// Select the first conversation
+const c = await createConversation(conversations[0]);
+convDisplay.appendChild(c);
+

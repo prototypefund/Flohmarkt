@@ -53,16 +53,22 @@ const conversationContainer = createElement('div',null, '');
 conversations.forEach(async conversation => {
     const container = await createConversation(conversation);
     conversationContainers[conversation.id] = container;
-    const indicator = createSmallAvatar(getUser(conversation.remote_user));
+    console.log(conversation.remote_user);
+    const indicator = createSmallAvatar(await getUser(conversation.remote_user));
     indicator.name = conversation.id;
     indicator.onclick = (t) => {
         conversationContainer.innerHTML = "";
         const c = conversationContainers[t.srcElement.name];
         conversationContainer.appendChild(c);
-        current_conversation = t.srcElement.name;
     };
     conversationIndicatorContainer.appendChild(indicator);
 });
+console.log(conversations);
+if (conversations.length == 0) {
+    const container = await createConversation({"item_id": item.id, "id": null, "messages":[]});
+    conversationContainer.appendChild(container);
+    
+}
 
 conversationsFragment.appendChild(conversationIndicatorContainer);
 conversationsFragment.appendChild(conversationContainer);
