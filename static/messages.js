@@ -10,18 +10,23 @@ const [conversations, currentUser] = await Promise.all([
 ]);
 
 const items = {};
-if (conversations.length > 0 ) {
-    var itemIds = "?";
-    conversations.forEach(async convo => {
-        itemIds += "item="+convo["item_id"]+"&";
-    });
-    itemIds = itemIds.slice(0,-1);
 
-    const items_res =await fetchJSON('item/many'+itemIds)
-    items_res.forEach(item => {
-        items[item["id"]] = item;
-    });
+const loadItems = async conversations => {
+    if (conversations.length > 0 ) {
+        var itemIds = "?";
+        conversations.forEach(async convo => {
+            itemIds += "item="+convo["item_id"]+"&";
+        });
+        itemIds = itemIds.slice(0,-1);
+
+        const items_res =await fetchJSON('item/many'+itemIds)
+        items_res.forEach(item => {
+            items[item["id"]] = item;
+        });
+    }
 }
+
+await loadItems(conversations);
 
 var skip = 0;
 
@@ -31,6 +36,7 @@ if (conversations.length == 10) {
     moreButton.addEventListener('click', async e => {
         skip+=10;
         const newConversations = await fetchJSON('conversation/own?skip='+skip);
+        await loadItems(newConversations);
         newConversations.forEach(renderConversationButton);
     });
 }
