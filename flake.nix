@@ -96,7 +96,7 @@
                   type = lib.types.str;
                   description = ''
                     The external URL under which this instance will
-                    be available
+                    be available. DO NOT use a TRAILING SLASH!
                   '';
                 };
                 debugMode = lib.mkOption {

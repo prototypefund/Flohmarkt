@@ -19,3 +19,6 @@ for path in CONFIGPATH:
         break
 if not found:
     raise Error("Could not load config!")
+
+# remove trailing slash from ExternalURL
+cfg["General"]["ExternalURL"] = cfg["General"]["ExternalURL"].rstrip("/")
