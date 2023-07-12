@@ -37,23 +37,6 @@
           python3
         ] ++ depfun python3Packages;
     };
-    dockerImage.default = nixpkgs.legacyPackages.x86_64-linux.dockerTools.buildLayeredImage {
-      name = "flohmarkt";
-      tag = "latest";
-      contents = [ packages.x86_64-linux.default ];
-      config = {
-        Cmd = [
-          "${nixpkgs.legacyPackages.x86_64-linux.python3.withPackages (p: depfun p ++ [packages.x86_64-linux.default ])}/bin/uvicorn"
-          "flohmarkt:app"
-          "--host 0.0.0.0"
-          "--port 8080"
-        ];
-        WorkingDir = "${./.}";
-        ExposedPorts = {
-          "8080/tcp"= {}; 
-        };
-      };
-    };
     nixosModule.default = { config, lib, ... }:
       {
         options = {
