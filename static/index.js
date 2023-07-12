@@ -44,8 +44,18 @@ for (let key in reason_mapping) {
 itemsNewest.push(...itemsContested);
 itemsNewest.push(...itemsOldest);
 
+const keys = {};
+const to_display = [];
 
-const shuffled = itemsNewest
+itemsNewest.forEach(async item=> {
+    if (!(item.id in keys)) {
+        to_display.push(item);
+        keys[item.id] = 1;
+    }
+});
+
+
+const shuffled = to_display
     .map(value => ({ value, sort: Math.random() }))
     .sort((a, b) => a.sort - b.sort)
     .map(({ value }) => value)
