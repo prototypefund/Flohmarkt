@@ -67,8 +67,7 @@ async def follow_instance(url : str, current_user: UserSchema = Depends(get_curr
     }
     sign("post", url + "/inbox", headers, json.dumps(follow), instance_user)
     async with HttpClient().post(url + "/inbox", data=json.dumps(follow), headers = headers) as resp:
-        print(resp.status)
-        if resp.status != 200:
+        if resp.status not in ( 200, 202 ):
             raise HTTPException(status_code=400, detail=f"Received {resp.status} upon accepting")
     
     return instance_settings["pending_following"]
@@ -145,7 +144,7 @@ async def reject_instance(url : str, current_user: UserSchema = Depends(get_curr
     }
     sign("post", url+"/inbox", headers, json.dumps(accept), instance_user)
     async with HttpClient().post(url+"/inbox", data=json.dumps(accept), headers = headers) as resp:
-        if resp.status != 200:
+        if resp.status not in ( 200, 202 ):
             raise HTTPException(status_code=400, detail=f"Received {resp.status} upon accepting")
         return
 
@@ -190,7 +189,7 @@ async def accept_instance(url : str, current_user: UserSchema = Depends(get_curr
     }
     sign("post", url+"/inbox", headers, json.dumps(accept), instance_user)
     async with HttpClient().post(url+"/inbox", data=json.dumps(accept), headers = headers) as resp:
-        if resp.status != 200:
+        if resp.status not in (200, 202):
             raise HTTPException(status_code=400, detail=f"Received {resp.status} upon accepting")
         return
 
