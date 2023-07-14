@@ -16,7 +16,7 @@ while True:
     try:
         print(f"Attempting to connect to DB at: {probe_url}")
         req = urllib.request.Request(probe_url)
-        res = urllib.request.urlopen(req, timeout=10)
+        pass #res = urllib.request.urlopen(req, timeout=10)
     except urllib.error.URLError as e:
         print("Failed attempt: "+str(e))
         time.sleep(0.2)
