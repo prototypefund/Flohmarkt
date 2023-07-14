@@ -51,50 +51,52 @@ export const createConversation = async conversation => {
     messages.forEach(async message=> {
 	    conversationMessagesContainer.appendChild(await createMessage(message));
     });
-
-    const conversationFormContainer = createElement('form',null, '');
-    const sendButton = createElement('button', null, 'Send');
-    const assignButton = createElement('button', null, 'Assign');
-    assignButton.style.display="none";
-    if (current_user.id == conversation.user_id) {
-        assignButton.style.display="inline";
-    }
-    const textArea = createElement('textarea', null, '');
-    textArea.name="content";
-    conversationFormContainer.appendChild(textArea);
-    conversationFormContainer.appendChild(sendButton);
-    conversationFormContainer.appendChild(assignButton);
-    sendButton.addEventListener('click', async event => {
-        event.preventDefault();
-
-        const formData = new FormData(conversationFormContainer);
-        postJSON("/api/v1/conversation/to_item/"+conversation.item_id, {
-            text: formData.get('content'),
-            conversation_id :  conversation.id,
-            item_id :  conversation.item_id
-        })
-        .then(async data => {
-            const m = await createMessage(data["messages"].at(-1));
-            conversationMessagesContainer.appendChild(m);
-        });
-    });
-    assignButton.addEventListener('click', async event=> {
-        event.preventDefault();
-
-        const formData = new FormData(conversationFormContainer);
-        postJSON("/api/v1/item/"+conversation.item_id+"/give", {
-            text: formData.get('content'),
-            conversation_id :  conversation.id,
-            item_id :  conversation.item_id
-        })
-        .then(async data => {
-            const m = await createMessage(data["messages"].at(-1));
-            conversationMessagesContainer.appendChild(m);
-        });
-    });
-
     conversationAllContainer.appendChild(conversationMessagesContainer);
-    conversationAllContainer.appendChild(conversationFormContainer);
+
+    if (current_user !== null) {
+        const conversationFormContainer = createElement('form',null, '');
+        const sendButton = createElement('button', null, 'Send');
+        const assignButton = createElement('button', null, 'Assign');
+        assignButton.style.display="none";
+        if (current_user.id == conversation.user_id) {
+            assignButton.style.display="inline";
+        }
+        const textArea = createElement('textarea', null, '');
+        textArea.name="content";
+        conversationFormContainer.appendChild(textArea);
+        conversationFormContainer.appendChild(sendButton);
+        conversationFormContainer.appendChild(assignButton);
+        sendButton.addEventListener('click', async event => {
+            event.preventDefault();
+
+            const formData = new FormData(conversationFormContainer);
+            postJSON("/api/v1/conversation/to_item/"+conversation.item_id, {
+                text: formData.get('content'),
+                conversation_id :  conversation.id,
+                item_id :  conversation.item_id
+            })
+            .then(async data => {
+                const m = await createMessage(data["messages"].at(-1));
+                conversationMessagesContainer.appendChild(m);
+            });
+        });
+        assignButton.addEventListener('click', async event=> {
+            event.preventDefault();
+
+            const formData = new FormData(conversationFormContainer);
+            postJSON("/api/v1/item/"+conversation.item_id+"/give", {
+                text: formData.get('content'),
+                conversation_id :  conversation.id,
+                item_id :  conversation.item_id
+            })
+            .then(async data => {
+                const m = await createMessage(data["messages"].at(-1));
+                conversationMessagesContainer.appendChild(m);
+            });
+        });
+
+        conversationAllContainer.appendChild(conversationFormContainer);
+    }
 
     return conversationAllContainer;
 }
