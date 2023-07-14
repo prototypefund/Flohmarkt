@@ -1,5 +1,19 @@
 import { createSmallAvatar } from "./create/avatar.js";
 
+const token_expiry_check = () => {
+    if (token != undefined && token != null && typeof(token) === 'string') {
+        const parsedToken = JSON.parse(window.sessionStorage.getItem('parsedToken'));
+        if (parsedToken.exp < Date.now()) {
+            window.sessionStorage.setItem('parseToken', null);
+            window.sessionStorage.setItem('token', null);
+            window.location = window.location;
+        }
+        window.setTimeout(token_expiry_check, 1000);
+    }
+};
+
+document.addEventListener('load', token_expiry_check);
+
 const showElements = [];
 const token = window.sessionStorage.getItem('token');
 if (token != undefined && token != null && typeof(token) === 'string') {
