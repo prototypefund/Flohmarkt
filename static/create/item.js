@@ -33,16 +33,16 @@ export function createItem(item, details=false, watching=[]) {
 	    element.appendChild(g_right);
 	} else {
 	    element.addEventListener('mouseenter', e => {
-		var callback = null;
-		const f = ()=>{
-	            image.image_idx++;
-	            image.src = "/api/v1/image/"+item.images[(image.image_idx+1)%item.images.length];
-		    callback = window.setTimeout(f, 1000);
-		};
-	        callback = window.setTimeout(f, 1000);
-		element.addEventListener('mouseout', e=> {
-		    window.clearTimeout(callback);   
-		});
+            var callback = null;
+            const f = ()=>{
+                image.image_idx++;
+                image.src = "/api/v1/image/"+item.images[(image.image_idx+1)%item.images.length];
+                callback = window.setTimeout(f, 1000);
+            };
+            callback = window.setTimeout(f, 1000);
+            element.addEventListener('mouseout', e=> {
+                window.clearTimeout(callback);   
+            });
 	    });
 	}
         element.appendChild(image);
