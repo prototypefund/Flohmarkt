@@ -18,7 +18,6 @@ document.getElementById('login-btn').addEventListener('click', async event => {
         if (typeof(data) === 'string') {
             window.sessionStorage.setItem('token', data);
             window.sessionStorage.setItem('parsedToken', parse_jwt(data));
-            window.sessionStorage.setItem('test', {"lol":"lal"});
             window.location.pathname = '/~' + loginForm.querySelector('input').value;
         }
         else {
