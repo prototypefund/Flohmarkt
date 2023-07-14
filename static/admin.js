@@ -99,6 +99,10 @@ const instanceRulesTextArea = document.getElementById('instance_rules');
 instanceRulesTextArea.value = instance_settings.rules;
 const instanceAboutTextArea = document.getElementById('instance_about');
 instanceAboutTextArea.value = instance_settings.about;
+const instanceImprintTextArea = document.getElementById('instance_imprint');
+instanceImprintTextArea.value = instance_settings.imprint;
+const instancePrivacyTextArea = document.getElementById('instance_privacy');
+instancePrivacyTextArea.value = instance_settings.privacy;
 const instanceRangeInput = document.getElementById('instance_perimeter');
 instanceRangeInput.value = instance_settings.perimeter;
 
@@ -112,6 +116,8 @@ instanceSaveButton.addEventListener('click', event => {
         perimeter: formData.get('instance_perimeter'),
         rules: formData.get('instance_rules'),
         about: formData.get('instance_about'),
+        imprint: formData.get('instance_imprint'),
+        privacy: formData.get('instance_privacy'),
     })
     .then(async data => {
 	// reload

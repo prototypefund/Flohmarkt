@@ -23,6 +23,8 @@ class InstanceSettingsSchema(BaseModel):
     class Config: 
         schema_extra = {
             "example": {
+                "data_privacy": "We take good care of your data",
+                "imprint": "This website is operated by Erika Mustermann, Hackerstr. 23, 13337 Leethausen",
                 "rules": "be excellent to each other",
                 "about": "my little instance for my little town",
                 "coordinates": "49.80:9.90",
@@ -51,6 +53,8 @@ class UpdateInstanceSettingsModel(BaseModel):
     name: Optional[str]
     about: Optional[str]
     rules: Optional[str]
+    imprint: Optional[str]
+    privacy: Optional[str]
     coordinates: Optional[Coordinates]
     perimeter: Optional[int]
 
