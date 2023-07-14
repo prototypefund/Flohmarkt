@@ -474,8 +474,6 @@ async def following():
 async def user_inbox(req: Request, name: str, msg : dict = Body(...) ):
     if not await verify(req):
         raise HTTPException(status_code=401, detail="request signature could not be validated")
-    else:
-        print("Valid signature")
     if msg['type'] == "Follow":
         result = await follow(msg)
         return Response(content="0", status_code=202)

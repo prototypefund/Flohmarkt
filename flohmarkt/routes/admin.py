@@ -60,8 +60,6 @@ async def follow_instance(url : str, current_user: UserSchema = Depends(get_curr
 
     follow = jsonable_encoder(follow)
 
-    print(follow)
-
     headers = {
         "Content-Type":"application/json"
     }
