@@ -34,6 +34,7 @@ class UserSchema(BaseModel):
     role : str = Field(...)
     remote_url : Optional[str] = None
     watching : list = []
+    creation_date : Optional[datetime.datetime] = datetime.datetime.now()
     
     class Config: 
         schema_extra = {
