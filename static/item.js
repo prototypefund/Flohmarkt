@@ -5,6 +5,7 @@ import { createImage } from "./create/image.js";
 import { createMessage, createConversation, getUser } from "./create/message.js";
 import { createAvatar, createSmallAvatar } from "./create/avatar.js";
 import { getCurrentUser } from "./current_user.js";
+import { createReportForm } from "./create/reportform.js";
 
 const [item, currentUser] = await Promise.all([
     fetchJSON('item/' + window.location.pathname.replace(/^.+?[/]/, '')),
@@ -34,10 +35,16 @@ deleteButton.addEventListener('click', async event=> {
     await deleteCall('/api/v1/item/' + item.id);
     window.location.pathname = '/~' + user.name;
 });
+const reportForm = createReportForm(item);
+reportForm.style.display = "none";
 const reportButton = createElement('button', null, 'Report');
+reportButton.addEventListener('click', e => {
+    reportForm.style.display = reportFrom.style.display == "none" ? "block" : "none";
+});
 itemOperationContainer.appendChild(deleteButton);
 itemOperationContainer.appendChild(reportButton);
 itemFragment.appendChild(itemOperationContainer);
+itemFragment.appendChild(reportForm);
 
 const conversationsFragment = document.createDocumentFragment();
 const conversationIndicatorContainer = createElement('div',null, '');
