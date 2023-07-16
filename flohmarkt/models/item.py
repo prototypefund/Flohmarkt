@@ -20,6 +20,7 @@ class ItemSchema(BaseModel):
     url : Optional[str] = ""
     conversations : Optional[set] = []
     creation_date : Optional[datetime.datetime] = datetime.datetime.now()
+    suspended : bool = False
     
     class Config: 
         schema_extra = {
