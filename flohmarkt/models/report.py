@@ -22,6 +22,13 @@ class ReportSchema(BaseModel):
         return reports
 
     @staticmethod
+    async def retrieve(item_id : str, limit=25, skip=0):
+        reports = []
+        for report in await Database.find({"type":"report"}):
+            reports.append(report)
+        return reports
+
+    @staticmethod
     async def add(data: dict, user:dict=None)->dict:
         data["type"] = "report"
         if not "id" in data:
