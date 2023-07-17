@@ -128,13 +128,13 @@ async def other(request: Request, q : str):
     return templates.TemplateResponse("search.html", {"request": request, "searchterm": q})
 
 @app.get("/imprint")
-async def imprint(request: Request, q : str):
+async def imprint(request: Request):
     settings = await InstanceSettingsSchema.retrieve()
     i = settings["imprint"]
     return templates.TemplateResponse("imprint.html", {"request": request, "imprint": i})
 
 @app.get("/privacy")
-async def privacy(request: Request, q : str):
+async def privacy(request: Request):
     settings = await InstanceSettingsSchema.retrieve()
     p = settings["privacy"]
     return templates.TemplateResponse("privacy.html", {"request": request, "privacy": p})
