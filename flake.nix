@@ -12,6 +12,7 @@
       p.email-validator
       p.slowapi
       p.haversine
+      p.magic
     ];
   in
   rec

@@ -107,7 +107,7 @@ uploadInput.addEventListener('change', () => {
                     canvas.height = height
                     
                     context.drawImage(image, 0, 0, width, height)
-                    srcData = canvas.toDataURL('image/jpeg')
+                    srcData = canvas.toDataURL('image/*')
                 }
                 window.fetch('/api/v1/image/', {
                         method: "post",
