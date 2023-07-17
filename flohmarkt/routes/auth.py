@@ -116,7 +116,9 @@ async def _(request: Request,
         return {"error": "email invalid "+str(e)+"'"+email+"'"}
 
     found_for_email = await UserSchema.retrieve_single_email(email)
-    found_for_name = await UserSchema.retrieve_single_email(username)
+    found_for_name = await UserSchema.retrieve_single_name(username)
+    
+    instance_name = await get_instance_name()
     
     if found_for_name is not None and found_for_email == found_for_name:
         if found_for_name["active"]:
@@ -144,7 +146,6 @@ async def _(request: Request,
     }
 
     new_user = await UserSchema.add(new_user)
-    instance_name = await get_instance_name()
 
     await send_registration_mail(new_user, instance_name, email)
 
