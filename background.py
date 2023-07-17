@@ -29,6 +29,7 @@ async def generate_searchvectors():
         await asyncio.sleep(4)
 
 async def get_remote_outbox(instance):
+    return #TODO: remove
     print(instance)
     async with HttpClient().get(instance+"/outbox", headers = {
             "Accept":"application/json"
