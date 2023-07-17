@@ -64,6 +64,32 @@ async def _(request: Request):
 async def _(request: Request):
     return templates.TemplateResponse("registered.html", {"request": request})
 
+async def send_registration_mail(new_user, instance_name, email):
+    server = aiosmtplib.SMTP(
+        hostname = cfg["SMTP"]["Server"],
+        port = int(cfg["SMTP"]["Port"]),
+        tls_context = ssl_context,
+        username = cfg["SMTP"]["User"],
+        password = cfg["SMTP"]["Password"],
+    )
+
+    await server.connect()
+
+    text = ACTIVATION_MAIL.format(
+            new_user["name"],
+            instance_name,
+            cfg["General"]["ExternalURL"],
+            new_user["activation_code"],
+            instance_name
+        )
+    message = MIMEText(text.encode('utf-8'), _charset='utf-8')
+    message["Subject"] = "Registration with {}".format(instance_name)
+    await server.sendmail(
+        cfg["SMTP"]["From"],
+        email,
+        message.as_string()
+    )
+
 @limiter.limit("1/minute")
 @router.post("/register")
 async def _(request: Request,
@@ -92,6 +118,13 @@ async def _(request: Request,
     found_for_email = await UserSchema.retrieve_single_email(email)
     found_for_name = await UserSchema.retrieve_single_email(username)
     
+    if found_for_name is not None and found_for_email == found_for_name:
+        if found_for_name["active"]:
+            return {"error": "user already exists"}
+        else:
+            await send_registration_mail(found_for_email, instance_name, email)
+            return {"result": "resent mail"}
+
     if found_for_name is not None or found_for_email is not None:
         return {"error": "user already exists"}
 
@@ -113,31 +146,7 @@ async def _(request: Request,
     new_user = await UserSchema.add(new_user)
     instance_name = await get_instance_name()
 
-
-    server = aiosmtplib.SMTP(
-        hostname = cfg["SMTP"]["Server"],
-        port = int(cfg["SMTP"]["Port"]),
-        tls_context = ssl_context,
-        username = cfg["SMTP"]["User"],
-        password = cfg["SMTP"]["Password"],
-    )
-
-    await server.connect()
-
-    text = ACTIVATION_MAIL.format(
-            new_user["name"],
-            instance_name,
-            cfg["General"]["ExternalURL"],
-            new_user["activation_code"],
-            instance_name
-        )
-    message = MIMEText(text.encode('utf-8'), _charset='utf-8')
-    message["Subject"] = "Registration with {}".format(instance_name)
-    await server.sendmail(
-        cfg["SMTP"]["From"], 
-        email, 
-        message.as_string()
-    )
+    await send_registration_mail(new_user, instance_name, email)
 
     return {"result": True}
 
@@ -190,8 +199,8 @@ async def _(request: Request, email: str = Form()):
         message = MIMEText(text.encode('utf-8'), _charset='utf-8')
         message["Subject"] = "Password reset on {}".format(instance_name)
         await server.sendmail(
-            cfg["SMTP"]["From"], 
-            email, 
+            cfg["SMTP"]["From"],
+            email,
             message.as_string()
         )
     return {"result": True}
