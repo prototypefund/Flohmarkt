@@ -1,6 +1,8 @@
-from fastapi import HTTPException, Body
+from fastapi import APIRouter, Request, Depends, HTTPException, Body
 
-from flohmarkt.report import ReportSchema
+from flohmarkt.models.report import ReportSchema
+from flohmarkt.models.user import UserSchema
+from flohmarkt.auth import get_current_user
 
 router = APIRouter()
 
