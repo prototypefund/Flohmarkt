@@ -6,6 +6,7 @@
       p.uvicorn
       p.fastapi
       p.aiohttp
+      p.aiosmtplib
       p.pyjwt
       p.pycryptodome
       p.email-validator

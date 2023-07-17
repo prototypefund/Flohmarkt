@@ -3,7 +3,7 @@ import datetime
 import jwt
 import crypt
 import email_validator
-import smtplib
+import aiosmtplib
 import uuid
 
 from email.mime.text import MIMEText
@@ -113,12 +113,17 @@ async def _(request: Request,
     new_user = await UserSchema.add(new_user)
     instance_name = await get_instance_name()
 
-    server = smtplib.SMTP(cfg["SMTP"]["Server"], int(cfg["SMTP"]["Port"]))
 
-    server.ehlo()
-    server.starttls(context=ssl_context)
-    server.ehlo()
-    server.login(cfg["SMTP"]["User"], cfg["SMTP"]["Password"])
+    server = aiosmtplib.SMTP(
+        hostname = cfg["SMTP"]["Server"],
+        port = int(cfg["SMTP"]["Port"]),
+        tls_context = ssl_context,
+        username = cfg["SMTP"]["User"],
+        password = cfg["SMTP"]["Password"],
+    )
+
+    await server.connect()
+
     text = ACTIVATION_MAIL.format(
             new_user["name"],
             instance_name,
@@ -128,7 +133,7 @@ async def _(request: Request,
         )
     message = MIMEText(text.encode('utf-8'), _charset='utf-8')
     message["Subject"] = "Registration with {}".format(instance_name)
-    server.sendmail(
+    await server.sendmail(
         cfg["SMTP"]["From"], 
         email, 
         message.as_string()
@@ -166,12 +171,16 @@ async def _(request: Request, email: str = Form()):
         user["reset_token"] = str(uuid.uuid4())
         await UserSchema.update(user["id"], user)
 
-        server = smtplib.SMTP(cfg["SMTP"]["Server"], int(cfg["SMTP"]["Port"]))
+        server = aiosmtplib.SMTP(
+            hostname = cfg["SMTP"]["Server"],
+            port = int(cfg["SMTP"]["Port"]),
+            tls_context = ssl_context,
+            username = cfg["SMTP"]["User"],
+            password = cfg["SMTP"]["Password"],
+        )
 
-        server.ehlo()
-        server.starttls(context=ssl_context)
-        server.ehlo()
-        server.login(cfg["SMTP"]["User"], cfg["SMTP"]["Password"])
+        await server.connect()
+
         text = PW_RESET_MAIL.format(
                 user["name"],
                 cfg["General"]["ExternalURL"],
@@ -180,7 +189,7 @@ async def _(request: Request, email: str = Form()):
             )
         message = MIMEText(text.encode('utf-8'), _charset='utf-8')
         message["Subject"] = "Password reset on {}".format(instance_name)
-        server.sendmail(
+        await server.sendmail(
             cfg["SMTP"]["From"], 
             email, 
             message.as_string()
