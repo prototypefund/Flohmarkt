@@ -23,6 +23,11 @@ if (token != undefined && token != null && typeof(token) === 'string') {
     detailsListItem.querySelector('.details-menu span').append(username);
     detailsListItem.querySelector('.details-menu .l-profile').href = '/~' + username;
     detailsListItem.querySelector('.details-menu .l-messaging').href = '/messages';
+    if (parsedToken.admin === true || parsedToken.moderator === true) {
+        detailsListItem.querySelector('.details-menu .l-site-moderation').href = '/moderation';
+    } else {
+        detailsListItem.querySelector('.details-menu .l-site-moderation').style.display = 'none';
+    }
     if (parsedToken.admin === true) {
         detailsListItem.querySelector('.details-menu .l-site-admin').href = '/admin';
     } else {
