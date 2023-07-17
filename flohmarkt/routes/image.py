@@ -40,11 +40,8 @@ async def upload_image(current_user : UserSchema = Depends(get_current_user), im
     imagefile.write(image)
     imagefile.close()
 
-    print(path)
-
     mime = m.file(path).split(";")[0]
 
-    print(mime)
     if not mime.startswith("image/"):
         os.unlink(path)
         raise HTTPException(status_code=400, detail="This mimetype is in an unacceptable condition. UNACCEPTABLE!1!!1")
@@ -63,12 +60,8 @@ async def get_image(ident: str):
 
     mime = m.file(path).split(";")[0]
 
-    print(mime[0])
-
     response = StreamingResponse(iter([data]),
         media_type=mime
     )
-
-    #response.headers["Content-Disposition"] = "attachment; filename="+ident+"."+ext
 
     return response
