@@ -1,6 +1,5 @@
-import json
-
 from fastapi import FastAPI, Request, Response, Depends, Form, HTTPException
+from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -80,9 +79,9 @@ async def root(request: Request):
 @app.get("/~{user}/{item}")
 async def other(request: Request, user: str, item: str):
     if "application/activity+json" in request.headers["accept"]:
+        headers = {"Content-type":"application/activity+json"}
         item = await get_item_activity(item, user)
-        item = json.dumps(item)
-        return Response(content=item, media_type="application/activity+json, application/ld+json")
+        return JSONResponse(content=item, headers=headers)
     else:
         item = await ItemSchema.retrieve_single_id(item)
         return templates.TemplateResponse("item.html", {"request": request, "user": user, "item": item})
