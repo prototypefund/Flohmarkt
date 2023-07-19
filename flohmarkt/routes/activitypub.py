@@ -853,7 +853,7 @@ async def user_outbox(name: str, page : bool = False, min_id : str = ""):
         }
 
 @router.get("/users/{name}", response_description="User Activitypub document")
-async def user(name: str):
+async def user_route(name: str):
     user = await UserSchema.retrieve_single_name(name)
     if not user:
         raise HTTPException(status_code=404, detail="User not found :(")

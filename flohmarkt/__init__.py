@@ -8,7 +8,7 @@ from slowapi.errors import RateLimitExceeded
 
 from flohmarkt.ratelimit import limiter
 from flohmarkt.config import cfg
-from flohmarkt.routes.activitypub import get_item_activity
+from flohmarkt.routes.activitypub import get_item_activity, user_route
 from flohmarkt.models.user import UserSchema
 from flohmarkt.models.item import ItemSchema
 from flohmarkt.models.instance_settings import InstanceSettingsSchema
@@ -88,6 +88,10 @@ async def other(request: Request, user: str, item: str):
 
 @app.get("/~{user}")
 async def other(request: Request, user: str):
+    if "application/activity+json" in request.headers["accept"]:
+        userdata = await user_route(user)
+        headers = {"Content-type":"application/activity+json"}
+        return JSONResponse(content=userdata, headers=headers)
     user = await UserSchema.retrieve_single_name(user)
     if user is None:
         raise HTTPException(status_code=404, detail="User not found :(")
