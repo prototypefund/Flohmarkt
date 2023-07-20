@@ -159,11 +159,9 @@ async def replicate_image(image_url : str) -> str:
         ident = str(uuid.uuid4())
 
     await assert_imagepath()
-    imagepath = os.path.join(cfg["General"]["DataPath"], "images", ident+".jpg")
+    imagepath = os.path.join(cfg["General"]["DataPath"], "images", ident)
 
-    async with HttpClient().get(image_url, headers = {
-            "Accept":"image/jpeg"
-        }) as resp:
+    async with HttpClient().get(image_url) as resp:
         imagefile = open(imagepath, "wb")
         imagefile.write(await resp.read())
         imagefile.close()
