@@ -42,7 +42,7 @@ const reportForm = createReportForm(item);
 reportForm.style.display = "none";
 const reportButton = createElement('button', null, 'Report');
 reportButton.addEventListener('click', e => {
-    reportForm.style.display = reportFrom.style.display == "none" ? "block" : "none";
+    reportForm.style.display = reportForm.style.display == "none" ? "block" : "none";
 });
 itemOperationContainer.appendChild(deleteButton);
 itemOperationContainer.appendChild(reportButton);
