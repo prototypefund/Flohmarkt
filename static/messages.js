@@ -63,7 +63,11 @@ const renderConversationButton = async convo => {
     const cell = createElement('td', 'convo_cell', '');
     cell.style.width="99%";
     const img = createElement('img', '','');
-    img.src = "/api/v1/image/"+items[convo.item_id].images[0];
+    if (convo.item_id in items && items[convo.item_id].images.length > 0) {
+        img.src = "/api/v1/image/"+items[convo.item_id].images[0];
+    } else {
+        img.src = "/static/nopic.webp";
+    }
     img.style.display = "inline-block";
     img.style.height="50px";
     img.style.width="50px";
@@ -79,7 +83,11 @@ const renderConversationButton = async convo => {
     } else {
         cell.appendChild(createSmallAvatar(await getUser(convo.user_id)));
     }
-    cell.appendChild(createElement('span','', items[convo.item_id].name));
+    if (convo.item_id in items ) {
+        cell.appendChild(createElement('span','', items[convo.item_id].name));
+    } else {
+        cell.appendChild(createElement('span','', 'Deleted Item'));
+    }
     row.appendChild(cell);
     row.addEventListener('click', async e=>  {
         const c = await createConversation(convo);
