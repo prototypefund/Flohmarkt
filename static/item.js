@@ -25,7 +25,10 @@ if (token !== null) {
 const user = await fetchJSON('user/' + item.user);
 
 const heading = document.getElementById('heading');
-heading.prepend(createAvatar(user));
+const avalink = createElement('a');
+avalink.href="/~"+user.name;
+avalink.append(createAvatar(user));
+heading.prepend(avalink);
 
 const itemFragment = document.createDocumentFragment();
 itemFragment.appendChild(createItem(item, true, watching));
