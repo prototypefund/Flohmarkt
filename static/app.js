@@ -1,6 +1,9 @@
 import { createSmallAvatar } from "./create/avatar.js";
 
+const token = window.sessionStorage.getItem('token');
+
 const token_expiry_check = () => {
+    console.log("check token expiry");
     if (token != undefined && token != null && typeof(token) === 'string') {
         const parsedToken = JSON.parse(window.sessionStorage.getItem('parsedToken'));
         if (parsedToken.exp < Date.now()) {
@@ -8,14 +11,13 @@ const token_expiry_check = () => {
             window.sessionStorage.setItem('token', null);
             window.location = window.location;
         }
-        window.setTimeout(token_expiry_check, 1000);
     }
+    window.setTimeout(token_expiry_check, 1000);
 };
 
 document.addEventListener('load', token_expiry_check);
 
 const showElements = [];
-const token = window.sessionStorage.getItem('token');
 if (token != undefined && token != null && typeof(token) === 'string') {
     const parsedToken = JSON.parse(window.sessionStorage.getItem('parsedToken'));
     const username = parsedToken.username;
