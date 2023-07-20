@@ -37,7 +37,8 @@ const label_mapping = {
 
 for (let key in reason_mapping) {
     reason_mapping[key].forEach(async item=> {
-        item["reason"] = key;
+        if (item != null) 
+            item["reason"] = key;
     });
 }
 
@@ -48,6 +49,7 @@ const keys = {};
 const to_display = [];
 
 itemsNewest.forEach(async item=> {
+    if (item == null) return;
     if (!(item.id in keys)) {
         to_display.push(item);
         keys[item.id] = 1;
