@@ -33,11 +33,14 @@ export const createMessage = async message => {
     if ("overridden" in message) {
         messageElement.classList.add("message_overridden");
     }
-    const ava = createSmallAvatar(await getUser(message.attributedTo));
+    const user = await getUser(message.attributedTo);
+    const nameElement = createElement('span', 'messagedate', user.name);
+    const ava = createSmallAvatar(user);
     ava.classList.add("message_ava");
     ava.classList.add(isCurrentUser(message) ? "message_ava_me" : "message_ava_you");
     messageElement.appendChild(ava);
     messageElement.appendChild(dateElement);
+    messageElement.appendChild(nameElement);
     messageElement.appendChild(textElement);
     return messageElement;
 }
