@@ -51,8 +51,10 @@ export const createConversation = async conversation => {
     conversationMessagesContainer.id = conversation.id;
     conversationMessagesContainer.classList.add('message_container');
     const messages = "messages" in conversation ? conversation.messages : [];
-    messages.forEach(async message=> {
-	    conversationMessagesContainer.appendChild(await createMessage(message));
+   
+    const messageElements= await Promise.all(messages.map(createMessage));
+    messageElements.forEach( e=> {
+	    conversationMessagesContainer.appendChild(e);
     });
     conversationAllContainer.appendChild(conversationMessagesContainer);
 
