@@ -709,7 +709,7 @@ async def append_context(message: dict):
     """
     def remove_inner_context(m: dict):
         if "@context" in m:
-            del(m["@context")
+            del(m["@context"])
         for _, v in m.items():
             if type(v) == dict:
                 remove_inner_context(v)
