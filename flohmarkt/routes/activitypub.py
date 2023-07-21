@@ -193,7 +193,9 @@ async def replicate_user(user_url: str) -> str:
         userinfo = await resp.json()
         parsed = urlparse(user_url)
 
-        username = userinfo["preferredUsername"]+"@"+parsed.netloc
+        provided_name = userinfo["preferredUsername"].split("@")[0]
+        
+        username = provided_name+"@"+parsed.netloc
 
         user = await UserSchema.retrieve_single_name(username)
         if user is not None:
@@ -233,7 +235,7 @@ async def create_new_item(msg: dict):
         tasks.append(replicate_image(attachment["url"]))
     image_urls = await asyncio.gather(*tasks)
 
-    new_user = await replicate_user(msg["actor"])
+    new_user = await replicate_user(msg["object"]["attributedTo"])
 
     if not (await is_inside_perimeter(msg["object"]["flohmarkt:data"]["coordinates"])):
         raise HTTPException(status_code=403, detail="Cannot accept item beyond perimeter")
