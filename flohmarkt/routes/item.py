@@ -17,7 +17,7 @@ from flohmarkt.routes.conversation import get_last_message
 router = APIRouter()
 
 @router.post("/", response_description="Added")
-@limiter.limit("6/minute")
+#@limiter.limit("6/minute")
 async def add_item(request: Request, item: ItemSchema = Body(...), 
                    current_user: UserSchema = Depends(get_current_user)):
     item = jsonable_encoder(item)
