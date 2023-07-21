@@ -700,15 +700,19 @@ async def item_to_activity(item: ItemSchema, user: UserSchema):
     settings = await InstanceSettingsSchema.retrieve()
 
     attachments = []
-    for image in item["images"]:
-        attachments.append({
-            "type":"Document",
-            "mediaType":"image/jpeg",
-            "url": f"{hostname}/api/v1/image/{image}",
-            "name": None,
-            "width":600,
-            "height":400
-        })
+    if "images" in item:
+        for image in item["images"]:
+            attachments.append({
+                "type":"Document",
+                "mediaType":"image/jpeg",
+                "url": f"{hostname}/api/v1/image/{image}",
+                "name": None,
+                "width":600,
+                "height":400
+            })
+    elif "attachments" in item:
+        attachment = item["attachments"]
+
     return {
         "id": f"{hostname}/users/{user['name']}/items/{item['id']}/activity",
         "type": "Create",
