@@ -668,14 +668,13 @@ async def item_to_activity(item: ItemSchema, user: UserSchema):
     """
     hostname = cfg["General"]["ExternalURL"]
 
-
     note = await item_to_note(item, user)
 
     return {
         "id": f"{hostname}/users/{user['name']}/items/{item['id']}/activity",
         "type": "Create",
         "actor": f"{hostname}/users/{user['name']}",
-        "published": published,
+        "published": item["creation_date"].split(".")[0]+"Z",
         "to": [
             "https://www.w3.org/ns/activitystreams#Public"
         ],
