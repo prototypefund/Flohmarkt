@@ -8,7 +8,7 @@ from slowapi.errors import RateLimitExceeded
 
 from flohmarkt.ratelimit import limiter
 from flohmarkt.config import cfg
-from flohmarkt.routes.activitypub import get_item_activity, user_route
+from flohmarkt.routes.activitypub import item_to_note, user_route
 from flohmarkt.models.user import UserSchema
 from flohmarkt.models.item import ItemSchema
 from flohmarkt.models.instance_settings import InstanceSettingsSchema
@@ -80,7 +80,7 @@ async def root(request: Request):
 async def other(request: Request, user: str, item: str):
     if "application/activity+json" in request.headers["accept"]:
         headers = {"Content-type":"application/activity+json"}
-        item = await get_item_activity(item, user)
+        item = await item_to_note(item, user)
         return JSONResponse(content=item, headers=headers)
     else:
         item = await ItemSchema.retrieve_single_id(item)

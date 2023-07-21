@@ -160,29 +160,9 @@ async def replicate_item(item_url : str) -> ItemSchema:
             res = await resp.json()
             if res["type"] == "Note":
                 user = await replicate_user(res["attributedTo"])
-                item = await item_to_activity(res, user)
-                data = {
-                    "@context": [
-                        "https://www.w3.org/ns/activitystreams",
-                        {
-                            "ostatus": "http://ostatus.org#",
-                            "atomUri": "ostatus:atomUri",
-                            "inReplyToAtomUri": "ostatus:inReplyToAtomUri",
-                            "conversation": "ostatus:conversation",
-                            "sensitive": "as:sensitive",
-                            "toot": "http://joinmastodon.org/ns#",
-                            "votersCount": "toot:votersCount",
-                            "blurhash": "toot:blurhash",
-                            "focalPoint": {
-                                "@container": "@list",
-                                "@id": "toot:focalPoint"
-                            },
-                            "Hashtag": "as:Hashtag"
-                        }
-                    ],
-                }
-                data.update(res)
-                return await create_new_item(res)
+                item = await wrap_note_in_activity(res, user)
+                item = await append_context(item)
+                return await create_new_item(item)
     except asyncio.exceptions.TimeoutError:
         raise Exception(f"Timed out replicating : {item_url}")
     except Exception as e:
@@ -583,33 +563,12 @@ async def delete_item_remote(item: ItemSchema, user: UserSchema):
 async def post_item_to_remote(item: ItemSchema, user: UserSchema):
     item = await item_to_activity(item, user)
     hostname = cfg["General"]["ExternalURL"]
-    data = {
-        "@context": [
-            "https://www.w3.org/ns/activitystreams",
-            {
-                "ostatus": "http://ostatus.org#",
-                "atomUri": "ostatus:atomUri",
-                "inReplyToAtomUri": "ostatus:inReplyToAtomUri",
-                "conversation": "ostatus:conversation",
-                "sensitive": "as:sensitive",
-                "toot": "http://joinmastodon.org/ns#",
-                "votersCount": "toot:votersCount",
-                "blurhash": "toot:blurhash",
-                "focalPoint": {
-                    "@container": "@list",
-                    "@id": "toot:focalPoint"
-                },
-                "Hashtag": "as:Hashtag"
-            }
-        ],
-    }
-    data.update(item)
-
+    item = await append_context(item)
     headers = {
         "Content-Type":"application/json"
     }
 
-    rcv_inboxes = await get_inbox_list_from_activity(data)
+    rcv_inboxes = await get_inbox_list_from_activity(item)
 
     tasks = []
     for rcv_inbox in rcv_inboxes:
@@ -617,9 +576,9 @@ async def post_item_to_remote(item: ItemSchema, user: UserSchema):
             continue
 
         async def do(rcv_inbox):
-            sign("post", rcv_inbox, headers, json.dumps(data), user)
+            sign("post", rcv_inbox, headers, json.dumps(item), user)
 
-            async with HttpClient().post(rcv_inbox, data=json.dumps(data), headers = headers) as resp:
+            async with HttpClient().post(rcv_inbox, data=json.dumps(item), headers = headers) as resp:
                 if resp.status != 202:
                     print ("Article has not been accepted by target system",rcv_inbox, resp.status)
                 return
@@ -641,9 +600,19 @@ async def item_to_note(item: ItemSchema, user: UserSchema):
             "width":600,
             "height":400
         })
+
+    settings = await InstanceSettingsSchema.retrieve()
+
     return  {
         "id": f"{hostname}/users/{user['name']}/items/{item['id']}",
         "type": "Note",
+        "flohmarkt:data": {
+            "price": item["price"],
+            "name": item["name"],
+            "description": item["description"],
+            "original_id": item["id"],
+            "coordinates": settings["coordinates"],
+        },
         "summary": None,
         "inReplyTo": None,
         "published": item["creation_date"].split(".")[0]+"Z",
@@ -697,96 +666,76 @@ async def item_to_activity(item: ItemSchema, user: UserSchema):
     """
     hostname = cfg["General"]["ExternalURL"]
 
-    settings = await InstanceSettingsSchema.retrieve()
 
-    attachments = []
-    if "images" in item:
-        for image in item["images"]:
-            attachments.append({
-                "type":"Document",
-                "mediaType":"image/jpeg",
-                "url": f"{hostname}/api/v1/image/{image}",
-                "name": None,
-                "width":600,
-                "height":400
-            })
-    elif "attachments" in item:
-        attachment = item["attachments"]
+    note = await item_to_note(item, user)
 
     return {
         "id": f"{hostname}/users/{user['name']}/items/{item['id']}/activity",
         "type": "Create",
         "actor": f"{hostname}/users/{user['name']}",
-        "published": item["creation_date"],
+        "published": published,
         "to": [
             "https://www.w3.org/ns/activitystreams#Public"
         ],
         "cc": [
             f"{hostname}/users/{user['name']}/followers"
         ],
-        "object": {
-            "id": f"{hostname}/users/{user['name']}/items/{item['id']}",
-            "type": "Note",
-            "flohmarkt:data": {
-                "price": item["price"],
-                "name": item["name"],
-                "description": item["description"],
-                "original_id": item["id"],
-                "coordinates": settings["coordinates"],
-            },
-            "summary": None,
-            "inReplyTo": None,
-            "published": item["creation_date"],
-            "url": f"{hostname}/~{user['name']}/{item['id']}",
-            "attributedTo": f"{hostname}/users/{user['name']}",
-            "to": [
-                "https://www.w3.org/ns/activitystreams#Public"
-            ],
-            "cc": [
-                f"{hostname}/users/{user['name']}/followers"
-            ],
-            "sensitive": False,
-            "content": item["name"] + " <br> " + item["description"],
-            "contentMap": {
-                "en":item["name"] + " <br> " + item["description"],
-            },
-            "attachment": attachments,
-            "tag": [],
-            "replies": {
-                "id": f"{hostname}/users/{user['id']}/items/{item['id']}/replies",
-                "type": "Collection",
-                "first": {
-                    "type":"CollectionPage",
-                    "next": f"{hostname}/users/{user['id']}/items/{item['id']}/replies/never",
-                    "partOf":f"{hostname}/users/{user['id']}/items/{item['id']}/replies",
-                    "items": []
-                }
-            }
-        }
+        "object": note
     }
 
-async def get_item_activity(item: str, user: str):
-    item = await ItemSchema.retrieve_single_id(item)
-    if item is None:
-        raise HTTPException(status_code=404, detail = "Item not found")
-    user = await UserSchema.retrieve_single_name(user)
-    if user is None:
-        raise HTTPException(status_code=404, detail = "User not found")
-    item = await item_to_note(item, user)
-    data = {
-        "@context": [
-            "https://www.w3.org/ns/activitystreams",
-            {
-                "ostatus": "http://ostatus.org#",
-                "conversation": "ostatus:conversation",
-                "sensitive": "as:sensitive",
-                "toot": "http://joinmastodon.org/ns#",
-                "votersCount": "toot:votersCount",
-            }
+async def wrap_note_in_activity(item: dict, user: UserSchema):
+    """
+    Render an item into its corresponding Create-activity
+    """
+    hostname = cfg["General"]["ExternalURL"]
+
+    return {
+        "id": f"{hostname}/users/{user['name']}/items/{item['id']}/activity",
+        "type": "Create",
+        "actor": f"{hostname}/users/{user['name']}",
+        "published": item["published"],
+        "to": [
+            "https://www.w3.org/ns/activitystreams#Public"
         ],
+        "cc": [
+            f"{hostname}/users/{user['name']}/followers"
+        ],
+        "object": item
     }
-    data.update(item)
-    return data
+
+async def append_context(message: dict):
+    """
+    Place @context at the outermost level. remove inner @contexts if present.
+    """
+    def remove_inner_context(m: dict):
+        if "@context" in m:
+            del(m["@context")
+        for _, v in m.items():
+            if type(v) == dict:
+                remove_inner_context(v)
+
+    remove_inner_context(message)
+    message["@context"] = [
+        "https://www.w3.org/ns/activitystreams",
+        {
+            "ostatus": "http://ostatus.org#",
+            "atomUri": "ostatus:atomUri",
+            "inReplyToAtomUri": "ostatus:inReplyToAtomUri",
+            "conversation": "ostatus:conversation",
+            "sensitive": "as:sensitive",
+            "toot": "http://joinmastodon.org/ns#",
+            "votersCount": "toot:votersCount",
+            "blurhash": "toot:blurhash",
+            "focalPoint": {
+                "@container": "@list",
+                "@id": "toot:focalPoint"
+            },
+            "Hashtag": "as:Hashtag"
+        }
+    ]
+    return message
+            
+
 
 async def message_to_activity(message: dict):
     """
@@ -808,38 +757,19 @@ async def message_to_activity(message: dict):
 async def post_message_remote(message: dict, user: UserSchema):
     message = await message_to_activity(message)
     hostname = cfg["General"]["ExternalURL"]
-    data = {
-        "@context": [
-            "https://www.w3.org/ns/activitystreams",
-            {
-                "ostatus": "http://ostatus.org#",
-                "atomUri": "ostatus:atomUri",
-                "inReplyToAtomUri": "ostatus:inReplyToAtomUri",
-                "conversation": "ostatus:conversation",
-                "sensitive": "as:sensitive",
-                "toot": "http://joinmastodon.org/ns#",
-                "votersCount": "toot:votersCount",
-                "blurhash": "toot:blurhash",
-                "focalPoint": {
-                    "@container": "@list",
-                    "@id": "toot:focalPoint"
-                },
-                "Hashtag": "as:Hashtag"
-            }
-        ],
-    }
-    data.update(message)
+
+    message = await append_context(message)
 
     headers = {
         "Content-Type":"application/json"
     }
 
-    for rcv_inbox in await get_inbox_list_from_activity(data):
+    for rcv_inbox in await get_inbox_list_from_activity(message):
         if rcv_inbox.startswith(hostname):
             continue
-        sign("post", rcv_inbox, headers, json.dumps(data), user)
+        sign("post", rcv_inbox, headers, json.dumps(message), user)
 
-        async with HttpClient().post(rcv_inbox, data=json.dumps(data), headers = headers) as resp:
+        async with HttpClient().post(rcv_inbox, data=json.dumps(message), headers = headers) as resp:
             if resp.status != 202:
                 print ("Article has not been accepted by target system",rcv_inbox, resp.status)
             return
