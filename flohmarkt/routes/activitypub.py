@@ -156,7 +156,7 @@ async def unfollow(obj):
 async def replicate_item(item_url : str) -> ItemSchema:
     headers = { "Accept": "application/activity+json" }
     try:
-        async with HttpClient().get(item_url, headers=headers):
+        async with HttpClient().get(item_url, headers=headers) as resp:
             res = await resp.json()
             if res["type"] == "Note":
                 user = await replicate_user(res["attributedTo"])
