@@ -153,19 +153,6 @@ async def unfollow(obj):
         await UserSchema.update(user['id'], user, replace=True)
     return {}
 
-async def replicate_item(item_url : str) -> ItemSchema:
-    headers = { "Accept": "application/activity+json" }
-    try:
-        async with HttpClient().get(item_url, headers=headers) as resp:
-            res = await resp.json()
-            if res["type"] == "Create":
-                return await create_new_item(res)
-    except asyncio.exceptions.TimeoutError:
-        raise Exception("HTTP TIMEOUT")
-    except Exception as e:
-        raise(e)
-
-
 async def replicate_image(image_url : str) -> str:
     ident = image_url.split("/")[-1]
     if not uuid_regex.match (ident):
@@ -223,7 +210,7 @@ async def replicate_user(user_url: str) -> str:
         await UserSchema.add(new_user)
         return new_user
 
-async def create_new_item(msg: dict):
+async def create_new_item(req: Request, msg: dict):
     hostname = cfg["General"]["ExternalURL"]
 
     tasks = []
@@ -250,11 +237,11 @@ async def create_new_item(msg: dict):
         "price":msg["object"]["flohmarkt:data"]["price"],
         "creation_date ": msg["object"]["published"],
         "user": new_user["id"],
-        "url": msg["object"]["url"],
         "images": image_urls
     }
-    
-    return await ItemSchema.add(item, new_user)
+    await ItemSchema.add(item, new_user)
+
+    return Response(content="0", status_code=202)
 
 async def send_noreply_message(msg):
     item_id = msg["object"]["inReplyTo"].split("/")[-1]
@@ -279,8 +266,7 @@ async def inbox_process_create(req: Request, msg: dict):
             await send_noreply_message(msg)
             return Response(content="0", status_code=202)
         else:
-            await create_new_item(msg)
-            return Response(content="0", status_code=202)
+            return await create_new_item(req, msg)
 
     if len(msg["to"]) != 1:
         raise HTTPException(status_code=400, detail="Can only accept private messages to 1 user")

@@ -8,7 +8,7 @@ from slowapi.errors import RateLimitExceeded
 
 from flohmarkt.ratelimit import limiter
 from flohmarkt.config import cfg
-from flohmarkt.routes.activitypub import item_to_activity, user_route
+from flohmarkt.routes.activitypub import get_item_activity, user_route
 from flohmarkt.models.user import UserSchema
 from flohmarkt.models.item import ItemSchema
 from flohmarkt.models.instance_settings import InstanceSettingsSchema
@@ -79,37 +79,9 @@ async def root(request: Request):
 @app.get("/~{user}/{item}")
 async def other(request: Request, user: str, item: str):
     if "application/activity+json" in request.headers["accept"]:
-        user = await UserSchema.retrieve_single_name(user)
-        item = await ItemSchema.retrieve_single_id(item)
-
-        if item["user"] != user["id"]:
-            raise HTTPException(status_code=403, detail="Not allowed to spoof user lol")
-
         headers = {"Content-type":"application/activity+json"}
-        item = await item_to_activity(item, user)
-
-        data = {
-            "@context": [
-                "https://www.w3.org/ns/activitystreams",
-                {
-                    "ostatus": "http://ostatus.org#",
-                    "atomUri": "ostatus:atomUri",
-                    "inReplyToAtomUri": "ostatus:inReplyToAtomUri",
-                    "conversation": "ostatus:conversation",
-                    "sensitive": "as:sensitive",
-                    "toot": "http://joinmastodon.org/ns#",
-                    "votersCount": "toot:votersCount",
-                    "blurhash": "toot:blurhash",
-                    "focalPoint": {
-                        "@container": "@list",
-                        "@id": "toot:focalPoint"
-                    },
-                    "Hashtag": "as:Hashtag"
-                }
-            ],
-        }
-        data.update(item)
-        return JSONResponse(content=data, headers=headers)
+        item = await get_item_activity(item, user)
+        return JSONResponse(content=item, headers=headers)
     else:
         item = await ItemSchema.retrieve_single_id(item)
         return templates.TemplateResponse("item.html", {"request": request, "user": user, "item": item})
