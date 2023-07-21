@@ -209,7 +209,7 @@ async def replicate_user(user_url: str) -> str:
 
                 avatar = str(uuid.uuid4())
 
-                imagefile = open(os.path.join(cfg["General"]["DataPath"],"images", avatar+".jpg"), "wb")
+                imagefile = open(os.path.join(cfg["General"]["DataPath"],"images", avatar), "wb")
                 imagefile.write(image)
                 imagefile.close()
 
@@ -917,7 +917,7 @@ async def user_route(name: str):
     if user["avatar"] is not None:
       ret["icon"] = {
         "type":"Image",
-        "mediaType": "image/jpeg",
+        "mediaType": "image/*",
         "url": f"{hostname}/api/v1/image/{user['avatar']}"
       }
 
