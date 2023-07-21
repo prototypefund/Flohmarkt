@@ -3,8 +3,8 @@ import { createElement } from "./create/element.js";
 import { createImg } from "./create/img.js";
 import { createSVG } from "./create/svg.js";
 
-const MAX_WIDTH = 1920,
-      MAX_HEIGHT = 1080;
+const MAX_WIDTH = 1080,
+      MAX_HEIGHT = 720;
 
 var uploaded_images = [];
 
@@ -58,6 +58,7 @@ uploadInput.addEventListener('change', () => {
         fileReader.onload = event => {
             let srcData = event.target.result;
             const image = createImg(srcData, file.name, 'd-block');
+            const showImage = createImg(srcData, file.name, 'd-block');
             image.onload = () => {
                 let width = image.width,
                     height = image.height,
@@ -131,7 +132,7 @@ uploadInput.addEventListener('change', () => {
                 event.dataTransfer.setData('text/plain', null); // still needed for Firefox?
                 selected = event.target;
             });
-            li.appendChild(image);
+            li.appendChild(showImage);
             const iconDelete = createSVG('x');
             iconDelete.addEventListener('click', () => {
                 li.remove();
