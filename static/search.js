@@ -5,7 +5,7 @@ import { createItem } from "./create/item.js";
 const gridResults = document.querySelector('.grid__results');
 
 const [items, user] = await Promise.all([
-    fetchJSON('item/search/' + gridResults.dataset.searchterm),
+    fetchJSON('item/search?q=' + gridResults.dataset.searchterm),
     getCurrentUser
 ]);
 
@@ -29,7 +29,7 @@ if (items.length == 120) {
 var skip = 120;
 
 searchButton.addEventListener("click", async e => {
-    const items = await fetchJSON('item/search/' + gridResults.dataset.searchterm + "?skip=" + skip);
+    const items = await fetchJSON('item/search?q=' + gridResults.dataset.searchterm + "?skip=" + skip);
     skip += 120;
     items.forEach(async item => {
         window.requestAnimationFrame(() => {

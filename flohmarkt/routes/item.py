@@ -49,9 +49,22 @@ async def get_items():
 async def get_items():
     return await ItemSchema.retrieve_newest()
 
-@router.get("/search/{searchterm}", response_description="Search results")
-async def get_items(req: Request, searchterm: str, skip: int = 0):
-    return await ItemSchema.search(searchterm, skip)
+@router.get("/search", response_description="Search results")
+#@limiter.limit("6/minute") # limit needed to avoid enabling DDOS other services via fetch_remote_item
+async def get_items(req: Request, q: str, skip: int = 0):
+    searchterm = q
+    if searchterm.startswith(("http://","https://")):
+        ident = searchterm.split("/")[-1]
+        item = await ItemSchema.retrieve_single_id(ident)
+        if item is not None:
+            return [ item ]
+        if not searchterm.startswith(cfg["General"]["ExternalURL"]):
+            item = await replicate_item(searchterm)
+        else:
+            item = None
+        return [ item ] if item is not None else []
+    else:
+        return await ItemSchema.search(searchterm, skip)
 
 @router.get("/oldest", response_description="Oldest items")
 async def get_items():
