@@ -5,6 +5,7 @@ from fastapi import APIRouter, Body, Depends, Request, HTTPException, Query
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import Response
 
+from flohmarkt.config import cfg
 from flohmarkt.ratelimit import limiter
 from flohmarkt.models.user import UserSchema
 from flohmarkt.models.item import ItemSchema, UpdateItemModel
