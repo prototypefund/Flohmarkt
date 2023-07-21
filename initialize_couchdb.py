@@ -220,6 +220,8 @@ req.data = json.dumps({
     "name": "A new Flohmarkt instance",
     "about": "Please enter a text about this instance here",
     "rules": "Please enter the instance rules here",
+    "privacy": "Please enter a text about data privacy here",
+    "imprint": "Please enter your imprint here",
     "perimeter": 50,
     "coordinates": "",
     "followers": [],
