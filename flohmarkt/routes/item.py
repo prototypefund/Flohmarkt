@@ -31,7 +31,7 @@ async def get_items():
     items = await ItemSchema.retrieve()
     return items
 
-@router.get("/many", response_description="list of watched items")
+@router.get("/many", response_description="list of many items")
 async def get_many_items(req : Request, item : List[str] = Query(), current_user : UserSchema = Depends(get_current_user)):
     return await ItemSchema.retrieve_many(item)
 
