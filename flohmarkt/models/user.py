@@ -1,6 +1,6 @@
 import datetime
 
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel, Field
 
 try:
@@ -60,6 +60,15 @@ class UserSchema(BaseModel):
                             }, 
                             limit=USERS_PER_PAGE,
                             skip=skip)
+
+    @staticmethod
+    async def retrieve_many(ids: List[str] = []):
+        ret = []
+        result = await Database.view("many_users", "users-view", key=ids, include_docs=True)
+        for row in result:
+            ret.append(row["doc"])
+        return ret
+
 
     @staticmethod
     async def add(data: dict)->dict:
