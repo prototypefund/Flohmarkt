@@ -10,34 +10,79 @@ class ReportSchema(BaseModel):
     type : str = "report"
     item_id : str 
     user_id : str = ""
+    reporter_user_id : str = ""
     reason : str = Field(...)
     resolution : Optional[str] = ""
     creation_date : Optional[datetime.datetime] = datetime.datetime.now()
 
     @staticmethod
-    async def retrieve_by_item(item_id : str):
+    async def retrieve_by_reportee(reportee_id : str):
         reports = []
-        for report in await Database.find({"type":"report", "item_id" : item_id}):
+        for report in await Database.find({"type":"report",
+                                           "$or":[
+                                                {"item_id" : reportee_id},
+                                                {"user_id" : reportee_id}
+                                            ]}):
             reports.append(report)
         return reports
 
     @staticmethod
-    async def retrieve(item_id : str, limit=25, skip=0):
-        reports = []
-        for report in await Database.find({"type":"report"}):
-            reports.append(report)
-        return reports
+    async def get_reportees(limit, skip):
+        reportees = []
+
+        break_outer = False
+
+        dblimit = 25 
+        dbskip = 0
+        while True:
+            if break_outer:
+                break
+            reports = await Database.find(
+                    {"type":"report"}, 
+                    sort=[{"creation_date":"desc"}],#),,
+                    limit = dblimit,
+                    skip = dbskip,
+                    fields = ["item_id", "user_id"])
+            if len(reports) < 25:
+                break_outer=True
+            for report in reports:
+
+                if report["item_id"] != "" and ("item",report["item_id"]) not in reportees:
+                    reportees.append(("item",report["item_id"]))
+                if report["user_id"] != "" and ("user",report["user_id"]) not in reportees:
+                    reportees.append(("user",report["user_id"]))
+
+                if len(reportees) == limit + skip:
+                    break_outer = True
+                    break
+            dbskip += dblimit
+            dblimit += 25
+
+        return reportees[-25:]
+
+    @staticmethod
+    async def retrieve(limit=25, skip=0):
+        item_ids = []
+        for report in await Database.find(
+                {"type":"report"}, 
+                sort=[{"creation_date":"desc"}],#),,
+                limit = limit,
+                skip = skip):
+            item_ids.append(report["item_id"])
+        item_ids = set(item_ids)
+        results = await Database.view("reports_by_item", "reports-by-item-view", key=item_ids)
+        return [result["value"] for result in results]
 
     @staticmethod
     async def add(data: dict, user:dict=None)->dict:
         data["type"] = "report"
         if not "id" in data:
             data["id"] = str(uuid.uuid4())
-        if not "creation_date" in data or data["creation_date"] is None:
-            data["creation_date"] = datetime.datetime.now()
+        data["creation_date"] = datetime.datetime.now()
 
         ins = await Database.create(data)
         new = await Database.find_one({"id":ins})
+
         return new
 
     @staticmethod
