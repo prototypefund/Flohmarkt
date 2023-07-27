@@ -74,12 +74,16 @@ async def shutdown():
 @app.get("/")
 async def root(request: Request):
     instance_settings = await InstanceSettingsSchema.retrieve()
-    return templates.TemplateResponse("index.html", {"request": request, "settings": instance_settings})
+    return templates.TemplateResponse("index.html", {
+        "request": request,
+        "settings": instance_settings,
+    })
 
 @app.get("/~{user}/{item}")
 async def other(request: Request, user: str, item: str):
     if "application/activity+json" in request.headers["accept"]:
         headers = {"Content-type":"application/activity+json"}
+        settings = await InstanceSettingsSchema.retrieve()
         item = await ItemSchema.retrieve_single_id(item)
         user = await UserSchema.retrieve_single_name(user)
         item = await item_to_note(item, user)
@@ -87,7 +91,12 @@ async def other(request: Request, user: str, item: str):
         return JSONResponse(content=item, headers=headers)
     else:
         item = await ItemSchema.retrieve_single_id(item)
-        return templates.TemplateResponse("item.html", {"request": request, "user": user, "item": item})
+        return templates.TemplateResponse("item.html", {
+            "request": request,
+            "settings": settings,
+            "user": user,
+            "item": item
+        })
 
 @app.get("/~{user}")
 async def other(request: Request, user: str):
@@ -98,7 +107,8 @@ async def other(request: Request, user: str):
     user = await UserSchema.retrieve_single_name(user)
     if user is None:
         raise HTTPException(status_code=404, detail="User not found :(")
-    return templates.TemplateResponse("user.html", {"request": request, "user": user})
+    settings = await InstanceSettingsSchema.retrieve()
+    return templates.TemplateResponse("user.html", {"request": request, "user": user, "settings":settings})
 
 
 @app.get("/setup/{initkey}")
@@ -106,42 +116,62 @@ async def setup_page(request: Request, initkey : str):
     instance_settings = await InstanceSettingsSchema.retrieve()
     if instance_settings["initialization_key"] != initkey:
         raise HTTPException(status_code=403, detail="This is no valid initialization key")
-    return templates.TemplateResponse("setup.html", {"request": request, "initkey": initkey})
+    return templates.TemplateResponse("setup.html", {
+        "request": request,
+        "settings": instance_settings,
+        "initkey": initkey
+    })
 
 #Admin
 @app.get("/admin")
 async def other(request: Request):
-    return templates.TemplateResponse("admin.html", {"request": request})
+    settings = await InstanceSettingsSchema.retrieve()
+    return templates.TemplateResponse("admin.html", {"request": request, "settings": settings})
 
 #Moderation 
 @app.get("/moderation")
 async def other(request: Request):
-    return templates.TemplateResponse("moderation.html", {"request": request})
+    settings = await InstanceSettingsSchema.retrieve()
+    return templates.TemplateResponse("moderation.html", {"request": request, "settings": settings})
 
 #Messaging
 @app.get("/messages")
 async def other(request: Request):
-    return templates.TemplateResponse("messages.html", {"request": request})
+    settings = await InstanceSettingsSchema.retrieve()
+    return templates.TemplateResponse("messages.html", {"request": request, "settings": settings})
 
 #New
 @app.get("/new")
 async def other(request: Request):
-    return templates.TemplateResponse("new.html", {"request": request})
+    settings = await InstanceSettingsSchema.retrieve()
+    return templates.TemplateResponse("new.html", {"request": request, "settings": settings})
 
 #Search
 @app.get("/search")
 async def other(request: Request, q : str):
-    return templates.TemplateResponse("search.html", {"request": request, "searchterm": q})
+    return templates.TemplateResponse("search.html", {
+        "request": request,
+        "settings": settings,
+        "searchterm": q
+    })
 
 @app.get("/imprint")
 async def imprint(request: Request):
     settings = await InstanceSettingsSchema.retrieve()
     i = settings["imprint"]
-    return templates.TemplateResponse("imprint.html", {"request": request, "imprint": i})
+    return templates.TemplateResponse("imprint.html", {
+        "request": request,
+        "settings": settings,
+        "imprint": i
+    })
 
 @app.get("/privacy")
 async def privacy(request: Request):
     settings = await InstanceSettingsSchema.retrieve()
     p = settings["privacy"]
-    return templates.TemplateResponse("privacy.html", {"request": request, "privacy": p})
+    return templates.TemplateResponse("privacy.html", {
+        "request": request,
+        "settings": settings,
+        "privacy": p
+    })
 

@@ -6,6 +6,7 @@
 
 {% block main %}
 <section>
+    {% if settings.registrations == "open" %}
     <header>
         <h1>Register</h1>
     </header>
@@ -20,5 +21,9 @@
         <input type="password" name="password-repeat" autocomplete="new-password">
         <button type="submit" class="w-100" disabled>Register</button>
     </form>
+    {% else %}
+    <h1> Registrations are closed </h1>
+    <p> Sorry but you cannot register with this instance at the moment </p>
+    {% endif %}
 </section>
 {% endblock %}

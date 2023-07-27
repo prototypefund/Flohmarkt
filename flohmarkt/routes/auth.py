@@ -17,7 +17,7 @@ from flohmarkt.config import cfg
 from flohmarkt.auth import blacklist_token
 from flohmarkt.ssl import ssl_context
 from flohmarkt.models.user import UserSchema, UpdateUserModel
-from flohmarkt.models.instance_settings import get_instance_name
+from flohmarkt.models.instance_settings import InstanceSettingsSchema, get_instance_name
 templates = Jinja2Templates(directory="templates")
 router = APIRouter()
 
@@ -58,11 +58,13 @@ USERNAME_BLACKLIST = [
 #Registration
 @router.get("/register")
 async def _(request: Request):
-    return templates.TemplateResponse("register.html", {"request": request})
+    settings = await InstanceSettingsSchema.retrieve()
+    return templates.TemplateResponse("register.html", {"request": request, "settings": settings})
 
 @router.get("/registered")
 async def _(request: Request):
-    return templates.TemplateResponse("registered.html", {"request": request})
+    settings = await InstanceSettingsSchema.retrieve()
+    return templates.TemplateResponse("registered.html", {"request": request, "settings": settings})
 
 async def send_registration_mail(new_user, instance_name, email):
     server = aiosmtplib.SMTP(
@@ -97,6 +99,10 @@ async def _(request: Request,
                 username:str=Form(),
                 password:str=Form(),
                 ):
+
+    settings = await InstanceSettingsSchema.retrieve()
+    if settings["registrations"] not in ("open", "invite"):
+        raise HTTPException(status_code=403, detail="Registrations are not allowed at the moment")
 
     hostname = cfg["General"]["ExternalURL"]
 
@@ -153,7 +159,12 @@ async def _(request: Request,
 
 @router.get("/resetpassword/{code}")
 async def _(request: Request, code : str):
-    return templates.TemplateResponse("resetpw.html", {"request": request, "code": code})
+    settings = await InstanceSettingsSchema.retrieve()
+    return templates.TemplateResponse("resetpw.html", {
+        "request": request,
+        "settings": settings,
+        "code": code
+    })
 
 @router.post("/resetpassword")
 async def _(request: Request, code : str = Form(), password : str = Form()):
@@ -166,11 +177,13 @@ async def _(request: Request, code : str = Form(), password : str = Form()):
 
 @router.get("/reset_initiated")
 async def _(request: Request):
-    return templates.TemplateResponse("reset_initiated.html", {"request": request})
+    settings = await InstanceSettingsSchema.retrieve()
+    return templates.TemplateResponse("reset_initiated.html", {"request": request, "settings":settings})
 
 @router.get("/forgotpassword")
 async def _(request: Request):
-    return templates.TemplateResponse("reset.html", {"request": request})
+    settings = await InstanceSettingsSchema.retrieve()
+    return templates.TemplateResponse("reset.html", {"request": request, "settings":settings})
 
 @router.post("/forgotpassword")
 #@limiter.limit("1/day")
@@ -211,7 +224,8 @@ async def _(request: Request, email: str = Form()):
 #@limiter.limit("6/minute")
 async def _(request : Request, activation_code : str):
     if await UserSchema.activate(activation_code):
-        return templates.TemplateResponse("login.html", {"request": request})
+        settings = await InstanceSettingsSchema.retrieve()
+        return templates.TemplateResponse("login.html", {"request": request, "settings":settings })
     else:
         raise HTTPException(status_code=403, detail="That did not taste very well.")
 
@@ -244,7 +258,8 @@ async def _(request: Request, username: str = Form(), password: str = Form()):
 #Login
 @router.get("/login")
 async def _(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request})
+    settings = await InstanceSettingsSchema.retrieve()
+    return templates.TemplateResponse("login.html", {"request": request, "settings":settings})
 
 @router.get("/blacklist_token")
 async def _(request: Request, current_user : UserSchema = Depends(blacklist_token)):
@@ -253,4 +268,5 @@ async def _(request: Request, current_user : UserSchema = Depends(blacklist_toke
 #Logout
 @router.get("/logout")
 async def _(request: Request):
-    return templates.TemplateResponse("logout.html", {"request": request})
+    settings = await InstanceSettingsSchema.retrieve()
+    return templates.TemplateResponse("logout.html", {"request": request, "settings": settings})

@@ -118,6 +118,7 @@ instanceSaveButton.addEventListener('click', event => {
         about: formData.get('instance_about'),
         imprint: formData.get('instance_imprint'),
         privacy: formData.get('instance_privacy'),
+        registrations: formData.get('registrations'),
     })
     .then(async data => {
 	// reload

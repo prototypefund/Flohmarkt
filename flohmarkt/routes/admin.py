@@ -27,7 +27,7 @@ async def set_instancesettings(request: Request, settings: UpdateInstanceSetting
     return instance_settings
 
 @router.get("/", response_description="Current instance settings")
-async def set_instancesettings(current_user: UserSchema = Depends(get_current_user)):
+async def get_instancesettings(current_user: UserSchema = Depends(get_current_user)):
     if not current_user["admin"]:
         raise HTTPException(status_code=403, detail="Only admins may do this")
     return await InstanceSettingsSchema.retrieve()

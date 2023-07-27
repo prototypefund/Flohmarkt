@@ -222,6 +222,7 @@ req.data = json.dumps({
     "rules": "Please enter the instance rules here",
     "privacy": "Please enter a text about data privacy here",
     "imprint": "Please enter your imprint here",
+    "registrations": "open",  
     "perimeter": 50,
     "coordinates": "",
     "followers": [],
