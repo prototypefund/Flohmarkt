@@ -99,11 +99,12 @@ if (conversations.length == 0 && item.user != currentUser.id) {
     
 }
 
-conversationsFragment.appendChild(conversationIndicatorContainer);
-conversationsFragment.appendChild(conversationContainer);
 
 if (token === null) {
     conversationsFragment.appendChild(conversationLoginHintContainer);
+} else {
+    conversationsFragment.appendChild(conversationIndicatorContainer);
+    conversationsFragment.appendChild(conversationContainer);
 }
 
 const colItem = document.querySelector('.col__item'),
