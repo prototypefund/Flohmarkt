@@ -36,4 +36,36 @@ async def update_user(ident: str, req: dict = Body(...),current_user : UserSchem
 @router.delete("/{ident}", response_description="deleted")
 async def delete_user(ident: str):
     await UserSchema.delete(ident)
-    return "SUS"
+    return True
+
+@router.get("/{ident}/ban", response_description="deleted")
+async def delete_user(ident: str, current_user : UserSchema = Depends(get_current_user)):
+    if not (current_user["admin"] or current_user["moderator"]):
+        raise HTTPException(status_code=403, detail="Only admins/mods :(")
+    
+    user = await UserSchema.retrieve_single_id(ident)
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not here :(")
+
+    user["banned"] = True
+
+    if await UserSchema.update(ident, user):    
+        return user
+    else:
+        raise HTTPException(status_code=500, detail="Something went wrong while updating")
+    
+@router.get("/{ident}/unban", response_description="deleted")
+async def delete_user(ident: str, current_user : UserSchema = Depends(get_current_user)):
+    if not (current_user["admin"] or current_user["moderator"]):
+        raise HTTPException(status_code=403, detail="Only admins/mods :(")
+    
+    user = await UserSchema.retrieve_single_id(ident)
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not here :(")
+
+    user["banned"] = False
+
+    if await UserSchema.update(ident, user):    
+        return user
+    else:
+        raise HTTPException(status_code=500, detail="Something went wrong while updating")

@@ -35,8 +35,10 @@ itemFragment.appendChild(createItem(item, true, watching));
 const itemOperationContainer = createElement('div',null, '');
 const deleteButton = createElement('button', null, 'Delete');
 deleteButton.addEventListener('click', async event=> {
-    await deleteCall('/api/v1/item/' + item.id);
-    window.location.pathname = '/~' + user.name;
+    if (confirm("Do you really want to delete " + item.name + "?")) {
+        await deleteCall('/api/v1/item/' + item.id);
+        window.location.pathname = '/~' + user.name;
+    }
 });
 const reportForm = createReportForm(item);
 reportForm.style.display = "none";

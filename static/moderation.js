@@ -1,4 +1,4 @@
-import { fetchJSON } from "./utils.js";
+import { fetchJSON, deleteCall } from "./utils.js";
 import { getCurrentUser } from "./current_user.js";
 import { createAvatar, createSmallAvatar } from "./create/avatar.js";
 
@@ -36,8 +36,8 @@ reportedItem.innerHTML = `
         <div class="col-md-3"><img class="image"><span class="name">item caption</span></div>
         <div class="col-md-3">
             <textarea> Please enter a reason here </textarea>
-            <button> Suspend </button>
-            <button> Delete </button>
+            <button class="suspendbtn">Suspend</button>
+            <button class="deletebtn">Delete</button>
         </div>
     </div>
     <div class="row reports">
@@ -54,6 +54,8 @@ class ReportedItem extends HTMLElement {
         this.image = this._shadowRoot.querySelector('img');
         this.label = this._shadowRoot.querySelector('.name');
         this.reports = this._shadowRoot.querySelector('.reports');
+        this.suspendbtn = this._shadowRoot.querySelector('.suspendbtn');
+        this.deletebtn = this._shadowRoot.querySelector('.deletebtn');
     }
 
     setItem(val) {
@@ -68,12 +70,35 @@ class ReportedItem extends HTMLElement {
                 e.setReport(report);
                 this.reports.appendChild(e);
             });
-        })
+        });
+
+        this.suspendbtn.addEventListener('click', async e => {
+            if (this.item.suspended) {
+                const res = await fetchJSON('item/'+this.item.id+"/unsuspend");
+                if (res.suspended == false) {
+                    this.item = res;
+                }
+            } else {
+                const res = await fetchJSON('item/'+this.item.id+"/suspend");
+                if ( res.suspended == true ) {
+                    this.item = res;
+                }
+            }
+            this.render();
+        });
+
+        this.deletebtn.addEventListener('click', async e=> {
+            if (confirm("Do you really want to delete " + this.item.name + "?")) {
+                const res = await deleteCall('item/'+this.item.id);
+                window.location = window.location;
+            }
+        });
     }
 
     render () {
         this.image.src = "/api/v1/image/"+this.item.images[0];  
         this.label.innerHTML = this.item.name;
+        this.suspendbtn.innerHTML = this.item.suspended ? "Unsuspend" : "Suspend";
     }
 }
 
@@ -119,7 +144,7 @@ reportedUser.innerHTML = `
         <div class="col-md-3"><div class="ava"></div><span class="name">user caption</span></div>
         <div class="col-md-3">
             <textarea> Please enter a reason here </textarea>
-            <button> Ban </button>
+            <button class="banbtn"> Ban </button>
         </div>
     </div>
     <div class="row reports">
@@ -136,6 +161,7 @@ class ReportedUser extends HTMLElement {
         this.avatar_container = this.shadowRoot.querySelector('.ava');
         this.label = this.shadowRoot.querySelector('.name');
         this.reports = this._shadowRoot.querySelector('.reports');
+        this.banbtn = this._shadowRoot.querySelector('.banbtn');
     }
 
     setUser(val) {
@@ -151,12 +177,28 @@ class ReportedUser extends HTMLElement {
                 this.reports.appendChild(e);
             });
         })
+
+        this.banbtn.addEventListener('click', async e => {
+            if (this.user.banned) {
+                const res = await fetchJSON('user/'+this.user.id+"/unban");
+                if (res.banned == false) {
+                    this.user = res;
+                }
+            } else {
+                const res = await fetchJSON('user/'+this.user.id+"/ban");
+                if ( res.banned == true ) {
+                    this.user = res;
+                }
+            }
+            this.render();
+        });
     }
 
     render () {
         this.avatar_container.innerHTML = "";
         this.avatar_container.appendChild(createAvatar(this.user));
         this.label.innerHTML = this.user.name + "<br>" + this.user.bio;
+        this.banbtn.innerHTML = this.user.banned ? "Unban" : "Ban";
     }
 }
 window.customElements.define('reported-user', ReportedUser);

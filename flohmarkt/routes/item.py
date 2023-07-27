@@ -118,6 +118,41 @@ async def unwatch_item(ident: str, current_user: UserSchema = Depends(get_curren
 
     return {}
 
+@router.get("/{ident}/suspend")
+async def unwatch_item(ident: str, current_user: UserSchema = Depends(get_current_user)):
+    if not (current_user["admin"] or current_user["moderator"]):
+        raise HTTPException(status_code=403, detail="Only admins/mods :(")
+
+    item = await ItemSchema.retrieve_single_id(ident)
+    if item is None:
+        raise HTTPException(status_code=404, detail="Item not here :(")
+
+    item["suspended"] = True
+
+    res = await ItemSchema.update(item["id"], item)
+
+    if res:
+        return item
+    else:
+        raise HTTPException(status_code=500, detail="something went wrong updating")
+
+@router.get("/{ident}/unsuspend")
+async def unwatch_item(ident: str, current_user: UserSchema = Depends(get_current_user)):
+    if not (current_user["admin"] or current_user["moderator"]):
+        raise HTTPException(status_code=403, detail="Only admins/mods :(")
+
+    item = await ItemSchema.retrieve_single_id(ident)
+    if item is None:
+        raise HTTPException(status_code=404, detail="Item not here :(")
+
+    item["suspended"] = False
+    res = await ItemSchema.update(item["id"], item)
+
+    if res:
+        return item
+    else:
+        raise HTTPException(status_code=500, detail="something went wrong updating")
+
 @router.post("/{ident}/give")
 async def give_item(ident: str, msg: dict = Body(...), current_user: UserSchema = Depends(get_current_user)):
     item = await ItemSchema.retrieve_single_id(ident)

@@ -1,4 +1,4 @@
-import { fetchJSON, postJSON } from "./utils.js";
+import { fetchJSON, postJSON, deleteCall } from "./utils.js";
 import { initTabs } from "./tabs.js";
 import { createElement } from "./create/element.js";
 import { createSmallAvatar } from "./create/avatar.js";
@@ -50,8 +50,34 @@ const renderUserList = async user => {
     
     const ctrlCell = createElement('td', '');
     const controlsContainer = createElement('div', 'd-flex');
-    controlsContainer.appendChild(createElement('button', null, 'Ban'));
-    controlsContainer.appendChild(createElement('button', null, 'Delete'));
+
+    const banButton = createElement('button', null, user.banned ? 'Unban': 'Ban');
+    banButton.addEventListener('click', async e => {
+        if (banButton.innerHTML == "Ban") {
+            if (confirm("Do you really want to ban " + user.name + "?")){
+                const res = await fetchJSON('user/'+user.id+'/ban');
+                if (res.banned === true) {
+                    banButton.innerHTML = "Unban";
+                }
+            }
+        } else if (banButton.innerHTML == "Unban") {
+            const res = await fetchJSON('user/'+user.id+'/unban');
+            if (res.banned === false) {
+                banButton.innerHTML = "Ban";
+            }
+        }
+    });
+    controlsContainer.appendChild(banButton);
+
+    const deleteButton = createElement('button', null, 'Delete');
+    deleteButton.addEventListener('click', async e => {
+        if (confirm("Do you really want to delete " + user.name + "?")) {
+            const res = await deleteCall('api/v1/user/'+ user.id);
+            window.location = window.location;
+        }
+    });
+    controlsContainer.appendChild(deleteButton);
+
     ctrlCell.appendChild(controlsContainer);
     row.appendChild(ctrlCell);
 

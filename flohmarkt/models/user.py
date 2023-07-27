@@ -31,6 +31,7 @@ class UserSchema(BaseModel):
     public_key : str = Field(...)
     moderator : bool = Field(...)
     activation_code : str = Field(...)
+    banned : bool = False
     reset_token : str = ""
     followers : dict[str, FollowSchema] = {}
     role : str = Field(...)
