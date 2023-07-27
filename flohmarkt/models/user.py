@@ -147,7 +147,7 @@ class UserSchema(BaseModel):
     async def delete(ident : str):
         user = await Database.find_one({"id":ident})
         if user is not None:
-            await Database.delete_one({"id":ident})
+            await Database.delete({"id":ident})
             return True
 
     @staticmethod
