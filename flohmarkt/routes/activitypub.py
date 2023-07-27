@@ -822,6 +822,25 @@ async def user_outbox(name: str, page : bool = False, min_id : str = ""):
             "first":f"{hostname}/users/{user['name']}/outbox?page=true"
         }
 
+@router.get("/remote-interact", response_description="User Activitypub document")
+async def user_route(req : Request, acc: str):
+    if not "@" in acc:
+        raise HTTPException(status_code=400, detail="fediverse account must contain @")
+
+    name, host = acc.split("@")
+    name = name.lstrip("@") # for mastodon
+    webfinger_url = "https://"+host+"/.well-known/webfinger?resource=acct:"+acc
+    async with HttpClient().get(webfinger_url) as r:
+        json = await r.json()
+        if not "links" in json:
+            raise HTTPException(status_code=403, detail="Remote instance does not support interaction")
+        for link in json['links']:
+            if link["rel"] == "http://ostatus.org/schema/1.0/subscribe":
+                return {"url":link["template"]}
+
+        raise HTTPException(status_code=403, detail="Remote instance doesn't support interaction")
+    
+
 @router.get("/users/{name}", response_description="User Activitypub document")
 async def user_route(name: str):
     user = await UserSchema.retrieve_single_name(name)

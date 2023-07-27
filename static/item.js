@@ -58,8 +58,26 @@ const conversationContainers = {};
 
 const conversationLoginHintContainer = createElement('div',null, '');
 const conversationLoginHintText = createElement('p',null, '');
-conversationLoginHintText.innerHTML = 'To participate in this conversation please <a href="/login">log in</a> or <a href="/register">create an account</a>.';
+conversationLoginHintText.innerHTML = `
+
+To participate in this conversation please <a href="/login">log in</a> or <a href="/register">create an account</a>.
+
+OR
+
+use another fediverse-account:
+`;
+const remoteInteractField = createElement('input','','');
+remoteInteractField.placeholder = "myaccount@some-fediverse-server.org";
+const remoteInteractButton = createElement('button','','Go!');
+remoteInteractButton.addEventListener('click', async e => {
+    const name = remoteInteractField.value;
+    const res = await fetch("/remote-interact?acc="+encodeURIComponent(name));
+    const url = await res.json();
+    window.location = url["url"].replace("{uri}",window.location);
+});
 conversationLoginHintContainer.appendChild(conversationLoginHintText);
+conversationLoginHintContainer.appendChild(remoteInteractField);
+conversationLoginHintContainer.appendChild(remoteInteractButton);
 
 const conversationContainer = createElement('div',null, '');
 conversations.forEach(async conversation => {
