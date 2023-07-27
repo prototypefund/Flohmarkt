@@ -37,9 +37,9 @@ async def get_reportees(req: Request, limit=25, skip=0, current_user : UserSchem
 
 
     for r in reportees:
-        if r[0] == "item":
+        if r[0] == "item" and r[1] in items:
             result.append(items[r[1]])
-        elif r[0] == "user":
+        elif r[0] == "user" and r[1] in users:
             result.append(users[r[1]])
 
     return result
