@@ -31,9 +31,12 @@ registerForm.querySelectorAll('input').forEach((input, index) => {
             case 'password-repeat':
                 valid = this.value === password;
                 break;
+            case 'accept':
+                valid = this.value;
+                break;
         }
         const mask = 1 << index;
         inputValid = valid ? inputValid | mask : inputValid & ~mask;
-        registerBtn.disabled = inputValid !== 15; // 1111
+        registerBtn.disabled = inputValid !== 31; // 1111
     });
 });
