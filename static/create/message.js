@@ -34,7 +34,8 @@ export const createMessage = async message => {
         messageElement.classList.add("message_overridden");
     }
     const user = await getUser(message.attributedTo);
-    const nameElement = createElement('span', 'messagedate', user.name);
+    const username = user == null ? "[Deleted User]" : user.name
+    const nameElement = createElement('span', 'messagedate', username);
     const ava = createSmallAvatar(user);
     ava.classList.add("message_ava");
     ava.classList.add(isCurrentUser(message) ? "message_ava_me" : "message_ava_you");

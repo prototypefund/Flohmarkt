@@ -157,6 +157,8 @@ class UserSchema(BaseModel):
 
     @staticmethod
     async def filter(user):
+        if user is None:
+            return {}
         fields_to_ignore = (
             "private_key",
             "pwhash",

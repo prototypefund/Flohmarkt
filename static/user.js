@@ -1,4 +1,4 @@
-import { fetchJSON, putJSON } from "./utils.js";
+import { fetchJSON, putJSON, deleteCall } from "./utils.js";
 import { createImg } from "./create/img.js";
 import { createSVG } from "./create/svg.js";
 import { createItem } from "./create/item.js";
@@ -62,6 +62,21 @@ createBtn.addEventListener('click', event => {
 	updateAvatar(new_user.avatar);
 	window.location.pathname = '/~' + new_user.name;
     });
+});
+
+const deleteButton = document.getElementById('delete-btn');
+deleteButton.addEventListener('click', async e => {
+    if (prompt("Please enter your username to confirm account deletion!") == user.name) {
+        const res = await deleteCall('/api/v1/user/'+user.id);
+        console.log(res);
+        if (res == true) {
+            window.sessionStorage.setItem('token',null);
+            window.sessionStorage.setItem('parsedToken',null);
+            window.location = "/";
+        }
+    } else {
+        alert("Wrong usename. Aborting account deletion");
+    }
 });
 
 const createForm = document.getElementById('create-form');
