@@ -113,6 +113,9 @@ if (token === null) {
 } else {
     conversationsFragment.appendChild(conversationIndicatorContainer);
     conversationsFragment.appendChild(conversationContainer);
+    if (item.user != currentUser.id) {
+        conversationIndicatorContainer.style.display="none";
+    }
 }
 
 const colItem = document.querySelector('.col__item'),
