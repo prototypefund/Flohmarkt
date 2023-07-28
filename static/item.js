@@ -52,7 +52,7 @@ itemFragment.appendChild(itemOperationContainer);
 itemFragment.appendChild(reportForm);
 
 const conversationsFragment = document.createDocumentFragment();
-const conversationIndicatorContainer = createElement('div',null, '');
+const conversationIndicatorContainer = createElement('div','conv_indicator', '');
 
 const conversationContainers = {};
 
