@@ -79,11 +79,18 @@ conversationLoginHintContainer.appendChild(conversationLoginHintText);
 conversationLoginHintContainer.appendChild(remoteInteractField);
 conversationLoginHintContainer.appendChild(remoteInteractButton);
 
+let firstSelected = false;
+const selectFirst = async convCont => {
+    if (firstSelected) return;
+    conversationContainer.innerHTML = "";
+    conversationContainer.appendChild(convCont);
+    firstSelected = true;
+}
+
 const conversationContainer = createElement('div',null, '');
 conversations.forEach(async conversation => {
     const container = await createConversation(conversation);
     conversationContainers[conversation.id] = container;
-    console.log(conversation.remote_user);
     const indicator = createSmallAvatar(await getUser(conversation.remote_user));
     indicator.name = conversation.id;
     indicator.onclick = (t) => {
@@ -92,6 +99,7 @@ conversations.forEach(async conversation => {
         conversationContainer.appendChild(c);
     };
     conversationIndicatorContainer.appendChild(indicator);
+    await selectFirst(container);
 });
 if (conversations.length == 0 && item.user != currentUser.id) {
     const container = await createConversation({"item_id": item.id, "id": null, "messages":[]});
