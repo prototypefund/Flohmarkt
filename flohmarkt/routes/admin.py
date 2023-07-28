@@ -290,6 +290,7 @@ async def setup_execute(request: Request, initkey : str,
     instance_settings["initialization_key"] = ""
     instance_settings["perimeter"] = perimeter
     instance_settings["coordinates"] = coordinates
+    instance_settings["admin"] = new_user["id"]
 
     await InstanceSettingsSchema.set(instance_settings)
 
