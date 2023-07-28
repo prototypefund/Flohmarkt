@@ -2,6 +2,7 @@ from fastapi import APIRouter, Body, Depends, HTTPException
 from fastapi.encoders import jsonable_encoder
 
 from flohmarkt.models.user import UserSchema, UpdateUserModel
+from flohmarkt.models.item import ItemSchema
 from flohmarkt.auth import oauth2, get_current_user
 
 router = APIRouter()
@@ -34,7 +35,15 @@ async def update_user(ident: str, req: dict = Body(...),current_user : UserSchem
     raise HTTPException(status_code=500, detail="Something went wrong :(")
 
 @router.delete("/{ident}", response_description="deleted")
-async def delete_user(ident: str):
+async def delete_user(ident: str, current_user : UserSchema = Depends(get_current_user)):
+    if ident != current_user["id"]:
+        if not current_user["admin"] and not current_user["moderator"]:
+            raise HTTPException(status_code=403, detail="Only owners, admins or moderators may delete item")
+
+    items = await ItemSchema.retrieve_by_user(ident)
+    for item in items:
+        await ItemSchema.delete(item["id"])
+
     await UserSchema.delete(ident)
     return True
 
