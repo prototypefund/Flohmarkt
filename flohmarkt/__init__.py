@@ -74,8 +74,10 @@ async def shutdown():
 @app.get("/")
 async def root(request: Request):
     instance_settings = await InstanceSettingsSchema.retrieve()
+    adminuser = await UserSchema.retrieve_single_id(instance_settings.get("admin",""))
     return templates.TemplateResponse("index.html", {
         "request": request,
+        "adminuser": adminuser,
         "settings": instance_settings,
     })
 

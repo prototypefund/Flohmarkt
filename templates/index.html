@@ -7,19 +7,20 @@
 {% block main %}
 <div id="instance-info" style="display:none;">
     <div class="row">
-        <div class="col-md-12">
-            <h3>Administration</h3>
-            <p>by Admin</p>
-        </div>
-    </div>
-    <div class="row">
         <div class="col-md-6">
             <h2>About this instance</h2>
         <p>{{ settings.about }}</p>
         </div>
         <div class="col-md-6">
-            <h3>Rules</h3>
-        <p>{{ settings.rules }}</p>
+            {% if adminuser != null %}
+            <h3>Administration</h3>
+            <p>
+                <a href="/~{{ adminuser.name }}">
+                    <img style="float:left; width: 75px; height:75px; border-radius:37.5px; margin-right:10px;" src="/api/v1/image/{{ adminuser.avatar }}">
+                </a>
+                this instance is run by <a href="/~{{ adminuser.name }}">{{ adminuser.name }}</a><br><br><i>{{ adminuser.bio }}</i>
+            </p>
+            {% endif %}
         </div>
     </div>
 </div>

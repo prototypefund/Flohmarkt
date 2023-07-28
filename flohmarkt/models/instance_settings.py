@@ -20,6 +20,7 @@ class InstanceSettingsSchema(BaseModel):
     followers : List[str] = []
     pending_followers : List[str] = []
     registrations : str = "open"
+    admin : str = ""
     
     class Config: 
         schema_extra = {
@@ -59,6 +60,7 @@ class UpdateInstanceSettingsModel(BaseModel):
     coordinates: Optional[Coordinates]
     perimeter: Optional[int]
     registrations: Optional[str]
+    admin: Optional[str]
 
     class Config: 
         schema_extra = {
