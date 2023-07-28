@@ -156,6 +156,7 @@ async def other(request: Request):
 #Search
 @app.get("/search")
 async def other(request: Request, q : str):
+    settings = await InstanceSettingsSchema.retrieve()
     return templates.TemplateResponse("search.html", {
         "request": request,
         "settings": settings,
