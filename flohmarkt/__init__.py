@@ -128,7 +128,12 @@ async def setup_page(request: Request, initkey : str):
 @app.get("/admin")
 async def other(request: Request):
     settings = await InstanceSettingsSchema.retrieve()
-    return templates.TemplateResponse("admin.html", {"request": request, "settings": settings})
+    admins = await UserSchema.retrieve_admins()
+    return templates.TemplateResponse("admin.html", {
+        "request": request,
+        "admins": admins,
+        "settings": settings
+    })
 
 #Moderation 
 @app.get("/moderation")

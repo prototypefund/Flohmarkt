@@ -34,6 +34,12 @@
                 <option value="invite" disabled>Invite Only</option>
                 <option value="closed">Closed</option>
             </select>
+            <label for="displayed_admin">Displayed Admin</label>
+            <select name="displayed_admin">
+                {% for admin in admins %}
+                    <option {% if admin.id == settings.admin %}selected{% endif %} value="{{ admin.id }}">{{ admin.name }}</option>
+                {% endfor %}
+            </select>
             <button id="save_settings">Save</button>
         </form>
     </div>

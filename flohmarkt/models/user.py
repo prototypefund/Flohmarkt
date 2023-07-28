@@ -127,6 +127,10 @@ class UserSchema(BaseModel):
             return user
 
     @staticmethod
+    async def retrieve_admins()->list:
+        return await Database.find({"type":"user", "admin":True})
+
+    @staticmethod
     async def update(ident: str, data: dict, replace=False):
         if len(data) < 1:
             return False
