@@ -103,7 +103,7 @@ class ItemSchema(BaseModel):
         item.update(data)
         if item is not None:
             updated = await Database.update(
-                    ident, data
+                    ident, item
             )
             if updated is not None:
                 return True
