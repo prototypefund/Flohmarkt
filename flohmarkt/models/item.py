@@ -118,7 +118,7 @@ class ItemSchema(BaseModel):
 
 
 class UpdateItemModel(BaseModel):
-    name : Optional[str]
+    description : Optional[str]
 
     class Config: 
         schema_extra = {

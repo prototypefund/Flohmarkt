@@ -6,6 +6,7 @@ import { createMessage, createConversation, getUser } from "./create/message.js"
 import { createAvatar, createSmallAvatar } from "./create/avatar.js";
 import { getCurrentUser } from "./current_user.js";
 import { createReportForm } from "./create/reportform.js";
+import { createEditItemForm } from "./create/edititemform.js";
 
 const [item, currentUser] = await Promise.all([
     fetchJSON('item/' + window.location.pathname.replace(/^.+?[/]/, '')),
@@ -46,10 +47,20 @@ const reportButton = createElement('button', null, 'Report');
 reportButton.addEventListener('click', e => {
     reportForm.style.display = reportForm.style.display == "none" ? "block" : "none";
 });
+const editItemForm = createEditItemForm(item);
+editItemForm.style.display = "none";
+const editItemButton = createElement('button', null, 'Edit');
+editItemButton.addEventListener('click', e => {
+    editItemForm.style.display = editItemForm.style.display == "none" ? "block" : "none";
+});
+if (item.user == currentUser.id) {
+    itemOperationContainer.appendChild(editItemButton);
+}
 itemOperationContainer.appendChild(deleteButton);
 itemOperationContainer.appendChild(reportButton);
 itemFragment.appendChild(itemOperationContainer);
 itemFragment.appendChild(reportForm);
+itemFragment.appendChild(editItemForm);
 
 const conversationsFragment = document.createDocumentFragment();
 const conversationIndicatorContainer = createElement('div','conv_indicator', '');

@@ -1,4 +1,5 @@
 import asyncio
+import difflib
 from typing import List
 
 from fastapi import APIRouter, Body, Depends, Request, HTTPException, Query
@@ -83,12 +84,48 @@ async def get_item(ident:str):
     return item
 
 @router.put("/{ident}", response_description="Update stuff")
-async def update_item(ident: str, req: UpdateItemModel = Body(...)):
-    req = {k: v for k,v in req.dict().items() if v is not None}
-    updated_item = await ItemSchema.update(ident, req)
+async def update_item(ident: str, req: UpdateItemModel = Body(...), current_user: UserSchema = Depends(get_current_user)):
+    data = jsonable_encoder(req)
+
+    olditem = await ItemSchema.retrieve_single_id(ident)
+
+    updated_item = await ItemSchema.update(ident, data)
+
+    newitem = await ItemSchema.retrieve_single_id(ident)
     if updated_item:
-        return "YEEEH"
-    return "NOOO"
+
+        diff = difflib.Differ()
+        diffresult = diff.compare(
+            olditem["description"].splitlines(True),
+            newitem["description"].splitlines(True)
+        ) 
+
+        conversations = await ConversationSchema.retrieve_for_item(newitem["id"])
+
+        fulldiff = "The owner has changed the item description:<br><br><pre>"
+        for diffline in diffresult:
+            if not diffline.startswith(("+","-")):
+                continue
+            fulldiff += diffline+"\n"
+
+        fulldiff += "</pre>"
+        
+        tasks = []
+        for convo in conversations:
+            msg = {"text": fulldiff}
+
+            last_message = await get_last_message(convo, current_user)
+            message = await convert_to_activitypub_message(msg, current_user,parent=last_message, item=newitem)
+            convo["messages"].append(message)
+            await ConversationSchema.update(convo['id'], convo)
+            tasks.append(post_message_remote(message, current_user))
+
+        await asyncio.gather(*tasks)
+        
+        
+        return {}
+
+    raise HTTPException(status_code=500, detail="something went wrong when updating")
 
 @router.get("/{ident}/watch")
 async def watch_item(ident: str, current_user: UserSchema = Depends(get_current_user)):
