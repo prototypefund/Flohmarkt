@@ -17,7 +17,7 @@ const token_expiry_check = () => {
 window.setTimeout(token_expiry_check, 100);
 
 const showElements = [];
-if (token != undefined && token != null && typeof(token) === 'string') {
+if (token != undefined && token != "null" && typeof(token) === 'string') {
     const parsedToken = JSON.parse(window.sessionStorage.getItem('parsedToken'));
     const username = parsedToken.username;
     const detailsListItem = document.getElementById('details-list-item');
@@ -45,7 +45,7 @@ if (token != undefined && token != null && typeof(token) === 'string') {
 
 export function updateAvatar(avatar) {
     const token = window.sessionStorage.getItem('token');
-    if (token != undefined && token != null && typeof(token) === 'string') {
+    if (token != undefined && token != "null" && typeof(token) === 'string') {
         const parsedToken = JSON.parse(window.sessionStorage.getItem('parsedToken'));
 	parsedToken.avatar = avatar;
 	const new_token = JSON.stringify(parsedToken);
@@ -56,7 +56,7 @@ export function updateAvatar(avatar) {
 
 function headerAvatar() {
     const token = window.sessionStorage.getItem('token');
-    if (token != undefined && token != null && typeof(token) === 'string') {
+    if (token != undefined && token != "null" && typeof(token) === 'string') {
         const avatarslot = document.getElementById('avatar-slot');
         avatarslot.innerHTML = '';
         const parsedToken = JSON.parse(window.sessionStorage.getItem('parsedToken'));

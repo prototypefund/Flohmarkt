@@ -4,7 +4,7 @@ const nop = async () => null;
 
 const token = JSON.parse(window.sessionStorage.getItem('parsedToken'));
 var get_user_func = nop;
-if (token != null) {
+if (token != null && token != "null") {
     get_user_func = fetchJSON('user/' + token.user_id);
 }
 

@@ -20,7 +20,8 @@ if (currentUser != null && 'watching' in currentUser) {
 
 const token = JSON.parse(window.sessionStorage.getItem('parsedToken'));
 var conversations = [];
-if (token !== null) {
+
+if (token != undefined && token != "null") {
     conversations = await fetchJSON('conversation/by_item/' + window.location.pathname.replace(/^.+?[/]/, ''));
 }
 const user = await fetchJSON('user/' + item.user);
@@ -119,7 +120,7 @@ if (conversations.length == 0 && item.user != currentUser.id) {
 }
 
 
-if (token === null) {
+if (token == undefined && token != "null") {
     conversationsFragment.appendChild(conversationLoginHintContainer);
 } else {
     conversationsFragment.appendChild(conversationIndicatorContainer);

@@ -30,7 +30,7 @@ const userFragment = document.createDocumentFragment();
 const token = JSON.parse(window.sessionStorage.getItem('parsedToken'));
 var watched_items = [];
 const watchedFragment = document.createDocumentFragment();
-if (token != null && token.username == user.name) {
+if (token != null  && token != "null" && token.username == user.name) {
     document.getElementById('profile-form').style.display="block";
     watched_items = await fetchJSON('item/get_watched');
     watched_items.forEach(async item => {

@@ -59,7 +59,7 @@ export const createConversation = async conversation => {
     });
     conversationAllContainer.appendChild(conversationMessagesContainer);
 
-    if (current_user !== null && current_user.banned === false) {
+    if (current_user !== null && (current_user.banned ?? false) == false) {
         const conversationFormContainer = createElement('form',null, '');
         const sendButton = createElement('button', null, 'Send');
         const assignButton = createElement('button', null, 'Assign');
