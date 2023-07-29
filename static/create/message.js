@@ -59,7 +59,7 @@ export const createConversation = async conversation => {
     });
     conversationAllContainer.appendChild(conversationMessagesContainer);
 
-    if (current_user !== null) {
+    if (current_user !== null && current_user.banned === false) {
         const conversationFormContainer = createElement('form',null, '');
         const sendButton = createElement('button', null, 'Send');
         const assignButton = createElement('button', null, 'Assign');
@@ -102,6 +102,9 @@ export const createConversation = async conversation => {
         });
 
         conversationAllContainer.appendChild(conversationFormContainer);
+    } else {
+        const banHint = createElement('p',null, 'You are banned. You may not participate.');
+        conversationAllContainer.appendChild(banHint);
     }
 
     return conversationAllContainer;

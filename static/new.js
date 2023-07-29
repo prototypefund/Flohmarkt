@@ -2,11 +2,20 @@ import { fetchJSON, postJSON } from './utils.js';
 import { createElement } from "./create/element.js";
 import { createImg } from "./create/img.js";
 import { createSVG } from "./create/svg.js";
+import { getCurrentUser } from "./current_user.js";
 
 const MAX_WIDTH = 1080,
       MAX_HEIGHT = 720;
 
 var uploaded_images = [];
+
+const current_user = await getCurrentUser;
+if (current_user !== null && current_user.banned) {
+    const form = document.getElementById("create-form");
+    form.innerHTML = "";
+    form.appendChild(createElement('p',null,"You are banned. You can't create new items"));
+    throw new Error("Aborting due to ban");
+}
 
 const createBtn = document.getElementById('create-btn');
 createBtn.addEventListener('click', event => {

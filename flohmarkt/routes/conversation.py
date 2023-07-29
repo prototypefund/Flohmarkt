@@ -47,6 +47,9 @@ async def get_last_message(conversation, current_user):
 
 @router.post("/to_item/{item_id}", response_description="Update stuff")
 async def create_message(item_id: str, msg: dict = Body(...), current_user: UserSchema = Depends(get_current_user)):
+    if current_user["banned"]:
+        raise HTTPException(status_code=403, detail="You are banned")
+
     hostname = cfg["General"]["ExternalURL"]
     actor = f"{hostname}/users/{current_user['name']}"
     item = await ItemSchema.retrieve_single_id(item_id)
