@@ -260,6 +260,28 @@ async def create_new_item(msg: dict):
     item = await ItemSchema.add(item, new_user)
     return item
 
+async def send_blocked_user_message(msg):
+    hostname = cfg["General"]["ExternalURL"]
+    item_id = msg["object"]["inReplyTo"].split("/")[-1]
+    item = await ItemSchema.retrieve_single_id(item_id)
+    user = await UserSchema.retrieve_single_id(item["user"])
+    
+    msg["text"] = f"Sorry, you are blocked on {hostname}"
+ 
+    message = await convert_to_activitypub_message(msg, user, parent=msg["object"], item=item)
+    await post_message_remote(message, user)
+
+async def send_blocked_instance_message(msg):
+    hostname = cfg["General"]["ExternalURL"]
+    item_id = msg["object"]["inReplyTo"].split("/")[-1]
+    item = await ItemSchema.retrieve_single_id(item_id)
+    user = await UserSchema.retrieve_single_id(item["user"])
+    
+    msg["text"] = f"Sorry, your instance is blocked on {hostname}"
+ 
+    message = await convert_to_activitypub_message(msg, user, parent=msg["object"], item=item)
+    await post_message_remote(message, user)
+
 
 async def send_noreply_message(msg):
     item_id = msg["object"]["inReplyTo"].split("/")[-1]
@@ -437,6 +459,19 @@ async def inbox_process_reject(req : Request, msg: dict):
 async def inbox(req : Request, msg : dict = Body(...) ):
     if not await verify(req):
         raise HTTPException(status_code=401, detail="request signature could not be validated")
+
+    instance_settings = await InstanceSettingsSchema.retrieve()
+    blocked_users = instance_settings.get("blocked_users",[])
+    if msg["actor"]  in blocked_users:
+        await send_blocked_user_message(msg)
+        raise HTTPException(status_code=403, detail="User is blocked")
+        
+    blocked_instances = instance_settings.get("blocked_instances",[])
+    parsed = urlparse(msg["actor"])
+    instance_url = parsed.scheme+"://"+parsed.netloc
+    if instance_url in blocked_instances:
+        await send_blocked_instance_message(msg)
+        raise HTTPException(status_code=403, detail="Instance is blocked")
 
     if msg["type"] == "Create":
         return await inbox_process_create(req, msg)

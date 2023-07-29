@@ -192,6 +192,68 @@ async def accept_instance(url : str, current_user: UserSchema = Depends(get_curr
         return
 
     return instance_settings["following"]
+
+@router.get("/block_instance", response_description="current list of blocked instances")
+async def block_instance(url : str, block: bool, current_user: UserSchema = Depends(get_current_user)):
+    if not current_user["admin"]:
+        raise HTTPException(status_code=403, detail="Only admins may do this")
+    
+    instance_settings = await InstanceSettingsSchema.retrieve()
+
+    blocked_instances = instance_settings.get("blocked_instances",[])
+    if block:
+        if url not in blocked_instances:
+            blocked_instances.append(url)
+    else:
+        if url in blocked_instances:
+            blocked_instances.remove(url)
+
+    instance_settings["blocked_instances"] = blocked_instances
+
+    await InstanceSettingsSchema.set(instance_settings)
+
+    return blocked_instances
+
+@router.get("/block_user", response_description="current list of blocked instances")
+async def block_instance(user : str, block: bool, current_user: UserSchema = Depends(get_current_user)):
+    if not current_user["admin"]:
+        raise HTTPException(status_code=403, detail="Only admins may do this")
+    
+    instance_settings = await InstanceSettingsSchema.retrieve()
+
+
+
+    blocked_users = instance_settings.get("blocked_users",[])
+
+    if block:
+        actor = ""
+        name, host = user.split("@")
+        name = name.lstrip("@") # for mastodon
+        webfinger_url = "https://"+host+"/.well-known/webfinger?resource=acct:"+user
+        async with HttpClient().get(webfinger_url) as r:
+            json = await r.json()
+            print(json)
+            if not "links" in json:
+                raise HTTPException(status_code=403, detail="Remote instance does not supply actorurl")
+            found = False
+            for link in json['links']:
+                if link["rel"] == "self":
+                    actor = link["href"]
+                    found = True
+                    break
+            if not found:
+                raise HTTPException(status_code=403, detail="Remote instance doesn't supply actorurl")
+        if actor not in blocked_users:
+            blocked_users.append(actor)
+    else:
+        if user in blocked_users:
+            blocked_users.remove(user)
+
+    instance_settings["blocked_users"] = blocked_users
+
+    await InstanceSettingsSchema.set(instance_settings)
+
+    return blocked_users
     
 
 @router.get("/toggle_admin/{user_id}", response_description="A boolean representing the users new admin state")

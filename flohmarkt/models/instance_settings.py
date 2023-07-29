@@ -21,6 +21,8 @@ class InstanceSettingsSchema(BaseModel):
     pending_followers : List[str] = []
     registrations : str = "open"
     admin : str = ""
+    blocked_instances : List[str] = []
+    blocked_users : List[str] = []
     
     class Config: 
         schema_extra = {

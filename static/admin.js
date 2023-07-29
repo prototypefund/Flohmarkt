@@ -259,3 +259,76 @@ instance_settings.pending_followers.forEach(e => {
     row.appendChild(commandCell);
     followerTable.appendChild(row);
 });
+
+
+const blockInstanceInput = document.getElementById('blockInstanceInput');
+const blockInstanceButton = document.getElementById('blockInstanceButton');
+const blockInstanceTable = document.getElementById('blockInstanceTable');
+
+blockInstanceButton.addEventListener('click', async e => {
+    const inp = encodeURIComponent(blockInstanceInput.value);
+    const response = await fetchJSON("admin/block_instance?block=true&url="+inp).catch(error=>console.error(error));
+    const row = createElement('tr','');
+    const nameCell = createElement('td', null, blockInstanceInput.value);
+    const commandCell = createElement('td', null, '');
+    const unfollowButton = createElement('button', null, 'Unblock');
+    unfollowButton.addEventListener('click', async e => {
+        const response = await fetchJSON("admin/block_instance?block=false&url="+inp).catch(error=>console.error(error));
+        row.remove();
+    });
+    commandCell.appendChild(unfollowButton);
+    row.appendChild(nameCell);
+    row.appendChild(commandCell);
+    blockInstanceTable.appendChild(row);
+});
+
+(instance_settings.blocked_instances ?? []).forEach(e => {
+    const row = createElement('tr','');
+    const nameCell = createElement('td', null, e);
+    const commandCell = createElement('td', null, '');
+    const unblockButton = createElement('button', null, 'Unblock');
+    unblockButton.addEventListener('click', async f => {
+        const response = await fetchJSON("admin/block_instance?block=false&url="+e).catch(error=>console.error(error));
+        row.remove();
+    });
+    commandCell.appendChild(unblockButton);
+    row.appendChild(nameCell);
+    row.appendChild(commandCell);
+    blockInstanceTable.appendChild(row);
+});
+
+const blockUsersInput = document.getElementById('blockUsersInput');
+const blockUsersButton = document.getElementById('blockUsersButton');
+const blockUsersTable = document.getElementById('blockUsersTable');
+
+blockUsersButton.addEventListener('click', async e => {
+    const inp = encodeURIComponent(blockUsersInput.value);
+    const response = await fetchJSON("admin/block_user?block=true&user="+inp).catch(error=>console.error(error));
+    const row = createElement('tr','');
+    const nameCell = createElement('td', null, blockUsersInput.value);
+    const commandCell = createElement('td', null, '');
+    const unfollowButton = createElement('button', null, 'Unblock');
+    unfollowButton.addEventListener('click', async e => {
+        const response = await fetchJSON("admin/block_user?block=false&user="+inp).catch(error=>console.error(error));
+        row.remove();
+    });
+    commandCell.appendChild(unfollowButton);
+    row.appendChild(nameCell);
+    row.appendChild(commandCell);
+    blockUsersTable.appendChild(row);
+});
+
+(instance_settings.blocked_users ?? []).forEach(e => {
+    const row = createElement('tr','');
+    const nameCell = createElement('td', null, e);
+    const commandCell = createElement('td', null, '');
+    const unblockButton = createElement('button', null, 'Unblock');
+    unblockButton.addEventListener('click', async f => {
+        const response = await fetchJSON("admin/block_user?block=false&user="+e).catch(error=>console.error(error));
+        row.remove();
+    });
+    commandCell.appendChild(unblockButton);
+    row.appendChild(nameCell);
+    row.appendChild(commandCell);
+    blockUsersTable.appendChild(row);
+});
