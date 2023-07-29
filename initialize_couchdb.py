@@ -229,6 +229,8 @@ req.data = json.dumps({
     "following": [],
     "pending_followers": [],
     "pending_following": [],
+    "blocked_instances": [],
+    "blocked_users": [],
 }).encode('utf-8')
 req.headers = {
     "Content-type": "application/json",
