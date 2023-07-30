@@ -7,6 +7,7 @@ uploaderImage.innerHTML = `
     <style>
         textarea {
             width:60%;
+	    height:100px;
         }
     </style>
     <div class="row">
@@ -14,6 +15,7 @@ uploaderImage.innerHTML = `
             <div class="image"></div>
             <textarea class="alttext" placeholder="Image description"></textarea>
         </div>
+	<canvas class="compress_canvas" hidden></canvas>
     </div>
 `;
 
@@ -71,14 +73,14 @@ class UploaderImage extends HTMLElement {
                     resize = true;
                 }
                 if (resize) {
-                    const canvas = this._shadowRoot.createElement('canvas'),
-                    context = canvas.getContext('2d')
+                    const canvas = this._shadowRoot.querySelector('.compress_canvas');
+                    const context = canvas.getContext('2d');
                     
-                    canvas.width = width
-                    canvas.height = height
+                    canvas.width = width;
+                    canvas.height = height;
                     
-                    context.drawImage(image, 0, 0, width, height)
-                    srcData = canvas.toDataURL('image/*')
+                    context.drawImage(image, 0, 0, width, height);
+                    const srcData = canvas.toDataURL('image/*');
                 }
                 window.fetch('/api/v1/image/', {
                         method: "post",
@@ -89,7 +91,6 @@ class UploaderImage extends HTMLElement {
                     }
                 ).then(data=>data.json()
                 ).then(id=>{
-                    console.log(id);
                     this.image_id = id;
                 });
             }
@@ -107,15 +108,19 @@ uploader.innerHTML = `
     <link rel="stylesheet" href="/static/icon.css">
     <link rel="stylesheet" href="/static/utils.css">
     <style>
+    	.upbox {
+		text-align:center;
+		padding-bottom:16px;
+	}
     </style>
     <div class="row">
-        <div class="col-md-12">
-            <label class="m-0 cursor-pointer" for="upload">
+        <div class="col-md-12 upbox">
+            <label class="m-0 cursor-pointer upbtn" for="upload">
                 <svg class="icon icon--photo-up" role="img" aria-hidden="true">
                     <use href="/static/sprite.svg#photo-up"></use>
                 </svg>
             </label>
-            <input type="file" name="upload" class="upload" accept="image/*" multiple>
+            <input type="file" name="upload" class="upload" accept="image/*" multiple hidden>
         </div>
     </div>
     <div class="row images">
@@ -128,10 +133,13 @@ class Uploader extends HTMLElement {
         this._shadowRoot = this.attachShadow({mode:'open'});
         this._shadowRoot.appendChild(uploader.content.cloneNode(true));
 
+        this.upbtn = this._shadowRoot.querySelector('.upbtn');
         this.imagesdiv = this._shadowRoot.querySelector('.images');
 
         this.upload = this._shadowRoot.querySelector('.upload');
         this.upload.addEventListener('change', this.processUpload.bind(this));
+
+	this.upbtn.addEventListener('click', ()=>this.upload.click() );
         this.images = [];
     }
 
