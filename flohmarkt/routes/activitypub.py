@@ -180,7 +180,7 @@ async def replicate_image(image_url : str) -> str:
         imagefile = open(imagepath, "wb")
         imagefile.write(await resp.read())
         imagefile.close()
-        return ident
+        return (image_url, ident)
 
 async def replicate_user(user_url: str) -> str:
     ident = user_url.split("/")[-1]
@@ -233,7 +233,13 @@ async def create_new_item(msg: dict):
     tasks = []
     for attachment in msg["object"]["attachment"]:
         tasks.append(replicate_image(attachment["url"]))
-    image_urls = await asyncio.gather(*tasks)
+    url_id_map = await asyncio.gather(*tasks)
+    images = [
+        {
+            "image_id": url_id_map[a["url"]],
+            "description": a["name"]
+        } for a in msg["object"]["attachment"]
+    ]
 
     new_user = await replicate_user(msg["object"]["attributedTo"])
 
@@ -629,11 +635,12 @@ async def item_to_note(item: ItemSchema, user: UserSchema):
 
     attachments = []
     for image in item["images"]:
+        image = image["image_id"]
         attachments.append({
             "type":"Document",
             "mediaType":"image/jpeg",
             "url": f"{hostname}/api/v1/image/{image}",
-            "name": None,
+            "name": image["description"],
             "width":600,
             "height":400
         })
