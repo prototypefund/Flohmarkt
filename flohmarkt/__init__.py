@@ -1,3 +1,5 @@
+import asyncio
+
 from fastapi import FastAPI, Request, Response, Depends, Form, HTTPException
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -6,6 +8,7 @@ from fastapi.templating import Jinja2Templates
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
+from flohmarkt.backgroundjobs import clean_images
 from flohmarkt.ratelimit import limiter
 from flohmarkt.config import cfg
 from flohmarkt.routes.activitypub import item_to_note, user_route, append_context
@@ -64,6 +67,9 @@ async def ini():
     except Exception as e:
         await shutdown()
         raise e
+
+    mainloop = asyncio.get_running_loop()
+    mainloop.create_task(clean_images())
 
     
 @app.on_event("shutdown")
