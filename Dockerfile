@@ -14,7 +14,6 @@ ADD templates ./templates
 
 COPY ./docker/config_generator.py /
 COPY ./docker/entrypoint.sh /
-COPY ./background.py .
 COPY ./initialize_couchdb.py .
 
 ENTRYPOINT [ "/entrypoint.sh" ]

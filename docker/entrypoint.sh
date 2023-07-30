@@ -9,9 +9,6 @@ case "$1" in
     "web")
         uvicorn --host 0.0.0.0 --port 8000 flohmarkt:app
         ;;
-    "background")
-        python3 background.py
-        ;;
     "initdb")
         python3 initialize_couchdb.py ${FLOHMARKT_DB_PASSWORD} ${FLOHMARKT_DB_PASSWORD}
         ;;
