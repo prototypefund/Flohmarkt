@@ -21,7 +21,7 @@ router = APIRouter()
 #@limiter.limit("6/minute")
 async def add_item(request: Request, item: ItemSchema = Body(...), 
                    current_user: UserSchema = Depends(get_current_user)):
-    if current_user["banned"]:
+    if current_user.get("banned",False):
         raise HTTPException(status_code=403, detail="You are banned")
     item = jsonable_encoder(item)
     item["user"] = current_user["id"]
@@ -194,7 +194,7 @@ async def unwatch_item(ident: str, current_user: UserSchema = Depends(get_curren
 
 @router.post("/{ident}/give")
 async def give_item(ident: str, msg: dict = Body(...), current_user: UserSchema = Depends(get_current_user)):
-    if current_user["banned"]:
+    if current_user.get("banned",False):
         raise HTTPException(status_code=403, detail="You are banned")
 
     item = await ItemSchema.retrieve_single_id(ident)
