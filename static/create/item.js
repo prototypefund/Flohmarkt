@@ -11,7 +11,8 @@ export function createItem(item, details=false, watching=[]) {
         element = createElement('aside', 'position-relative card-item');
     }
     if (item.images && item.images.length > 0) {
-        const image = createImage("/api/v1/image/"+item.images[0], item.name, 'card-img-top w-100');
+        const image = createImage("/api/v1/image/"+item.images[0]["image_id"], item.name, 'card-img-top w-100');
+        image.alt = item.images[0]["description"];
         image["image_idx"] = 0;
         if (details) {
             const g_left = createElement("div", "galery_left", "");
@@ -19,7 +20,8 @@ export function createItem(item, details=false, watching=[]) {
             g_left.addEventListener('click', e => {
                 image.image_idx--;
             if (image.image_idx < 0) { image.image_idx = item.images.length-1; }
-                image.src = "/api/v1/image/"+item.images[image.image_idx%item.images.length];
+                image.src = "/api/v1/image/"+item.images[image.image_idx%item.images.length]["image_id"];
+                image.alt = item.images[image.image_idx%item.images.length]["description"];
                 return true;
             });
             element.appendChild(g_left);
@@ -27,7 +29,8 @@ export function createItem(item, details=false, watching=[]) {
             g_right.appendChild(createElement("span",null,">"));
             g_right.addEventListener('click', e => {
                 image.image_idx++;
-                image.src = "/api/v1/image/"+item.images[image.image_idx%item.images.length];
+                image.src = "/api/v1/image/"+item.images[image.image_idx%item.images.length]["image_id"];
+                image.alt = item.images[image.image_idx%item.images.length]["description"];
                 return true;
             });
             element.appendChild(g_right);
@@ -36,7 +39,8 @@ export function createItem(item, details=false, watching=[]) {
                 var callback = null;
                 const f = ()=>{
                     image.image_idx++;
-                    image.src = "/api/v1/image/"+item.images[(image.image_idx+1)%item.images.length];
+                    image.src = "/api/v1/image/"+item.images[(image.image_idx+1)%item.images.length]["image_id"];
+                    image.alt = item.images[(image.image_idx+1)%item.images.length]["description"];
                     callback = window.setTimeout(f, 1000);
                 };
                 callback = window.setTimeout(f, 1000);

@@ -10,12 +10,16 @@ class ModeEnum:
     SELL = 0
     GIVEAWAY = 1
 
+class ImageSchema(BaseModel):
+    image_id : str
+    description : str
+
 class ItemSchema(BaseModel):
     type : Optional[str] = "item"
     name : str = Field(...)
     user : Optional[str] = ""
     price : str = Field(...)
-    images : List[str] = Field(...)
+    images : List[ImageSchema] = Field(...)
     description : str = Field(...)
     url : Optional[str] = ""
     conversations : Optional[set] = []
