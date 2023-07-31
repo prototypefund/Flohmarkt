@@ -234,9 +234,10 @@ async def create_new_item(msg: dict):
     for attachment in msg["object"]["attachment"]:
         tasks.append(replicate_image(attachment["url"]))
     url_id_map = await asyncio.gather(*tasks)
+    url_id_dict = {k: v for k,v in url_id_map}
     images = [
         {
-            "image_id": url_id_map[a["url"]],
+            "image_id": url_id_dict[a["url"]],
             "description": a["name"]
         } for a in msg["object"]["attachment"]
     ]
@@ -261,7 +262,7 @@ async def create_new_item(msg: dict):
         "creation_date ": msg["object"]["published"],
         "user": new_user["id"],
         "url": msg["object"]["url"],
-        "images": image_urls
+        "images": images
     }
     item = await ItemSchema.add(item, new_user)
     return item
