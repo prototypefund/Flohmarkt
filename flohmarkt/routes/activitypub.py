@@ -635,11 +635,11 @@ async def item_to_note(item: ItemSchema, user: UserSchema):
 
     attachments = []
     for image in item["images"]:
-        image = image["image_id"]
+        ident = image["image_id"]
         attachments.append({
             "type":"Document",
             "mediaType":"image/jpeg",
-            "url": f"{hostname}/api/v1/image/{image}",
+            "url": f"{hostname}/api/v1/image/{ident}",
             "name": image["description"],
             "width":600,
             "height":400
