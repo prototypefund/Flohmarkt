@@ -43,6 +43,9 @@ class Socketpool():
     @classmethod
     async def send_conversation(cls, convo):
         s = cls.get_socket(convo["user_id"])
-        await s.send_json(convo)
+        if s is not None:
+            await s.send_json(convo)
+            
         s = cls.get_socket(convo["remote_user"])
-        await s.send_json(convo)
+        if s is not None:
+            await s.send_json(convo)
