@@ -16,6 +16,12 @@ A decentral federated small trade platform
 
 `uvicorn flohmarkt:app`
 
+## Installing on Ubuntu / Debian
+
+You can get couchdb according to this howto:
+
+https://www.vultr.com/docs/install-an-apache-couchdb-database-server-on-ubuntu-20-04/
+
 ## License
 
 This project is licensed under the GNU Affero General Public License 3.
