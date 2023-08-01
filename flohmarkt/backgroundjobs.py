@@ -10,6 +10,8 @@ async def clean_images():
     print("Cleaning up unused images")
 
     fs_images = os.listdir(os.path.join(cfg["General"]["DataPath"], "images")) 
+    if not os.path.exists(fs_images): # on spawn a image folder may not exist yet
+        return
 
     item_images = []
     item_image_batch = None
