@@ -38,6 +38,8 @@ class UserSchema(BaseModel):
     remote_url : Optional[str] = None
     watching : list = []
     creation_date : Optional[datetime.datetime] = datetime.datetime.now()
+    blocked_users : list = []
+    blocked_instances : list = []
     
     class Config: 
         schema_extra = {
