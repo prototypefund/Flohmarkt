@@ -8,6 +8,7 @@ from fastapi.responses import Response
 
 from flohmarkt.config import cfg
 from flohmarkt.ratelimit import limiter
+from flohmarkt.socketpool import Socketpool
 from flohmarkt.models.user import UserSchema
 from flohmarkt.models.item import ItemSchema, UpdateItemModel
 from flohmarkt.models.conversation import ConversationSchema
@@ -119,6 +120,7 @@ async def update_item(ident: str, req: UpdateItemModel = Body(...), current_user
             convo["messages"].append(message)
             await ConversationSchema.update(convo['id'], convo)
             tasks.append(post_message_remote(message, current_user))
+            tasks.append(Socketpool.send_message(message))
 
         await asyncio.gather(*tasks)
         
@@ -224,6 +226,7 @@ async def give_item(ident: str, msg: dict = Body(...), current_user: UserSchema 
         convo["messages"].append(message)
         await ConversationSchema.update(convo['id'], convo)
         tasks.append(post_message_remote(message, current_user))
+        tasks.append(Socketpool.send_message(message))
 
     await asyncio.gather(*tasks)
 

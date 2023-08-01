@@ -15,6 +15,7 @@ from typing import List
 from flohmarkt.geo import is_inside_perimeter
 from flohmarkt.config import cfg
 from flohmarkt.signatures import verify, sign
+from flohmarkt.socketpool import Socketpool
 from flohmarkt.http import HttpClient
 from flohmarkt.routes.image import assert_imagepath
 from flohmarkt.models.user import UserSchema
@@ -336,7 +337,9 @@ async def inbox_process_create(req: Request, msg: dict):
     else:
         conversation = await ConversationSchema.retrieve_for_message_id(msg["object"]["inReplyTo"])
 
+    is_new_conversation = False
     if conversation is None:
+        is_new_conversation = True
         conversation = {
             "user_id" : user['id'],
             "remote_user" : msg["actor"],
@@ -348,6 +351,10 @@ async def inbox_process_create(req: Request, msg: dict):
     conversation["messages"].append(msg["object"])
 
     await ConversationSchema.update(conversation['id'], conversation)
+    if is_new_conversation:
+        await Socketpool.send_conversation(jsonable_encoder(conversation))
+    else:
+        await Socketpool.send_message(msg)
 
     return Response(content="0", status_code=202)
 
@@ -390,6 +397,7 @@ async def inbox_process_update(req: Request, msg: dict):
     conversation["messages"].append(msg["object"])
 
     await ConversationSchema.update(conversation['id'], conversation)
+    await Socketpool.send_message(msg)
 
     return Response(content="0", status_code=202)
 

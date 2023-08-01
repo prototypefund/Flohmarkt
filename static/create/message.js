@@ -84,6 +84,8 @@ export const createConversation = async conversation => {
             .then(async data => {
                 const m = await createMessage(data["messages"].at(-1));
                 conversationMessagesContainer.appendChild(m);
+                textArea.value = "";
+                textArea.focus();
             });
         });
         assignButton.addEventListener('click', async event=> {

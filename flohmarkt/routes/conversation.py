@@ -5,6 +5,7 @@ from fastapi.encoders import jsonable_encoder
 
 from flohmarkt.config import cfg
 from flohmarkt.routes.activitypub import post_message_remote, convert_to_activitypub_message
+from flohmarkt.socketpool import Socketpool
 from flohmarkt.models.item import ItemSchema
 from flohmarkt.models.user import UserSchema
 from flohmarkt.models.conversation import ConversationSchema, MessageSchema
@@ -64,7 +65,10 @@ async def create_message(item_id: str, msg: dict = Body(...), current_user: User
     if conversation is None:
         conversation = await ConversationSchema.retrieve_for_item_remote_user(msg["item_id"], actor)
 
+    is_new_conversation = False
+
     if conversation is None:
+        is_new_conversation = True
         conversation = {
             "user_id" : item['user'],
             "remote_user" : actor,
@@ -86,6 +90,11 @@ async def create_message(item_id: str, msg: dict = Body(...), current_user: User
     await ConversationSchema.update(conversation['id'], conversation)
 
     await post_message_remote(message, current_user)
+    if is_new_conversation:
+        await Socketpool.send_conversation(jsonable_encoder(conversation))
+    else:
+        await Socketpool.send_message(message)
+        
 
     return conversation
 
