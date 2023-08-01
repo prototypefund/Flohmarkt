@@ -1,6 +1,6 @@
 import asyncio
 
-from fastapi import FastAPI, Request, Response, Depends, Form, HTTPException
+from fastapi import FastAPI, Request, Response, Depends, Form, HTTPException, WebSocket
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -27,6 +27,7 @@ from flohmarkt.routes.activitypub import router as activitypub_router
 from flohmarkt.routes.conversation import router as conversation_router
 from flohmarkt.auth import oauth2, get_current_user
 from flohmarkt.http import HttpClient
+from flohmarkt.socketpool import Socketpool
 
 templates = Jinja2Templates(directory="templates")
 
@@ -75,7 +76,10 @@ async def ini():
 @app.on_event("shutdown")
 async def shutdown():
     print ("Tearing down Flohmarkt!")
-    await HttpClient.shutdown()
+    asyncio.gather(
+        HttpClient.shutdown(),
+        Socketpool.shutdown()
+    )
 
 @app.get("/")
 async def root(request: Request):
@@ -189,3 +193,19 @@ async def privacy(request: Request):
         "privacy": p
     })
 
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    authenticated = False
+    while True:
+        data = await websocket.receive_text()
+        if not authenticated:
+            user = await get_current_user(data) # first data must be token
+            if user is None:
+                websocket.close()
+                break
+            else:
+                authenticated = True
+                Socketpool.add_socket(user, websocket)
+                await websocket.send_json({"msg":"Welcome to the server","head":"Authenticated!"})
+                
