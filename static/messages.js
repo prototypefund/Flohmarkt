@@ -3,6 +3,7 @@ import { createSmallAvatar } from "./create/avatar.js";
 import { getCurrentUser, isCurrentUser } from "./current_user.js";
 import { createElement } from "./create/element.js";
 import { createMessage, createConversation, getUser } from "./create/message.js";
+import { incoming } from "./app.js";
 
 const [conversations, currentUser] = await Promise.all([
     fetchJSON('conversation/own'),
@@ -103,10 +104,40 @@ const renderConversationButton = async convo => {
         cell.classList.add("active_convo_selector");
         currentConversationButton = cell;
     }
-    convSelector.appendChild(row);
+    convSelector.prepend(row);
+    row.convo = convo;
 }
 
+conversations.reverse();
 await conversations.forEach(renderConversationButton);
+
+incoming.addEventListener('conversation', async msg=>{
+    const item = await fetchJSON('item/'+msg["item_id"]);
+    items[item["id"]] = item;
+    await renderConversationButton(msg);
+});
+
+incoming.addEventListener('message', async msg=>{
+    convSelector.childNodes.forEach(r=>{
+        if (r.convo ?? null != null) {
+            let belongs_here = false;
+            if (msg["inReplyTo"].indexOf(r.convo.item_id) != -1) {
+                belongs_here = true;   
+            }
+            r.convo.messages.forEach(m=>{
+                if (m.id == msg["inReplyTo"]) {
+                    belongs_here = true;   
+                }
+            });
+            if (belongs_here) {
+                r.convo.messages.push(msg);
+                const x = r;
+                r.remove();
+                convSelector.prepend(x);
+            }
+        }
+    });
+});
 
 // Select the first conversation
 const c = await createConversation(conversations[0]);

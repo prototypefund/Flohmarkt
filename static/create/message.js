@@ -3,6 +3,8 @@ import { createElement } from "./element.js";
 import { getCurrentUser, isCurrentUser } from "./../current_user.js";
 import { createSmallAvatar } from "./avatar.js";
 
+import { incoming } from "./../app.js";
+
 const current_user = await getCurrentUser;
 
 const conversation_users = {};
@@ -43,6 +45,7 @@ export const createMessage = async message => {
     messageElement.appendChild(dateElement);
     messageElement.appendChild(nameElement);
     messageElement.appendChild(textElement);
+    messageElement.message_id = message["id"];
     return messageElement;
 }
 
@@ -57,6 +60,24 @@ export const createConversation = async conversation => {
     messageElements.forEach( e=> {
 	    conversationMessagesContainer.appendChild(e);
     });
+
+    incoming.addEventListener('message', async msg=>{
+        let belongs_here = false;
+        if (msg["inReplyTo"].indexOf(conversation.item_id) != -1) {
+            belongs_here = true;
+        } else {
+            conversationMessagesContainer.childNodes.forEach(e=>{
+                if ( e.message_id == msg["inReplyTo"] ) {
+                    belongs_here = true;
+                }
+            });
+        }
+        if (belongs_here) {
+            const msgdiv = await createMessage(msg);
+            conversationMessagesContainer.appendChild(msgdiv);
+        }
+    });
+
     conversationAllContainer.appendChild(conversationMessagesContainer);
 
     if (current_user !== null && (current_user.banned ?? false) == false) {

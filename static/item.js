@@ -7,6 +7,7 @@ import { createAvatar, createSmallAvatar } from "./create/avatar.js";
 import { getCurrentUser } from "./current_user.js";
 import { createReportForm } from "./create/reportform.js";
 import { createEditItemForm } from "./create/edititemform.js";
+import { incoming } from "./app.js";
 
 const [item, currentUser] = await Promise.all([
     fetchJSON('item/' + window.location.pathname.replace(/^.+?[/]/, '')),
@@ -113,6 +114,35 @@ conversations.forEach(async conversation => {
     conversationIndicatorContainer.appendChild(indicator);
     await selectFirst(container);
 });
+
+incoming.addEventListener('conversation', async msg=>{
+    console.log(msg);
+    let found = false;
+    if (item.id != msg.item_id) {
+        return;
+    };
+    for (const id in  conversationContainers) {
+        if (id == msg.id) {
+            found = true;
+            break;
+        }
+    }
+    if ( found ) {
+        return;
+    }
+    const container = await createConversation(msg);
+    conversationContainers[msg.id] = container;
+    const indicator = createSmallAvatar(await getUser(msg.remote_user));
+    indicator.name = msg.id;
+    indicator.onclick = (t) => {
+        conversationContainer.innerHTML = "";
+        const c = conversationContainers[t.srcElement.name];
+        conversationContainer.appendChild(c);
+    };
+    conversationIndicatorContainer.appendChild(indicator);
+});
+
+
 if (conversations.length == 0 && item.user != currentUser.id) {
     const container = await createConversation({"item_id": item.id, "id": null, "messages":[]});
     conversationContainer.appendChild(container);
