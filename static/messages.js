@@ -64,7 +64,7 @@ const renderConversationButton = async convo => {
     cell.style.width="99%";
     const img = createElement('img', '','');
     if (convo.item_id in items && items[convo.item_id].images.length > 0) {
-        img.src = "/api/v1/image/"+items[convo.item_id].images[0];
+        img.src = "/api/v1/image/"+items[convo.item_id].images[0].image_id;
     } else {
         img.src = "/static/nopic.webp";
     }
