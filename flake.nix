@@ -199,6 +199,11 @@
             '';
           };
 
+          system.activationScripts.makeFlohmarktDirectory = lib.stringAfter [ "var" ] ''
+            mkdir -p ${config.services.flohmarkt.settings.general.dataPath}
+            chown -R flohmarkt ${config.services.flohmarkt.settings.general.dataPath}
+          '';
+
           services.couchdb = {
             enable = true;
             bindAddress = "127.0.0.1";
