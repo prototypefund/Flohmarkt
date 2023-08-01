@@ -78,6 +78,17 @@ deleteButton.addEventListener('click', async e => {
     }
 });
 
+const notificationButton = document.getElementById('notification-btn');
+notificationButton.addEventListener('click', ()=>{
+    if (!("Notification" in window)) {
+        return;
+    }
+    if (Notification.permission !== "granted") {
+        Notification.requestPermission();
+    }
+});
+
+
 const createForm = document.getElementById('create-form');
 let inputValid = 0;
 createForm.querySelectorAll('input, textarea').forEach((input, index) => {
