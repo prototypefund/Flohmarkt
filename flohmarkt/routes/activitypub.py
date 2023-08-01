@@ -418,7 +418,10 @@ async def inbox_process_delete(req: Request, msg: dict):
         return Response(content="", status_code=204)
     else:
         # Try to determine message
+        print("trying to delete msg: "+msg["object"]["id"])
         conv = await ConversationSchema.retrieve_for_message_id(msg["object"]["id"])
+        if conv is None:
+            return
         for message in conv["messages"]:
             if message["id"] == msg["object"]["id"]:
                 message["overridden"] = True
