@@ -34,6 +34,12 @@
     height: 42px;
 }
 
+.icon--message {
+    padding-top:8px;
+    width: 42px;
+    height: 42px;
+}
+
 .icon--photo {
     width: 100%;
     height: auto;
