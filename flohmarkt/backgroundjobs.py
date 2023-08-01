@@ -9,9 +9,10 @@ async def clean_images():
     await asyncio.sleep(10) # dont interrupt the first requests to the other routes
     print("Cleaning up unused images")
 
-    fs_images = os.listdir(os.path.join(cfg["General"]["DataPath"], "images")) 
-    if not os.path.exists(fs_images): # on spawn a image folder may not exist yet
+    imagespath = os.path.join(cfg["General"]["DataPath"], "images")
+    if not os.path.exists(imagespath): # on spawn a image folder may not exist yet
         return
+    fs_images = os.listdir(imagespath) 
 
     item_images = []
     item_image_batch = None
