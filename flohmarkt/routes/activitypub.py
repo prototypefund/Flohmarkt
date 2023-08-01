@@ -881,8 +881,9 @@ async def user_route(req : Request, acc: str):
     if not "@" in acc:
         raise HTTPException(status_code=400, detail="fediverse account must contain @")
 
+
+    acc = acc.lstrip("@") # for mastodon
     name, host = acc.split("@")
-    name = name.lstrip("@") # for mastodon
     webfinger_url = "https://"+host+"/.well-known/webfinger?resource=acct:"+acc
     async with HttpClient().get(webfinger_url) as r:
         json = await r.json()
