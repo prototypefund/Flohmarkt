@@ -5,6 +5,8 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
+from starlette.websockets import WebSocketDisconnect
+
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
@@ -198,14 +200,18 @@ async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
     authenticated = False
     while True:
-        data = await websocket.receive_text()
-        if not authenticated:
-            user = await get_current_user(data) # first data must be token
-            if user is None:
-                websocket.close()
-                break
-            else:
-                authenticated = True
-                Socketpool.add_socket(user, websocket)
-                await websocket.send_json({"msg":"Welcome to the server","head":"Authenticated!"})
+        try:
+            data = await websocket.receive_text()
+            if not authenticated:
+                user = await get_current_user(data) # first data must be token
+                if user is None:
+                    websocket.close()
+                    break
+                else:
+                    authenticated = True
+                    Socketpool.add_socket(user, websocket)
+                    await websocket.send_json({"msg":"Welcome to the server","head":"Authenticated!"})
+        except (WebSocketDisconnect, RuntimeError):
+            print("Websocket connection closed")
+            break
                 
