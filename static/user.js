@@ -68,7 +68,6 @@ const deleteButton = document.getElementById('delete-btn');
 deleteButton.addEventListener('click', async e => {
     if (prompt("Please enter your username to confirm account deletion!") == user.name) {
         const res = await deleteCall('/api/v1/user/'+user.id);
-        console.log(res);
         if (res == true) {
             window.sessionStorage.setItem('token',null);
             window.sessionStorage.setItem('parsedToken',null);
