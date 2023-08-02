@@ -33,12 +33,12 @@ async def clean_images():
     skip = 0
 
     while avatar_image_batch != []:
-        avatar_images = await Database.find({
+        avatar_image_batch = await Database.find({
             "type": "user",
         }, fields=["avatar"], limit=limit, skip=skip)
         limit += 100
         skip += 100
-        avatar_images.extend(item_image_batch)
+        avatar_images.extend(avatar_image_batch)
 
     item_images = [i["images"] for i in item_images]
     avatar_images = [a["avatar"] for a in avatar_images]
