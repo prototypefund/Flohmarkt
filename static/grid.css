@@ -26,7 +26,7 @@
     }
 }
 
-@media(min-width: 992px)and (max-width: 1199.98px) {
+@media(min-width: 992px) {
     .grid__results {
         grid-template-columns: repeat(4, 1fr)
     }
