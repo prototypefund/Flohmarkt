@@ -475,6 +475,9 @@ async def inbox_process_reject(req : Request, msg: dict):
 
 @router.post("/inbox")
 async def inbox(req : Request, msg : dict = Body(...) ):
+    if msg["actor"] == msg["object"] and msg["type"] == "Delete":
+        return # TODO: make sure we can delete replicated users
+
     if not await verify(req):
         raise HTTPException(status_code=401, detail="request signature could not be validated")
 
