@@ -95,7 +95,8 @@ async def root(request: Request):
 
 @app.get("/~{user}/{item}")
 async def other(request: Request, user: str, item: str):
-    if "application/activity+json" in request.headers["accept"]:
+    if "application/activity+json" in request.headers["accept"] or \
+       "application/ld+json" in request.headers["accept"]: 
         headers = {"Content-type":"application/activity+json"}
         item = await ItemSchema.retrieve_single_id(item)
         user = await UserSchema.retrieve_single_name(user)
