@@ -57,8 +57,8 @@ editItemButton.addEventListener('click', e => {
 });
 if (item.user == currentUser.id) {
     itemOperationContainer.appendChild(editItemButton);
+    itemOperationContainer.appendChild(deleteButton);
 }
-itemOperationContainer.appendChild(deleteButton);
 itemOperationContainer.appendChild(reportButton);
 itemFragment.appendChild(itemOperationContainer);
 itemFragment.appendChild(reportForm);
