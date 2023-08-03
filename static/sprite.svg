@@ -49,67 +49,14 @@
         <path d="M18 6l-12 12"></path>
         <path d="M6 6l12 12"></path>
     </svg>
-    <svg
-       width="48.0px"
-       height="48.0px"
-       viewBox="0 0 48.0 48.0"
-       version="1.1"
-       id="SVGRoot"
-       sodipodi:docname="message.svg"
-       inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
-       xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-       xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-       xmlns="http://www.w3.org/2000/svg"
-       xmlns:svg="http://www.w3.org/2000/svg">
-      <sodipodi:namedview
-         id="namedview261"
-         pagecolor="#ffffff"
-         bordercolor="#666666"
-         borderopacity="1.0"
-         inkscape:showpageshadow="2"
-         inkscape:pageopacity="0.0"
-         inkscape:pagecheckerboard="0"
-         inkscape:deskcolor="#d1d1d1"
-         inkscape:document-units="px"
-         showgrid="true"
-         inkscape:zoom="13.227826"
-         inkscape:cx="26.421575"
-         inkscape:cy="28.198133"
-         inkscape:window-width="1918"
-         inkscape:window-height="1059"
-         inkscape:window-x="0"
-         inkscape:window-y="0"
-         inkscape:window-maximized="1"
-         inkscape:current-layer="layer1">
-        <inkscape:grid
-           type="xygrid"
-           id="grid384" />
-      </sodipodi:namedview>
-      <defs
-         id="defs256" />
-      <g
-         inkscape:label="Layer 1"
-         inkscape:groupmode="layer"
-         id="layer1">
-        <rect
-           style="fill:none;stroke:#000000;stroke-width:1;stroke-dasharray:none"
-           id="rect621"
-           width="37.689156"
-           height="21.960514"
-           x="5.1554222"
-           y="13.019743" />
-        <path
-           style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-           d="M 5.3581641,13.067581 23.81597,27.836846 43.004365,13.19498"
-           id="path1436" />
-        <path
-           style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-           d="M 5.1416128,35.118618 19.95886,24.761661"
-           id="path1438" />
-        <path
-           style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-           d="M 42.536628,34.658952 28.92895,24.301999"
-           id="path1440" />
-      </g>
+    <svg id="mail" viewBox="0 0 24 24">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10z"></path>
+        <path d="M3 7l9 6l9 -6"></path>
+    </svg>
+    <svg id="mail-filled" viewBox="0 0 24 24">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+        <path d="M22 7.535v9.465a3 3 0 0 1 -2.824 2.995l-.176 .005h-14a3 3 0 0 1 -2.995 -2.824l-.005 -.176v-9.465l9.445 6.297l.116 .066a1 1 0 0 0 .878 0l.116 -.066l9.445 -6.297z" stroke-width="0" fill="currentColor"></path>
+        <path d="M19 4c1.08 0 2.027 .57 2.555 1.427l-9.555 6.37l-9.555 -6.37a2.999 2.999 0 0 1 2.354 -1.42l.201 -.007h14z" stroke-width="0" fill="currentColor"></path>
     </svg>
 </svg>
