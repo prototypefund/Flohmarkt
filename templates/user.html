@@ -16,15 +16,7 @@
         <h1>{{ user.name }}'s profile</h1>
         <div id="profile-form" style="display:none;">
             <form id="create-form" action="/api/v1/user" method="put" type="multipart/form-data" id="form">
-                <ul class="grid grid__images m-0 list-unstyled"></ul>
-                <header class="m-0">
-                    <label class="m-0 cursor-pointer" for="upload">
-                        <svg class="icon icon--photo-up" role="img" aria-hidden="true">
-                            <use href="/static/sprite.svg#photo-up"></use>
-                        </svg>
-                    </label>
-                    <input type="file" name="upload" id="upload" accept="image/*" multiple hidden>
-                </header>
+                <uploader-element id="image_uploader" max-width="128" max-height="128"></uploader-element>
                 <label for="description">Bio</label>
                 <input type="hidden" name="avatar" id="avatar" value="">
                 <textarea id="description" name="bio" >{{ user.bio }}</textarea>
