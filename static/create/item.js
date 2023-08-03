@@ -71,7 +71,7 @@ export function createItem(item, details=false, watching=[]) {
     wrapper.appendChild(createElement('p', null, item.description));
     element.appendChild(wrapper);
     
-    const watch_button = createSVG('eye' + watching.includes(item.id) ? '-off' : '');
+    const watch_button = createSVG('eye' + (watching.includes(item.id) ? '-off' : ''));
     watch_button.classList.add('watch_button');
     watch_button.addEventListener('click', async e => {
         if (watch_button.classList.contains('eye')) {
