@@ -1,6 +1,7 @@
 import { getCurrentUser } from "./current_user.js";
 import { incoming } from "./app.js";
 import { fetchJSON } from "./utils.js";
+import { replaceSVG } from "./create/svg.js";
 
 const user = await getCurrentUser;
 
@@ -14,7 +15,7 @@ messageIcon.innerHTML = `
     }
 </style>
 <span class="message_icon" aria-label="New messages">
-<svg class="icon icon--plus" role="img">
+<svg class="icon icon--mail" role="img">
     <use href="/static/sprite.svg#mail" class="usetag"></use>
 </svg>
 </span>
@@ -41,11 +42,7 @@ class MessageIcon extends HTMLElement {
     }
 
     processIncoming() {
-        /*const usetag = document.createElement('use',{'href':"/static/sprite.svg#mail-filled"});
-        this.usetag.remove();
-        console.log(this.messageicon);
-        this.messageicon.appendChild(usetag);*/
-        this.messageicon.classList.add("icon_filled");
+        replaceSVG(this.messageicon, 'mail', 'mail-filled');
         return true;
     }
 
