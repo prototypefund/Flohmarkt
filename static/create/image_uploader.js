@@ -62,16 +62,17 @@ class UploaderImage extends HTMLElement {
             
                 if (width > height) {
                     if (width > this["max-width"]) {
-                        height *= this["max-waidth"] / width;
+                        height *= this["max-width"] / width;
                         width = this["max-width"];
                         resize = true;
                     }
-                }
-                if (height > this["max-height"]) {
-                    width *= this["max-height"] / height;
-                    height = this["max-height"];
-                    resize = true;
-                }
+                } else {
+                    if (height > this["max-height"]) {
+                        width *= this["max-height"] / height;
+                        height = this["max-height"];
+                        resize = true;
+                    }
+		}
                 if (resize) {
                     const canvas = this._shadowRoot.querySelector('.compress_canvas');
                     const context = canvas.getContext('2d');
@@ -80,7 +81,7 @@ class UploaderImage extends HTMLElement {
                     canvas.height = height;
                     
                     context.drawImage(image, 0, 0, width, height);
-                    const srcData = canvas.toDataURL('image/*');
+                    srcData = canvas.toDataURL('image/*');
                 }
                 window.fetch('/api/v1/image/', {
                         method: "post",
