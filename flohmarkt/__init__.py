@@ -114,6 +114,14 @@ async def other(request: Request, user: str, item: str):
             "item": item
         })
 
+@app.get("/users/{username}/items/{item}")
+async def other(request: Request, user: str, item: str):
+    item = await ItemSchema.retrieve_single_id(item)
+    user = await UserSchema.retrieve_single_name(user)
+    item = await item_to_note(item, user)
+    item = await append_context(item)
+    return JSONResponse(content=item, headers=headers)
+
 @app.get("/~{user}")
 async def other(request: Request, user: str):
     if "application/activity+json" in request.headers["accept"]:
