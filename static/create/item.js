@@ -5,7 +5,7 @@ import { createSVG, replaceSVG } from "./svg.js";
 import { fetchJSON } from "../utils.js";
 
 export function createItem(item, details=false, watching=[]) {
-    const element = createElement('aside', `position-relative card-item${details ? '-big' : ''}`);
+    const element = createElement('aside', 'position-relative card-item');
     let image;
     if (item.images && item.images.length > 0) {
         image = createImage("/api/v1/image/"+item.images[0]["image_id"], item.name, 'card-img-top w-100');
@@ -55,7 +55,7 @@ export function createItem(item, details=false, watching=[]) {
     image.loading = 'lazy';
     element.appendChild(image);
 
-    const wrapper = createElement('div', `p-2 card-item-text${details ? '-big' : ''}`);
+    const wrapper = createElement('div', 'p-2');
     const container = createElement('div', 'd-flex justify-content-between');
     if (details) {
         container.appendChild(createElement("span", 'stretched-link', item.name));

@@ -5,17 +5,8 @@
     object-fit: contain;
 }
 
-.card-item,
-.card-item-big {
+.card-item {
     min-width: 0;
-}
-
-.card-item-text {
-    height: 200px;
-    overflow: hidden;
-}
-.card-item-big-text {
-    overflow: hidden;
 }
 
 .galery_left,
