@@ -151,10 +151,18 @@ class Uploader extends HTMLElement {
             images.appendChild(image);
             this.images.push(image);
             image.setImage(file);
-            image["max-width"] = 1080;
-            image["max-height"] = 720;
+            image["max-width"] = this["max-width"];
+            image["max-height"] = this["max-height"];
         }
 
+    }
+
+    static get observedAttributes() {
+        return ['max-width', 'max-height'];
+    }
+
+    attributeChangedCallback(name, oldVal, newVal) {
+        this[name] = newVal;
     }
 
     getData () {
