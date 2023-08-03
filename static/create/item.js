@@ -1,6 +1,7 @@
 import { createImage } from "./image.js";
 import { createLink } from "./link.js";
 import { createElement } from "./element.js";
+import { createSVG } from "./svg.js";
 import { fetchJSON } from "../utils.js";
 
 export function createItem(item, details=false, watching=[]) {
