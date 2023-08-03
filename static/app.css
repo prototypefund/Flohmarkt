@@ -607,6 +607,12 @@ blockquote footer {
     border-top-right-radius: 5px;
 }
 
+.convo_cell {
+    min-width: 400px;
+    /* TODO: make beautiful. is meant to fill the
+     * conversation selector to full width */
+}
+
 footer {
     background-color: #111;
 }
