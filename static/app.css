@@ -70,6 +70,11 @@ body {
     min-height: 100vh;
 }
 
+main {
+    /* move footer to bottom*/
+    flex: 1;
+}
+
 footer,
 header,
 main {
