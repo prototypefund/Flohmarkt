@@ -42,8 +42,7 @@ for (let key in reason_mapping) {
     });
 }
 
-itemsNewest.push(...itemsContested);
-itemsNewest.push(...itemsOldest);
+itemsNewest.push(...itemsContested, ...itemsOldest);
 
 const keys = {};
 const to_display = [];
@@ -62,12 +61,14 @@ const shuffled = to_display
     .sort((a, b) => a.sort - b.sort)
     .map(({ value }) => value)
 
-const gridResults = document.querySelector('.grid__results');
-
+const frag = document.createDocumentFragment();
 shuffled.forEach(item => {
-    window.requestAnimationFrame(() => {
 	const htmlItem = createItem(item, false, watching);
 	htmlItem.appendChild(createElement("div", 'circle badge badge_'+item.reason, label_mapping[item.reason]));
-        gridResults.appendChild(htmlItem);
-    });
+    frag.appendChild(htmlItem);
+});
+
+const gridResults = document.querySelector('.grid__results');
+window.requestAnimationFrame(() => {
+    gridResults.appendChild(frag);
 });
