@@ -9,6 +9,9 @@ messageIcon.innerHTML = `
 <link rel="stylesheet" href="/static/utils.css">
 <link rel="stylesheet" href="/static/icon.css">
 <style>
+    .message_icon {
+        cursor: pointer;
+    }
 </style>
 <span class="message_icon" aria-label="New messages">
 <svg class="icon icon--plus" role="img">
