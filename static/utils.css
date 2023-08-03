@@ -4,11 +4,9 @@
     height: 200px;
     object-fit: contain;
 }
-.card-item {
-    /*width: 250px;*/
-}
+
+.card-item,
 .card-item-big {
-    /*width: 100%;*/
     min-width: 0;
 }
 
