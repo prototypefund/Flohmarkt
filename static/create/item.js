@@ -1,7 +1,7 @@
 import { createImage } from "./image.js";
 import { createLink } from "./link.js";
 import { createElement } from "./element.js";
-import { createSVG } from "./svg.js";
+import { createSVG, replaceSVG } from "./svg.js";
 import { fetchJSON } from "../utils.js";
 
 export function createItem(item, details=false, watching=[]) {
@@ -71,17 +71,15 @@ export function createItem(item, details=false, watching=[]) {
     wrapper.appendChild(createElement('p', null, item.description));
     element.appendChild(wrapper);
     
-    const watch_button = createElement('span', 'watch_button', '👁');
-    if (watching.includes(item.id)) {
-        watch_button.classList.add("watch_button_active");
-    }
+    const watch_button = createSVG('eye' + watching.includes(item.id) ? '-off' : '');
+    watch_button.classList.add('watch_button');
     watch_button.addEventListener('click', async e => {
-        if (watch_button.classList.contains("watch_button_active")) {
-            await fetchJSON('item/'+item.id+'/unwatch');
-            watch_button.classList.remove("watch_button_active");
-        } else {
+        if (watch_button.classList.contains('eye')) {
             await fetchJSON('item/'+item.id+'/watch');
-            watch_button.classList.add("watch_button_active");
+            replaceSVG(watch_button, 'eye', 'eye-off');
+        } else {
+            await fetchJSON('item/'+item.id+'/unwatch');
+            replaceSVG(watch_button, 'eye-off', 'eye');
         }
     });
     container.appendChild(watch_button);

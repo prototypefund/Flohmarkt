@@ -38,22 +38,16 @@
 }
 
 .watch_button {
-    /*padding: 10px;*/
+    padding: 3px;
     border-radius: 50%;
     box-shadow: 1px 1px 2px black;
     border: 1px dashed silver;
     position: absolute;
-    top: 10px;
-    right: 10px;
-    width: 24px;
-    height: 24px;
-    /*text-align:center;
-    vertical-align: middle;*/
+    top: 0.25rem;
+    right: 0.25rem;
+    width: 32px;
+    height: 32px;
     z-index: 200;
-}
-
-.watch_button_active {
-    background-color:#af0;
 }
 
 .badge {
