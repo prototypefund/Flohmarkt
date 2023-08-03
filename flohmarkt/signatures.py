@@ -91,7 +91,7 @@ class Signature:
     async def _obtain_pubkey(self):
         url = self.key_id.split("#")[0]
         async with HttpClient().get(url, headers = {
-                "Accept":"application/json"
+                "Accept":"application/ld+json"
             }) as resp:
             data = await resp.json()
             return RSA.importKey(data['publicKey']['publicKeyPem'])
