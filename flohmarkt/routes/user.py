@@ -45,7 +45,7 @@ async def delete_user(ident: str, current_user : UserSchema = Depends(get_curren
         await ItemSchema.delete(item["id"])
 
     await UserSchema.delete(ident)
-    return True
+    return 
 
 @router.get("/{ident}/ban", response_description="deleted")
 async def delete_user(ident: str, current_user : UserSchema = Depends(get_current_user)):
