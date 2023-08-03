@@ -48,7 +48,8 @@ export function createItem(item, details=false, watching=[]) {
         }
     }
     else {
-        image = createImage("/static/nopic.webp" , "no image", 'card-img-top w-100');
+        image = createSVG('photo-off');
+        image.classList.add('card-img-top', 'w-100');
     }
     image.loading = 'lazy';
     element.appendChild(image);
