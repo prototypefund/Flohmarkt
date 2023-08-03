@@ -98,6 +98,14 @@ async def create_message(item_id: str, msg: dict = Body(...), current_user: User
 
     return conversation
 
+@router.get("/by_message_id")
+async def by_message_id(msg_id : str, current_user: UserSchema = Depends(get_current_user)):
+    conv = await ConversationSchema.retrieve_for_message_id(msg_id)
+    if current_user["id"] != conv["user_id"] and current_user["remote_url"] != conv["remote_user"]:
+        raise HTTPException(status_code=403, detail="You are not involved in this conversation")
+    return conv
+
+
 @router.delete("/{ident}", response_description="deleted")
 async def delete_user(ident: str):
     await UserSchema.delete(ident)

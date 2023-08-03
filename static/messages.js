@@ -31,6 +31,10 @@ await loadItems(conversations);
 
 var skip = 0;
 
+const convDisplay = document.getElementById('conversation-display');
+
+const convSelector = document.getElementById('conversation-selector');
+
 const moreButton = document.getElementById("more-button");
 if (conversations.length == 10) {
     moreButton.style.display="block";
@@ -38,13 +42,11 @@ if (conversations.length == 10) {
         skip+=10;
         const newConversations = await fetchJSON('conversation/own?skip='+skip);
         await loadItems(newConversations);
-        newConversations.forEach(renderConversationButton);
+        const conversationRows = await Promise.all(newConversations.map(renderConversationButton));
+	conversationRows.forEach(e=>convSelector.appendChild(e));
     });
 }
 
-const convDisplay = document.getElementById('conversation-display');
-
-const convSelector = document.getElementById('conversation-selector');
 
 const DIR_IN = 0;
 const DIR_OUT = 1;
@@ -104,21 +106,23 @@ const renderConversationButton = async convo => {
         cell.classList.add("active_convo_selector");
         currentConversationButton = cell;
     }
-    convSelector.prepend(row);
     row.convo = convo;
+    return row;
 }
 
-conversations.reverse();
-await conversations.forEach(renderConversationButton);
+const conversationRows = await Promise.all(conversations.map(renderConversationButton));
+conversationRows.forEach(e=>convSelector.appendChild(e));
 
 incoming.addEventListener('conversation', async msg=>{
     const item = await fetchJSON('item/'+msg["item_id"]);
     items[item["id"]] = item;
-    await renderConversationButton(msg);
+    const row = await renderConversationButton(msg);
+    convSelector.prepend(row);
 });
 
 incoming.addEventListener('message', async msg=>{
-    convSelector.childNodes.forEach(r=>{
+    let success = false;
+    await convSelector.childNodes.forEach(r=>{
         if (r.convo ?? null != null) {
             let belongs_here = false;
             if (msg["inReplyTo"].indexOf(r.convo.item_id) != -1) {
@@ -134,9 +138,22 @@ incoming.addEventListener('message', async msg=>{
                 const x = r;
                 r.remove();
                 convSelector.prepend(x);
+		success = true;
             }
         }
     });
+    if (!success) {
+	console.log("B$");
+        const conv = await fetchJSON('conversation/by_message_id?msg_id='+msg['id']);
+        const item = await fetchJSON('item/'+conv['item_id']);
+        items[item["id"]] = item;
+	console.log(conv);
+	const row = await renderConversationButton(conv);
+	console.log(row);
+        convSelector.prepend(row);
+	console.log("Benis");
+    }
+    
 });
 
 // Select the first conversation
