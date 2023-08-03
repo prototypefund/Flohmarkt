@@ -114,7 +114,7 @@ async def other(request: Request, user: str, item: str):
             "item": item
         })
 
-@app.get("/users/{username}/items/{item}")
+@app.get("/users/{user}/items/{item}")
 async def other(request: Request, user: str, item: str):
     item = await ItemSchema.retrieve_single_id(item)
     user = await UserSchema.retrieve_single_name(user)
