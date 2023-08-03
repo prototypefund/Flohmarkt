@@ -4,14 +4,10 @@ import { createElement } from "./element.js";
 import { fetchJSON } from "../utils.js";
 
 export function createItem(item, details=false, watching=[]) {
-    var element = null;
-    if (details) {
-        element = createElement('aside', 'position-relative card-item-big');
-    } else {
-        element = createElement('aside', 'position-relative card-item');
-    }
+    const element = createElement('aside', `position-relative card-item${details || '-big'}`);
+    let image;
     if (item.images && item.images.length > 0) {
-        const image = createImage("/api/v1/image/"+item.images[0]["image_id"], item.name, 'card-img-top w-100');
+        image = createImage("/api/v1/image/"+item.images[0]["image_id"], item.name, 'card-img-top w-100');
         image.alt = item.images[0]["description"];
         image["image_idx"] = 0;
         if (details) {
@@ -34,7 +30,8 @@ export function createItem(item, details=false, watching=[]) {
                 return true;
             });
             element.appendChild(g_right);
-        } else {
+        }
+        else {
             element.addEventListener('mouseenter', e => {
                 var callback = null;
                 const f = ()=>{
@@ -49,17 +46,14 @@ export function createItem(item, details=false, watching=[]) {
                 });
             });
         }
-        element.appendChild(image);
-    } else {
-        const image = createImage("/static/nopic.webp" , "no image", 'card-img-top w-100');
-        element.appendChild(image);
     }
-    var wrapper = null;
-    if (details) {
-	wrapper = createElement('div', 'p-2 card-item-text-big');
-    } else {
-	wrapper = createElement('div', 'p-2 card-item-text');
+    else {
+        image = createImage("/static/nopic.webp" , "no image", 'card-img-top w-100');
     }
+    image.loading = 'lazy';
+    element.appendChild(image);
+
+    const wrapper = createElement('div', `p-2 card-item-text${details || '-big'}`);
     const container = createElement('div', 'd-flex justify-content-between');
     if (details) {
         container.appendChild(createElement("span", 'stretched-link', item.name));
