@@ -350,6 +350,14 @@ async def inbox_process_create(req: Request, msg: dict):
 
     conversation["messages"].append(msg["object"])
 
+    if msg["actor"] == conversation["remote_user"]:
+        receiver = await UserSchema.retrieve_single_id(conversation["user_id"])
+    else:
+        receiver = await UserSchema.retrieve_single_remote_url(conversation["remote_user"])
+    if receiver is not None:
+        receiver["has_unread"] = True
+        await UserSchema.update(receiver["id"], receiver)
+
     await ConversationSchema.update(conversation['id'], conversation)
     if is_new_conversation:
         await Socketpool.send_conversation(jsonable_encoder(conversation))
@@ -395,6 +403,14 @@ async def inbox_process_update(req: Request, msg: dict):
         raise HTTPException(status_code=404, detail="Trying to update a non-existing message")
 
     conversation["messages"].append(msg["object"])
+
+    if msg["actor"] == conversation["remote_user"]:
+        receiver = await UserSchema.retrieve_single_id(conversation["user_id"])
+    else:
+        receiver = await UserSchema.retrieve_single_remote_url(conversation["remote_user"])
+    if receiver is not None:
+        receiver["has_unread"] = True
+        await UserSchema.update(receiver["id"], receiver)
 
     await ConversationSchema.update(conversation['id'], conversation)
     await Socketpool.send_message(msg["object"])

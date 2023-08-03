@@ -119,6 +119,15 @@ async def update_item(ident: str, req: UpdateItemModel = Body(...), current_user
             message = await convert_to_activitypub_message(msg, current_user,parent=last_message, item=newitem)
             convo["messages"].append(message)
             await ConversationSchema.update(convo['id'], convo)
+
+            if message["actor"] == convo["remote_user"]:
+                receiver = await UserSchema.retrieve_single_id(convo["user_id"])
+            else:
+                receiver = await UserSchema.retrieve_single_remote_url(convo["remote_user"])
+            if receiver is not None:
+                receiver["has_unread"] = True
+                await UserSchema.update(receiver["id"], receiver)
+
             tasks.append(post_message_remote(message, current_user))
             tasks.append(Socketpool.send_message(message))
 
@@ -225,6 +234,15 @@ async def give_item(ident: str, msg: dict = Body(...), current_user: UserSchema 
         message = await convert_to_activitypub_message(msg, current_user,parent=last_message, item=item)
         convo["messages"].append(message)
         await ConversationSchema.update(convo['id'], convo)
+
+        if message["actor"] == convo["remote_user"]:
+            receiver = await UserSchema.retrieve_single_id(convo["user_id"])
+        else:
+            receiver = await UserSchema.retrieve_single_remote_url(convo["remote_user"])
+        if receiver is not None:
+            receiver["has_unread"] = True
+            await UserSchema.update(receiver["id"], receiver)
+
         tasks.append(post_message_remote(message, current_user))
         tasks.append(Socketpool.send_message(message))
 

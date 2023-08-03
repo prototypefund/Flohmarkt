@@ -40,6 +40,7 @@ class UserSchema(BaseModel):
     creation_date : Optional[datetime.datetime] = datetime.datetime.now()
     blocked_users : list = []
     blocked_instances : list = []
+    has_unread : bool = False
     
     class Config: 
         schema_extra = {

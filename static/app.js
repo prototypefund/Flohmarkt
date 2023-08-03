@@ -60,8 +60,6 @@ export class Incoming {
 
 export const incoming = new Incoming();
 
-
-
 const token_expiry_check = () => {
     if (token != undefined && token != "null" && typeof(token) === 'string') {
         const parsedToken = JSON.parse(window.sessionStorage.getItem('parsedToken'));

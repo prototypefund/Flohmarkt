@@ -9,6 +9,10 @@
     stroke-linejoin: round;
 }
 
+.icon_filled {
+    fill: #777;
+}
+
 .icon--hand-grab,
 .icon--x {
     position: absolute;

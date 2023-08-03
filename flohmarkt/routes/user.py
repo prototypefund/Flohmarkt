@@ -78,3 +78,19 @@ async def delete_user(ident: str, current_user : UserSchema = Depends(get_curren
         return user
     else:
         raise HTTPException(status_code=500, detail="Something went wrong while updating")
+
+@router.get("/{ident}/mark_read", response_description="deleted")
+async def delete_user(ident: str, current_user : UserSchema = Depends(get_current_user)):
+    if current_user["id"] != ident:
+        raise HTTPException(status_code=403, detail="You can only modify your own state :(")
+
+    user = await UserSchema.retrieve_single_id(ident)
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not here :(")
+
+    user["has_unread"] = False
+
+    if await UserSchema.update(ident, user):    
+        return user
+    else:
+        raise HTTPException(status_code=500, detail="Something went wrong while updating")

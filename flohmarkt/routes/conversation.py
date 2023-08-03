@@ -89,6 +89,15 @@ async def create_message(item_id: str, msg: dict = Body(...), current_user: User
     conversation["messages"].append(message)
     await ConversationSchema.update(conversation['id'], conversation)
 
+    # mark user with unread messages
+    if actor == conversation["remote_user"]:
+        receiver = await UserSchema.retrieve_single_id(conversation["user_id"])
+    else:
+        receiver = await UserSchema.retrieve_single_remote_url(conversation["remote_user"])
+    if receiver is not None:
+        receiver["has_unread"] = True
+        await UserSchema.update(receiver["id"], receiver)
+
     await post_message_remote(message, current_user)
     if is_new_conversation:
         await Socketpool.send_conversation(jsonable_encoder(conversation))
