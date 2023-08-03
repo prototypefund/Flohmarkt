@@ -155,7 +155,7 @@ async def unfollow(obj):
     return {}
 
 async def replicate_item(item_url : str) -> ItemSchema:
-    headers = { "Accept": "application/activity+json" }
+    headers = { "Accept": "application/ld+json" }
     try:
         async with HttpClient().get(item_url, headers=headers) as resp:
             res = await resp.json()
@@ -189,7 +189,7 @@ async def replicate_user(user_url: str) -> str:
         ident = str(uuid.uuid4())
 
     async with HttpClient().get(user_url, headers = {
-            "Accept":"application/json"
+            "Accept":"application/ld+json"
         }) as resp:
         userinfo = await resp.json()
         parsed = urlparse(user_url)
@@ -566,6 +566,12 @@ async def user_inbox(req: Request, name: str, msg : dict = Body(...) ):
     if msg['type'] == "Follow":
         result = await follow(msg)
         return Response(content="0", status_code=202)
+    if msg['type'] == "Create":
+        return await inbox_process_create(req, msg)
+    if msg['type'] == "Update":
+        return await inbox_process_update(req, msg)
+    if msg['type'] == "Delete":
+        return await inbox_process_delete(req, msg)
     elif msg['type'] == "Undo":
         if msg['object']['type'] == "Follow":
             return await unfollow(msg)
