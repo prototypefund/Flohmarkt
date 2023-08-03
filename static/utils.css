@@ -62,8 +62,8 @@
     box-shadow: 1px 1px 3px #000;
     padding-top:12px;
     position: absolute;
-    top: -10px;
-    left: -10px;
+    top: 0.25rem;
+    left: 0.25rem;
     rotate: -30deg;
     height: 50px;
     width: 50px;
