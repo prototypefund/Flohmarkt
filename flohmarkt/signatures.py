@@ -124,6 +124,7 @@ def sign(method : str, url: str, headers: dict, data: str, user : UserSchema):
     headers["Digest"] = digest
     headers["Host"] = parsed.netloc
     headers["Date"] = to_rfc_2616(datetime.datetime.now(tz=datetime.timezone.utc))
+    print(headers["Date"])
     sign_headers = [
         '(request-target)',
         'Host',
