@@ -75,7 +75,6 @@ class NotificationContainer extends HTMLElement {
         const notification = document.createElement('notification-entry');
         notification.setMsg(msg);
         this.notifications.appendChild(notification);
-        
     }
 }
 
