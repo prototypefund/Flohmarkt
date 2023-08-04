@@ -247,7 +247,9 @@ async def create_new_item(msg: dict):
         } for a in msg["object"]["attachment"]
     ]
 
-    new_user = await replicate_user(msg["object"]["attributedTo"])
+    user = await UserSchema.retrieve_single_remote_url(msg["object"]["attributedTo"])
+    if user is None:
+        user = await replicate_user(msg["object"]["attributedTo"])
 
     if not (await is_inside_perimeter(msg["object"]["flohmarkt:data"]["coordinates"])):
         raise HTTPException(status_code=403, detail="Cannot accept item beyond perimeter")
