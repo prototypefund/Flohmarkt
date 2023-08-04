@@ -125,11 +125,15 @@ incoming.addEventListener('message', async msg=>{
     await convSelector.childNodes.forEach(r=>{
         if (r.convo ?? null != null) {
             let belongs_here = false;
-            if (msg["inReplyTo"].indexOf(r.convo.item_id) != -1) {
+            if (msg["inReplyTo"].indexOf(r.convo.item_id) != -1 &&
+		    (msg.actor == r.convo.remote_user ||
+		     msg.to[0] == r.convo.remote_user)) {
                 belongs_here = true;   
             }
             r.convo.messages.forEach(m=>{
-                if (m.id == msg["inReplyTo"]) {
+                if (m.id == msg["inReplyTo"] &&
+		    (msg.actor == r.convo.remote_user ||
+		     msg.to[0] == r.convo.remote_user)) {
                     belongs_here = true;   
                 }
             });

@@ -63,11 +63,15 @@ export const createConversation = async conversation => {
 
     incoming.addEventListener('message', async msg=>{
         let belongs_here = false;
-        if (msg["inReplyTo"].indexOf(conversation.item_id) != -1) {
+        if (msg.inReplyTo.indexOf(conversation.item_id) != -1 &&
+	    (msg.actor == conversation.remote_user ||
+	     msg.to[0] == conversation.remote_user)) {
             belongs_here = true;
         } else {
             conversationMessagesContainer.childNodes.forEach(e=>{
-                if ( e.message_id == msg["inReplyTo"] ) {
+                if ( e.message_id == msg["inReplyTo"] &&
+		    (msg.actor == conversation.remote_user ||
+		     msg.to[0] == conversation.remote_user)) {
                     belongs_here = true;
                 }
             });
