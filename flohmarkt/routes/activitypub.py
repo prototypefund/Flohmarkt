@@ -107,6 +107,9 @@ async def get_userinfo(actor : str) -> dict:
 
 async def accept(rcv_inbox, follow, user):
     hostname = cfg["General"]["ExternalURL"]
+    print(follow) #TODO remove. This is trapcode for a follow issue with a specific system
+    if type(follow.get("@context", None)) != str:
+        follow["@context"] = "https://www.w3.org/ns/activitystreams"
     accept = AcceptSchema(
         object=follow,
         id = f"{hostname}/users/{user['name']}#accepts/follows/42",
