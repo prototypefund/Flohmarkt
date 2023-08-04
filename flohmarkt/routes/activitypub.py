@@ -665,7 +665,7 @@ async def post_item_to_remote(item: ItemSchema, user: UserSchema):
             sign("post", rcv_inbox, headers, json.dumps(item), user)
 
             async with HttpClient().post(rcv_inbox, data=json.dumps(item), headers = headers) as resp:
-                if resp.status != 202:
+                if not resp.status in (200, 202):
                     print ("Article has not been accepted by target system",rcv_inbox, resp.status)
                 return
         tasks.append(do(rcv_inbox))
