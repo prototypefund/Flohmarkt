@@ -63,18 +63,6 @@ body {
     padding: 0;
 }
 
-body {
-    /* move footer to bottom*/
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-}
-
-main {
-    /* move footer to bottom*/
-    flex: 1;
-}
-
 footer,
 header,
 main {
