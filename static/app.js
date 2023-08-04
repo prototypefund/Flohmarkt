@@ -1,5 +1,4 @@
 import { createSmallAvatar } from "./create/avatar.js";
-import "./components/notification.js";
 
 const token = window.sessionStorage.getItem('token');
 
@@ -54,3 +53,5 @@ window.requestAnimationFrame(() => {
     });
     hideElements.forEach(element => element.hidden = true );
 });
+
+import "./components/notification.js";
