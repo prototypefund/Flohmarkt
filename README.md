@@ -15,6 +15,8 @@ Server Applications
 | Friendica       |  N/A           | [ ]                    | [x]         |     [ ]      | [x]        | Can't display Notes. |
 | Calckey       |  N/A           | [ ]                    | [  ]         |     [ ]      | [  ]        | The common problem is that my server cant connect to calckey URLs  |
 | Pleroma      | ?????  | [ ]                    | [ ]         |     [ ]      | [ ]        |            |
+| Mammuthus      | ?????  | [ ]                    | [ ]         |     [ ]      | [ ]        |         problems getting pubkeys from users   |
+| Mitra      | ?????  | [ ]                    | [ ]         |     [ ]      | [ ]        |             |
 
 Client Applications
 (We don't support C2S. It's just about interacting through other services.)
