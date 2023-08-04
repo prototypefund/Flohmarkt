@@ -15,7 +15,7 @@ Server Applications
 | Lemmy          |  0.18.2           | [ ]                    | [ ]         |     [ ]      | [ ]        | Doesnt work at all. I don't even see requests from lemmy at my side. |
 | Peertube       |  5.2.0           | [ ]                    | [ ]         |     [ ]      | [ ]        | Can't display Notes. |
 | Friendica       |  N/A           | [ ]                    | [x]         |     [ ]      | [x]        | Cannot write private messages :( otherwise would work |
-| Pleroma      | ?????  | [ ]                    | [ ]         |     [ ]      | [ ]        |            |
+| Pleroma      | 2.5.2    | [  ]                    | [ ]         |     [x ]      | [x ]        |            |
 | Mammuthus      | ?????  | [ ]                    | [ ]         |     [ ]      | [ ]        |         problems getting pubkeys from users   |
 | Mitra      | ?????  | [ ]                    | [ ]         |     [ ]      | [ ]        |             |
 
