@@ -71,6 +71,12 @@ main {
     padding: 1rem 0.5rem;
 }
 
+footer > a {
+    color: #555;
+    font-weight: normal;
+    font-size: small;
+}
+
 hr {
     background-color: var(--color-bg-secondary);
     border: none;
@@ -567,23 +573,20 @@ blockquote footer {
 }
 
 .message_ava {
-    margin:10px;
-    margin-left:20px;
+    margin: 10px;
+    margin-left: 20px;
 }
 
 .message_ava_me {
-    float: right;;
+    float: right;
 }
 .message_ava_you {
-    float: left;;
+    float: left;
 }
 
 .active_convo_selector {
     border-left: 5px solid var(--color-link);
     background-color: #555;
-}
-
-.tabs {
 }
 
 .tabpage {
@@ -600,27 +603,12 @@ blockquote footer {
     border-top-right-radius: 5px;
 }
 
-footer {
-    background-color: #111;
-}
-
 .conv_indicator {
     background-color:#333;
     border-radius: 5px;
     width:100%;
     padding:10px;
     margin-bottom:5px;
-}
-
-.footerline {
-    margin-left: auto;
-    margin-right: auto;
-    text-align:center;
-}
-.footerline a {
-    color: #555;
-    font-weight: normal;
-    font-size: small;
 }
 
 pre {
