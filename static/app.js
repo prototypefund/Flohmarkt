@@ -75,6 +75,7 @@ const token_expiry_check = () => {
 window.setTimeout(token_expiry_check, 100);
 
 const showElements = [];
+const hideElements = [];
 if (token != undefined && token != "null" && typeof(token) === 'string') {
     const parsedToken = JSON.parse(window.sessionStorage.getItem('parsedToken'));
     const username = parsedToken.username;
@@ -96,7 +97,11 @@ if (token != undefined && token != "null" && typeof(token) === 'string') {
 
     showElements.push(detailsListItem);
     showElements.push(document.getElementById('new-list-item'));
+    hideElements.push(document.getElementById('register-list-item'));
+    hideElements.push(document.getElementById('login-list-item'));
 } else {
+    hideElements.push(detailsListItem);
+    hideElements.push(document.getElementById('new-list-item'));
     showElements.push(document.getElementById('register-list-item'));
     showElements.push(document.getElementById('login-list-item'));
 }
@@ -123,5 +128,6 @@ function headerAvatar() {
 }
 
 window.requestAnimationFrame(() => {
-    showElements.forEach(element => element.classList.remove('invisible') )
+    showElements.forEach(element => element.classList.remove('invisible') );
+    hideElements.forEach(element => element.hidden = true );
 });
