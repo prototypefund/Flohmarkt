@@ -1,4 +1,5 @@
 import { createSmallAvatar } from "./create/avatar.js";
+import "./components/notification.js";
 
 const token = window.sessionStorage.getItem('token');
 
