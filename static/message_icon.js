@@ -1,7 +1,7 @@
 import { getCurrentUser } from "./current_user.js";
 import { incoming } from "./app.js";
 import { fetchJSON } from "./utils.js";
-import { replaceSVG } from "./create/svg.js";
+import { updateSVG } from "./update/svg.js";
 
 const user = await getCurrentUser;
 
@@ -42,7 +42,7 @@ class MessageIcon extends HTMLElement {
     }
 
     processIncoming() {
-        replaceSVG(this.messageicon, 'mail', 'mail-filled');
+        updateSVG(this.messageicon, 'mail', 'mail-filled');
         return true;
     }
 

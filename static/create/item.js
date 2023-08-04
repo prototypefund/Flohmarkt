@@ -1,7 +1,8 @@
 import { createImage } from "./image.js";
 import { createLink } from "./link.js";
 import { createElement } from "./element.js";
-import { createSVG, replaceSVG } from "./svg.js";
+import { createSVG } from "./svg.js";
+import { updateSVG } from "../update/svg.js";
 import { fetchJSON } from "../utils.js";
 
 export function createItem(item, details=false, watching=[]) {
@@ -76,10 +77,10 @@ export function createItem(item, details=false, watching=[]) {
     watch_button.addEventListener('click', async e => {
         if (watch_button.classList.contains('eye')) {
             await fetchJSON('item/'+item.id+'/watch');
-            replaceSVG(watch_button, 'eye', 'eye-off');
+            updateSVG(watch_button, 'eye', 'eye-off');
         } else {
             await fetchJSON('item/'+item.id+'/unwatch');
-            replaceSVG(watch_button, 'eye-off', 'eye');
+            updateSVG(watch_button, 'eye-off', 'eye');
         }
     });
     container.appendChild(watch_button);

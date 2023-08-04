@@ -1,4 +1,4 @@
-const spritePath = '/static/sprite.svg#';
+import { spritePath } from '../globals/path.js';
 
 export function createSVG(icon) {
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -12,10 +12,4 @@ export function createSVG(icon) {
     svg.appendChild(use);
     
     return svg;
-}
-
-export function replaceSVG(svg, oldIcon, newIcon) {
-    svg.classList.remove(oldIcon);
-    svg.classList.add(newIcon);
-    svg.firstElementChild.href.baseVal = spritePath + newIcon;
 }
