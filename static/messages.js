@@ -1,8 +1,9 @@
-import { fetchJSON, postJSON } from "./utils.js";
+import { fetchJSON } from "./utils.js";
 import { createSmallAvatar } from "./create/avatar.js";
-import { getCurrentUser, isCurrentUser } from "./current_user.js";
+import { getCurrentUser } from "./current_user.js";
 import { createElement } from "./create/element.js";
-import { createMessage, createConversation, getUser } from "./create/message.js";
+import { createImage } from "./create/image.js";
+import { createConversation, getUser } from "./create/message.js";
 import { incoming } from "./app.js";
 
 const [conversations, currentUser] = await Promise.all([
@@ -65,11 +66,11 @@ const renderConversationButton = async convo => {
     const row = createElement('tr', 'convo_row', '');
     const cell = createElement('td', 'convo_cell', '');
     cell.style.width="99%";
-    const img = createElement('img', '','');
+    let img;
     if (convo.item_id in items && items[convo.item_id].images.length > 0) {
-        img.src = "/api/v1/image/"+items[convo.item_id].images[0].image_id;
+        createImage('/api/v1/image/' + items[convo.item_id].images[0].image_id);
     } else {
-        img.src = "/static/nopic.webp";
+        createImage('photo-off.svg');
     }
     img.style.display = "inline-block";
     img.style.height="50px";

@@ -1,7 +1,5 @@
 import { fetchJSON, postJSON } from './utils.js';
 import { createElement } from "./create/element.js";
-import { createImg } from "./create/img.js";
-import { createSVG } from "./create/svg.js";
 import { getCurrentUser } from "./current_user.js";
 import "./create/image_uploader.js";
 
