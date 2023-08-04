@@ -7,8 +7,8 @@ const user = await getCurrentUser;
 
 const messageIcon = document.createElement('template');
 messageIcon.innerHTML = `
-<link rel="stylesheet" href="/static/utils.css">
-<link rel="stylesheet" href="/static/icon.css">
+<link rel="stylesheet" href="/static/css/utils.css">
+<link rel="stylesheet" href="/static/css/icon.css">
 <style>
     .message_icon {
         cursor: pointer;

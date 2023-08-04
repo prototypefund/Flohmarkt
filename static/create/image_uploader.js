@@ -3,7 +3,7 @@ import { createElement } from "./element.js";
 
 const uploaderImage = document.createElement('template');
 uploaderImage.innerHTML = `
-    <link rel="stylesheet" href="/static/container.css">
+    <link rel="stylesheet" href="/static/css/container.css">
     <style>
         textarea {
             width:60%;
@@ -105,9 +105,9 @@ window.customElements.define('uploader-image', UploaderImage);
 
 const uploader = document.createElement('template');
 uploader.innerHTML = `
-    <link rel="stylesheet" href="/static/container.css">
-    <link rel="stylesheet" href="/static/icon.css">
-    <link rel="stylesheet" href="/static/utils.css">
+    <link rel="stylesheet" href="/static/css/container.css">
+    <link rel="stylesheet" href="/static/css/icon.css">
+    <link rel="stylesheet" href="/static/css/utils.css">
     <style>
     	.upbox {
 		text-align:center;

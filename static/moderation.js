@@ -9,7 +9,7 @@ const [reportees, currentUser] = await Promise.all([
 
 const reportedItem = document.createElement('template');
 reportedItem.innerHTML = `
-    <link rel="stylesheet" href="/static/container.css">
+    <link rel="stylesheet" href="/static/css/container.css">
     <style>
         .reported {
             border: 1px solid white;
@@ -106,8 +106,8 @@ window.customElements.define('reported-item', ReportedItem);
 
 const reportedUser = document.createElement('template');
 reportedUser.innerHTML = `
-    <link rel="stylesheet" href="/static/container.css">
-    <link rel="stylesheet" href="/static/user.css">
+    <link rel="stylesheet" href="/static/css/container.css">
+    <link rel="stylesheet" href="/static/css/user.css">
     <style>
         .reported {
             border-top-left-radius:10px;
@@ -205,8 +205,8 @@ window.customElements.define('reported-user', ReportedUser);
 
 const reportCard = document.createElement('template');
 reportCard.innerHTML = `
-    <link rel="stylesheet" href="/static/container.css">
-    <link rel="stylesheet" href="/static/user.css">
+    <link rel="stylesheet" href="/static/css/container.css">
+    <link rel="stylesheet" href="/static/css/user.css">
     <style>
         .ava {
             display: inline-block;
