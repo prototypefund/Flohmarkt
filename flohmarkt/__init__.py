@@ -96,6 +96,15 @@ async def root(request: Request):
 @app.get("/~{user}/{item}")
 async def other(request: Request, user: str, item: str):
     if "accept" in request.headers:
+        if "text/html" in request.headers["accept"]:
+            settings = await InstanceSettingsSchema.retrieve()
+            item = await ItemSchema.retrieve_single_id(item)
+            return templates.TemplateResponse("item.html", {
+                "request": request,
+                "settings": settings,
+                "user": user,
+                "item": item
+            })
         if "application/activity+json" in request.headers["accept"] or \
            "application/ld+json" in request.headers["accept"] or \
            "application/json" in request.headers["accept"]: 
@@ -107,7 +116,6 @@ async def other(request: Request, user: str, item: str):
             return JSONResponse(content=item, headers=headers)
         else:
             raise HTTPException(status_code=400, detail="Content type not supported :(")
-
     else:
         settings = await InstanceSettingsSchema.retrieve()
         item = await ItemSchema.retrieve_single_id(item)
