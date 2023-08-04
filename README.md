@@ -12,7 +12,7 @@ Server Applications
 | Pixelfed       |  ???              | [ ]                    | [x]         |     [ ]      | [x]        | The software does not supply oauth url template for remote-interact. also cannot send private messages, so no conversations  | 
 | Lemmy          |  0.18.2           | [ ]                    | [ ]         |     [ ]      | [ ]        | Doesnt work at all. I don't even see requests from lemmy at my side. |
 | Peertube       |  5.2.0           | [ ]                    | [ ]         |     [ ]      | [ ]        | Can't display Notes. |
-| Friendica       |  N/A           | [ ]                    | [x]         |     [ ]      | [x]        | Can't display Notes. |
+| Friendica       |  N/A           | [ ]                    | [x]         |     [ ]      | [x]        | Cannot write private messages :( otherwise would work |
 | Calckey       |  N/A           | [ ]                    | [  ]         |     [ ]      | [  ]        | The common problem is that my server cant connect to calckey URLs  |
 | Pleroma      | ?????  | [ ]                    | [ ]         |     [ ]      | [ ]        |            |
 | Mammuthus      | ?????  | [ ]                    | [ ]         |     [ ]      | [ ]        |         problems getting pubkeys from users   |
