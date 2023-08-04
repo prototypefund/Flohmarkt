@@ -95,6 +95,9 @@ async def root(request: Request):
 
 @app.get("/~{user}/{item}")
 async def other(request: Request, user: str, item: str):
+    item = await ItemSchema.retrieve_single_id(item)
+    if item is None:
+        raise HTTPException(status_code=404, detail="Item not here :(")
     if "accept" in request.headers:
         print(request.headers["accept"])
         if "application/activity+json" in request.headers["accept"] or \
@@ -106,14 +109,12 @@ async def other(request: Request, user: str, item: str):
                 headers = {"Content-type": "application/ld+json"}
             else:
                 headers = {"Content-type": "application/json"}
-            item = await ItemSchema.retrieve_single_id(item)
             user = await UserSchema.retrieve_single_name(user)
             item = await item_to_note(item, user)
             item = await append_context(item)
             return JSONResponse(content=item, headers=headers)
         elif "text/html" in request.headers["accept"]:
             settings = await InstanceSettingsSchema.retrieve()
-            item = await ItemSchema.retrieve_single_id(item)
             return templates.TemplateResponse("item.html", {
                 "request": request,
                 "settings": settings,
@@ -124,7 +125,6 @@ async def other(request: Request, user: str, item: str):
             raise HTTPException(status_code=400, detail="Content type not supported :(")
     else:
         settings = await InstanceSettingsSchema.retrieve()
-        item = await ItemSchema.retrieve_single_id(item)
         return templates.TemplateResponse("item.html", {
             "request": request,
             "settings": settings,
