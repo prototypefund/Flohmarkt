@@ -151,7 +151,3 @@
 .w-100 {
     width: 100%;
 }
-
-.expand-content { /* Make sure it uses the conten of --content-width */
-    min-width: var(--width-content);
-}
