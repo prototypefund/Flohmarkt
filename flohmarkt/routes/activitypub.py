@@ -101,7 +101,7 @@ async def convert_to_activitypub_message(msg, current_user, parent=None, item=No
 
 async def get_userinfo(actor : str) -> dict:
     async with HttpClient().get(actor, headers = {
-            "Accept":"application/json"
+            "Accept":"application/json,application/ld+json,application/activity+json"
         }) as resp:
         return await resp.json()
 
@@ -158,7 +158,7 @@ async def unfollow(obj):
     return {}
 
 async def replicate_item(item_url : str) -> ItemSchema:
-    headers = { "Accept": "application/ld+json" }
+    headers = { "Accept": "application/json,application/ld+json,application/activity+json" }
     try:
         async with HttpClient().get(item_url, headers=headers) as resp:
             res = await resp.json()
@@ -187,12 +187,13 @@ async def replicate_image(image_url : str) -> str:
         return (image_url, ident)
 
 async def replicate_user(user_url: str) -> str:
+    print("REPLICATE UER "+user_url)
     ident = user_url.split("/")[-1]
     if not uuid_regex.match (ident):
         ident = str(uuid.uuid4())
 
     async with HttpClient().get(user_url, headers = {
-            "Accept":"application/ld+json"
+            "Accept":"application/json,application/ld+json,application/activity+json"
         }) as resp:
         userinfo = await resp.json()
         parsed = urlparse(user_url)
@@ -622,7 +623,7 @@ async def delete_item_remote(item: ItemSchema, user: UserSchema):
     data.update(item)
 
     headers = {
-        "Content-Type":"application/json"
+        "Content-Type":"application/ld+json"
     }
 
     rcv_inboxes = await get_inbox_list_from_activity(data)
@@ -648,7 +649,7 @@ async def post_item_to_remote(item: ItemSchema, user: UserSchema):
     hostname = cfg["General"]["ExternalURL"]
     item = await append_context(item)
     headers = {
-        "Content-Type":"application/json"
+        "Content-Type":"application/ld+json"
     }
 
     rcv_inboxes = await get_inbox_list_from_activity(item)
@@ -915,6 +916,7 @@ async def user_route(req : Request, acc: str):
     webfinger_url = "https://"+host+"/.well-known/webfinger?resource=acct:"+acc
     async with HttpClient().get(webfinger_url) as r:
         json = await r.json()
+        print("remote-interact", json)
         if not "links" in json:
             raise HTTPException(status_code=403, detail="Remote instance does not support interaction")
         for link in json['links']:
