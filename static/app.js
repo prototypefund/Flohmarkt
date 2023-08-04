@@ -100,6 +100,7 @@ if (token != undefined && token != "null" && typeof(token) === 'string') {
     hideElements.push(document.getElementById('register-list-item'));
     hideElements.push(document.getElementById('login-list-item'));
 } else {
+    const detailsListItem = document.getElementById('details-list-item');
     hideElements.push(detailsListItem);
     hideElements.push(document.getElementById('new-list-item'));
     showElements.push(document.getElementById('register-list-item'));
