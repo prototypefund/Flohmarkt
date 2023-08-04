@@ -1,7 +1,7 @@
-import { getCurrentUser } from "./current_user.js";
-import { getIncoming } from "./globals/incoming.js";
-import { fetchJSON } from "./utils.js";
-import { updateSVG } from "./update/svg.js";
+import { getCurrentUser } from "../current_user.js";
+import { getIncoming } from "../globals/incoming.js";
+import { fetchJSON } from "../utils.js";
+import { updateSVG } from "../update/svg.js";
 
 const user = await getCurrentUser;
 

@@ -55,3 +55,4 @@ window.requestAnimationFrame(() => {
 });
 
 import "./components/notification.js";
+import "./components/message_icon.js";
