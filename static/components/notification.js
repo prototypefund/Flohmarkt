@@ -80,4 +80,3 @@ class NotificationContainer extends HTMLElement {
 }
 
 window.customElements.define('notification-container', NotificationContainer);
-

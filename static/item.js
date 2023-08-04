@@ -1,13 +1,12 @@
-import { fetchJSON, postJSON, deleteCall } from "./utils.js";
+import { fetchJSON, deleteCall } from "./utils.js";
 import { createItem } from "./create/item.js";
 import { createElement } from "./create/element.js";
-import { createImage } from "./create/image.js";
-import { createMessage, createConversation, getUser } from "./create/message.js";
+import { createConversation, getUser } from "./create/message.js";
 import { createAvatar, createSmallAvatar } from "./create/avatar.js";
 import { getCurrentUser } from "./current_user.js";
 import { createReportForm } from "./create/reportform.js";
 import { createEditItemForm } from "./create/edititemform.js";
-import { incoming } from "./app.js";
+import { getIncoming } from "./globals/incoming.js";
 
 const [item, currentUser] = await Promise.all([
     fetchJSON('item/' + window.location.pathname.replace(/^.+?[/]/, '')),
@@ -115,7 +114,7 @@ conversations.forEach(async conversation => {
     await selectFirst(container);
 });
 
-incoming.addEventListener('conversation', async msg=>{
+getIncoming().addEventListener('conversation', async msg=>{
     console.log(msg);
     let found = false;
     if (item.id != msg.item_id) {

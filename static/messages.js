@@ -4,7 +4,7 @@ import { getCurrentUser } from "./current_user.js";
 import { createElement } from "./create/element.js";
 import { createImage } from "./create/image.js";
 import { createConversation, getUser } from "./create/message.js";
-import { incoming } from "./app.js";
+import { getIncoming } from "./globals/incoming.js";
 
 const [conversations, currentUser] = await Promise.all([
     fetchJSON('conversation/own'),
@@ -114,6 +114,7 @@ const renderConversationButton = async convo => {
 const conversationRows = await Promise.all(conversations.map(renderConversationButton));
 conversationRows.forEach(e=>convSelector.appendChild(e));
 
+const incoming = getIncoming();
 incoming.addEventListener('conversation', async msg=>{
     const item = await fetchJSON('item/'+msg["item_id"]);
     items[item["id"]] = item;

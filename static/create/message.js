@@ -3,7 +3,7 @@ import { createElement } from "./element.js";
 import { getCurrentUser, isCurrentUser } from "./../current_user.js";
 import { createSmallAvatar } from "./avatar.js";
 
-import { incoming } from "./../app.js";
+import { getIncoming } from "./../globals/incoming.js";
 
 const current_user = await getCurrentUser;
 
@@ -61,7 +61,7 @@ export const createConversation = async conversation => {
 	    conversationMessagesContainer.appendChild(e);
     });
 
-    incoming.addEventListener('message', async msg=>{
+    getIncoming().addEventListener('message', async msg=>{
         let belongs_here = false;
         if (msg["inReplyTo"].indexOf(conversation.item_id) != -1) {
             belongs_here = true;

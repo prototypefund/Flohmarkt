@@ -1,5 +1,5 @@
 import { getCurrentUser } from "./current_user.js";
-import { incoming } from "./app.js";
+import { getIncoming } from "./globals/incoming.js";
 import { fetchJSON } from "./utils.js";
 import { updateSVG } from "./update/svg.js";
 
@@ -33,6 +33,7 @@ class MessageIcon extends HTMLElement {
         this.outer.addEventListener('click', this.openMessages.bind(this));
         this.messageicon = this._shadowRoot.querySelector('.icon');
         console.log(this.messageicon);
+        const incoming = getIncoming();
         incoming.addEventListener('conversation', this.processIncoming.bind(this));
         incoming.addEventListener('message', this.processIncoming.bind(this));
 
