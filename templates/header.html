@@ -5,11 +5,11 @@
         </svg>
     </a>
     <ul class="order-md-1">
-        <li hidden id="register-list-item">
+        <li id="register-list-item" class="invisible">
             {% if settings.registrations == "open"  %}<a href="/register"><i>Register</i></a>{% endif %}
         </li>
-        <li hidden id="login-list-item"><a href="/login"><b>Sign in</b></a></li>
-        <li hidden id="new-list-item">
+        <li id="login-list-item" class="invisible"><a href="/login"><b>Sign in</b></a></li>
+        <li id="new-list-item" class="invisible">
             <a href="/new" aria-label="Create new item">
                 <svg class="icon icon--plus" role="img" aria-hidden="true">
                     <use href="/static/sprite.svg#plus"></use>
@@ -18,7 +18,7 @@
 	    <message-icon></message-icon>
         </li>
 	<li></li>
-        <li hidden id="details-list-item">
+        <li id="details-list-item" class="invisible">
             <details>
                 <summary aria-label="View profile and more" aria-haspopup="menu" role="button">
                     <span id="avatar-slot"></span>

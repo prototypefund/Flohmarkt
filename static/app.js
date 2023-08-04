@@ -123,5 +123,5 @@ function headerAvatar() {
 }
 
 window.requestAnimationFrame(() => {
-    showElements.forEach(element => element.hidden = false )
+    showElements.forEach(element => element.classList.remove('invisible') )
 });

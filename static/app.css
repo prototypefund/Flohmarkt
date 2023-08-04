@@ -117,6 +117,10 @@ section aside:hover {
     display: none;
 }
 
+.invisible {
+    visibility: hidden !important;
+}
+
 /* Headers */
 article header,
 div header,
