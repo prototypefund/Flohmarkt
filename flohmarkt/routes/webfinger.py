@@ -5,8 +5,17 @@ from flohmarkt.models.user import UserSchema, UpdateUserModel
 
 router = APIRouter()
 
+@router.get("/.well-known/host-meta", response_description="host meta info xml")
+async def hostmeta():
+    url = cfg["General"]["ExternalURL"]
+    return f"""
+    <?xml version="1.0" encoding="UTF-8"?>
+    <XRD xmlns="http://docs.oasis-open.org/ns/xri/xrd-1.0">
+        <Link rel="lrdd" template="{url}/.well-known/webfinger?resource={{uri}}">
+    </XRD>"""
+
 @router.get("/.well-known/webfinger", response_description="Check for user")
-async def add_item(resource: str):
+async def webfinger(resource: str):
     username = resource.split("@")[0]
     username = username.replace("acct:","",1)
     user = await UserSchema.retrieve_single_name(username)
