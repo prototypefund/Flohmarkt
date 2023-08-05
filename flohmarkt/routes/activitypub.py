@@ -4,6 +4,7 @@ import re
 import os
 import uuid
 import datetime
+import aiohttp
 
 from urllib.parse import urlparse
 
@@ -638,10 +639,15 @@ async def delete_item_remote(item: ItemSchema, user: UserSchema):
         async def do(rcv_inbox):
             sign("post", rcv_inbox, headers, json.dumps(data), user)
 
-            async with HttpClient().post(rcv_inbox, data=json.dumps(data), headers = headers) as resp:
-                if resp.status != 202:
-                    print ("Article has not been accepted by target system",rcv_inbox, resp.status)
-                return
+            try:
+                async with HttpClient().post(rcv_inbox, data=json.dumps(data), headers = headers) as resp:
+                    if resp.status != 202:
+                        print ("Article has not been accepted by target system",rcv_inbox, resp.status)
+                    return
+            except aiohttp.client_exceptions.ClientConnectorError:
+                print(f"Could not deliver itemdelete to {rcv_inbox}: Unable to connect")
+            except aiohttp.client_exceptions.ServerTimeoutError:
+                print(f"Could not deliver itemdelete to {rcv_inbox}: Server timeout")
         tasks.append(do(rcv_inbox))
     await asyncio.gather(*tasks)
 
@@ -664,10 +670,15 @@ async def post_item_to_remote(item: ItemSchema, user: UserSchema):
         async def do(rcv_inbox):
             sign("post", rcv_inbox, headers, json.dumps(item), user)
 
-            async with HttpClient().post(rcv_inbox, data=json.dumps(item), headers = headers) as resp:
-                if not resp.status in (200, 202):
-                    print ("Article has not been accepted by target system",rcv_inbox, resp.status)
-                return
+            try:
+                async with HttpClient().post(rcv_inbox, data=json.dumps(item), headers = headers) as resp:
+                    if not resp.status in (200, 202):
+                        print ("Article has not been accepted by target system",rcv_inbox, resp.status)
+                    return
+            except aiohttp.client_exceptions.ClientConnectorError:
+                print(f"Could not deliver item to {rcv_inbox}: Unable to connect")
+            except aiohttp.client_exceptions.ServerTimeoutError:
+                print(f"Could not deliver item to {rcv_inbox}: Server timeout")
         tasks.append(do(rcv_inbox))
     await asyncio.gather(*tasks)
 
