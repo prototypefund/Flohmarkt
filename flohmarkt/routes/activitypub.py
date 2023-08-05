@@ -5,6 +5,7 @@ import os
 import uuid
 import datetime
 import aiohttp
+import hashlib
 
 from urllib.parse import urlparse
 
@@ -188,10 +189,12 @@ async def replicate_image(image_url : str) -> str:
         return (image_url, ident)
 
 async def replicate_user(user_url: str) -> str:
-    print("REPLICATE UER "+user_url)
     ident = user_url.split("/")[-1]
+
     if not uuid_regex.match (ident):
-        ident = str(uuid.uuid4())
+        m = hashlib.md5()
+        m.update(user_url.encode('utf-8'))
+        ident = str(uuid.UUID(m.hexdigest()))
 
     async with HttpClient().get(user_url, headers = {
             "Accept":"application/json,application/ld+json,application/activity+json"
