@@ -582,6 +582,8 @@ async def following():
 
 @router.post("/users/{name}/inbox")
 async def user_inbox(req: Request, name: str, msg : dict = Body(...) ):
+    print(msg)
+
     if not await verify(req):
         raise HTTPException(status_code=401, detail="request signature could not be validated")
     if msg['type'] == "Follow":
