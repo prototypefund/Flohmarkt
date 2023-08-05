@@ -134,6 +134,10 @@ async def other(request: Request, user: str, item: str):
 
 @app.get("/users/{user}/items/{item}")
 async def other(request: Request, user: str, item: str):
+    item = await ItemSchema.retrieve_single_id(item)
+    if item is None:
+        raise HTTPException(status_code=404, detail="Item not here :(")
+
     if not "accept" in request.headers:
         headers = {"Content-type": "application/json"}
     elif "application/activity+json" in request.headers["accept"]:
@@ -144,7 +148,6 @@ async def other(request: Request, user: str, item: str):
         headers = {"Content-type": "application/json"}
     else:
         raise HTTPException(status_code=400, detail="Content type not supported :(")
-    item = await ItemSchema.retrieve_single_id(item)
     user = await UserSchema.retrieve_single_name(user)
     item = await item_to_note(item, user)
     item = await append_context(item)
