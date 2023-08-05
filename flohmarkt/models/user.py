@@ -163,6 +163,7 @@ class UserSchema(BaseModel):
         if user is None:
             return {}
         fields_to_ignore = (
+            "email",
             "private_key",
             "pwhash",
             "activation_code"
