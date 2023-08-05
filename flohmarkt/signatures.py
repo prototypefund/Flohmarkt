@@ -5,6 +5,8 @@ from urllib.parse import urlparse
 
 from fastapi import Request
 
+class AlreadyDeletedError (Exception): pass
+
 try:
     from Crypto.Signature import pkcs1_15
     from Crypto.Hash import SHA256
@@ -90,20 +92,29 @@ class Signature:
 
     async def _obtain_pubkey(self):
         url = self.key_id.split("#")[0]
-        print(url)
         async with HttpClient().get(url, headers = {
                 "Accept":"application/json,application/ld+json,application/activity+json"
             }) as resp:
+            if resp.status == 410:
+                raise AlreadyDeletedError("User has been deleted")
+            if resp.status == 404:
+                raise AlreadyDeletedError("User has been deleted")
             data = await resp.json()
             return RSA.importKey(data['publicKey']['publicKeyPem'])
         raise Exception("Key could not be obtaineD")
 
-    async def verify(self) -> bool:
+    async def verify(self, user : UserSchema = None) -> bool:
         if not await self._check_bodysum():
             return False
         h = SHA256.new()
         h.update(bytes(self._reconstruct(),'utf-8'))
-        s = pkcs1_15.new(await self._obtain_pubkey())
+        if user is None:
+            try:
+                s = pkcs1_15.new(await self._obtain_pubkey())
+            except AlreadyDeletedError:
+                return False
+        else:
+            s = pkcs1_15.new(user["public_key"])
         try:
             decodedsig = base64.decodebytes(self.signature.encode('utf-8'))
             s.verify(h, decodedsig)
@@ -112,7 +123,7 @@ class Signature:
             print ( "Not a valid signature" )
             return False
 
-async def verify(req: Request):
+async def verify(req: Request, user : UserSchema = None):
     return await Signature(req).verify()
 
 def sign(method : str, url: str, headers: dict, data: str, user : UserSchema):
