@@ -43,7 +43,6 @@ export async function deleteCall(url) {
         method: 'delete'
     })
     .catch(error => console.error(error));
-    await response.json();
     return true;
 }
 
