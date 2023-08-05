@@ -1,7 +1,10 @@
 import { fetchJSON, putJSON, deleteCall } from "./utils.js";
+import { createImg } from "./create/img.js";
+import { createSVG } from "./create/svg.js";
 import { createItem } from "./create/item.js";
-import { updateAvatar } from "./update/avatar.js";
-import { getCurrentUser } from "./current_user.js";
+import { createElement } from "./create/element.js";
+import { updateAvatar } from "./app.js";
+import { getCurrentUser } from "./current_user.js"
 import "./create/image_uploader.js";
 
 const [items, user, currentUser] = await Promise.all([
@@ -64,8 +67,8 @@ createBtn.addEventListener('click', event => {
     putJSON("/api/v1/user/"+user.id, sendData)
     .then(async data => {
         const new_user = await fetchJSON('user/' + user.id);
-        updateAvatar(new_user.avatar);
-        window.location.pathname = '/~' + new_user.name;
+	updateAvatar(new_user.avatar);
+	window.location.pathname = '/~' + new_user.name;
     });
 });
 
