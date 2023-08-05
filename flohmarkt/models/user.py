@@ -87,6 +87,14 @@ class UserSchema(BaseModel):
         return new
 
     @staticmethod
+    async def replicate(data: dict)->dict:
+        data["type"] = "user"
+
+        ins = await Database.create(data)
+        new = await Database.find_one({"id":ins})
+        return new
+
+    @staticmethod
     async def activate(code: str)->dict:
         user_to_activate = await Database.find_one({"type":"user","activation_code":code})
         if user_to_activate is None:

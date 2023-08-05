@@ -229,8 +229,9 @@ async def replicate_user(user_url: str) -> str:
             "activation_code": "-",
             "avatar":avatar,
             "remote_url": user_url,
+            "public_key": userinfo["publicKey"]["publicKeyPem"],
         }
-        await UserSchema.add(new_user)
+        await UserSchema.replicate(new_user)
         return new_user
 
 async def create_new_item(msg: dict):
