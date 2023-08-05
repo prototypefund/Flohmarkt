@@ -568,12 +568,12 @@ blockquote footer {
 }
 
 .message_me {
-    background-color: var(--color-accent);
+    background-color: var(--color-bg-secondary);
     margin-left: 20%;
     text-align:right;
 }
 .message_you {
-    background-color: var(--color-link);
+    background-color: var(--color-bg);
     margin-right: 20%;
 }
 
