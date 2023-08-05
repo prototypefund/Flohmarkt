@@ -337,6 +337,7 @@ async def inbox_process_create(req: Request, msg: dict):
     if user is None:
         raise HTTPException(status_code=404, detail="Targeted user not found")
 
+    item = None
     if f"{hostname}/users/{username}/items/" in msg["object"]["inReplyTo"]:
         item_id = msg["object"]["inReplyTo"].replace(
             f"{hostname}/users/{username}/items/", ""
@@ -348,8 +349,11 @@ async def inbox_process_create(req: Request, msg: dict):
     else:
         conversation = await ConversationSchema.retrieve_for_message_id(msg["object"]["inReplyTo"])
 
+
     is_new_conversation = False
     if conversation is None:
+        if item is None:
+            raise HTTPException(status_code=404, detail="Targeted item not found")
         is_new_conversation = True
         conversation = {
             "user_id" : user['id'],
