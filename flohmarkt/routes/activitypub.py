@@ -701,6 +701,10 @@ async def item_to_note(item: ItemSchema, user: UserSchema):
 
     settings = await InstanceSettingsSchema.retrieve()
 
+    utcdate = datetime.datetime.utcfromtimestamp(
+        datetime.datetime.fromisoformat(item["creation_date"]).timestamp()
+    ).isoformat().split(".")[0]+"Z"
+
     return  {
         "id": f"{hostname}/users/{user['name']}/items/{item['id']}",
         "type": "Note",
@@ -713,7 +717,7 @@ async def item_to_note(item: ItemSchema, user: UserSchema):
         },
         "summary": None,
         "inReplyTo": None,
-        "published": item["creation_date"].split(".")[0]+"Z",
+        "published": utcdate,
         "url": f"{hostname}/~{user['name']}/{item['id']}",
         "attributedTo": f"{hostname}/users/{user['name']}",
         "to": [
@@ -766,11 +770,15 @@ async def item_to_activity(item: ItemSchema, user: UserSchema):
 
     note = await item_to_note(item, user)
 
+    utcdate = datetime.datetime.utcfromtimestamp(
+        datetime.datetime.fromisoformat(item["creation_date"]).timestamp()
+    ).isoformat().split(".")[0]+"Z"
+
     return {
         "id": f"{hostname}/users/{user['name']}/items/{item['id']}/activity",
         "type": "Create",
         "actor": f"{hostname}/users/{user['name']}",
-        "published": item["creation_date"].split(".")[0]+"Z",
+        "published": utcdate,
         "to": [
             "https://www.w3.org/ns/activitystreams#Public"
         ],
