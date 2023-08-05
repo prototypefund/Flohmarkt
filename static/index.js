@@ -5,7 +5,6 @@ import { getCurrentUser } from "./current_user.js";
 
 const instanceInfo = document.getElementById("instance-info");
 const currentUser = await getCurrentUser;
-console.log(currentUser);
 if (!("id" in currentUser)) {
     instanceInfo.style.display="block";
 }

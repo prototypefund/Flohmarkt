@@ -32,7 +32,6 @@ class MessageIcon extends HTMLElement {
         this.outer = this._shadowRoot.querySelector('.message_icon');
         this.outer.addEventListener('click', this.openMessages.bind(this));
         this.messageicon = this._shadowRoot.querySelector('.icon');
-        console.log(this.messageicon);
         incoming.addEventListener('conversation', this.processIncoming.bind(this));
         incoming.addEventListener('message', this.processIncoming.bind(this));
 
