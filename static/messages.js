@@ -126,13 +126,13 @@ incoming.addEventListener('message', async msg=>{
         if (r.convo ?? null != null) {
             let belongs_here = false;
             if (msg["inReplyTo"].indexOf(r.convo.item_id) != -1 &&
-		    (msg.actor == r.convo.remote_user ||
+		    (msg.attributedTo == r.convo.remote_user ||
 		     msg.to[0] == r.convo.remote_user)) {
                 belongs_here = true;   
             }
             r.convo.messages.forEach(m=>{
                 if (m.id == msg["inReplyTo"] &&
-		    (msg.actor == r.convo.remote_user ||
+		    (msg.attributedTo == r.convo.remote_user ||
 		     msg.to[0] == r.convo.remote_user)) {
                     belongs_here = true;   
                 }
@@ -147,15 +147,11 @@ incoming.addEventListener('message', async msg=>{
         }
     });
     if (!success) {
-	console.log("B$");
         const conv = await fetchJSON('conversation/by_message_id?msg_id='+msg['id']);
         const item = await fetchJSON('item/'+conv['item_id']);
         items[item["id"]] = item;
-	console.log(conv);
 	const row = await renderConversationButton(conv);
-	console.log(row);
         convSelector.prepend(row);
-	console.log("Benis");
     }
     
 });
