@@ -13,22 +13,6 @@
         <section class="grid grid__user-items"></section>
     </div>
     <div class="col-md-6 col__about">
-        <h1>{{ user.name }}'s profile</h1>
-        <div id="profile-form" style="display:none;">
-            <form id="create-form" action="/api/v1/user" method="put" type="multipart/form-data" id="form">
-                <uploader-element id="image_uploader" max-width="128" max-height="128"></uploader-element>
-                <label for="description">Bio</label>
-                <input type="hidden" name="avatar" id="avatar" value="">
-                <textarea id="description" name="bio" >{{ user.bio }}</textarea>
-                <button type="submit" class="w-100" id="create-btn">Save</button>
-            </form>
-            <button type="submit" class="w-100 danger" id="delete-btn">Lösch dich!</button>
-            <button type="submit" class="w-100 danger" id="notification-btn">Activate Desktop notifications</button>
-        </div>
-        <div id="profile" style="display:none;">
-            <img src="/api/v1/image/{{user.avatar}}" alt="avatar of {{user.name}}">
-            <p> {{ user.bio }} </p>
-        </div>
     </div>
 </div>
 {% endblock %}

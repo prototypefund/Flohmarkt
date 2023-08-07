@@ -82,7 +82,7 @@ if (token != undefined && token != "null" && typeof(token) === 'string') {
     const detailsListItem = document.getElementById('details-list-item');
     detailsListItem.querySelector('.details-menu span').append(username);
     detailsListItem.querySelector('.details-menu .l-profile').href = '/~' + username;
-    detailsListItem.querySelector('.details-menu .l-messaging').href = '/messages';
+    detailsListItem.querySelector('.details-menu .l-settings').href = '/settings';
     if (parsedToken.admin === true || parsedToken.moderator === true) {
         detailsListItem.querySelector('.details-menu .l-site-moderation').href = '/moderation';
     } else {
