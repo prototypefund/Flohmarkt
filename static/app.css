@@ -619,3 +619,8 @@ blockquote footer {
 pre {
     white-space: pre-wrap;
 }
+
+.toolbar_button {
+    margin-left:10px;
+    margin-right:10px;
+}

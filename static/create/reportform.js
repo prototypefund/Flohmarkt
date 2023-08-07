@@ -7,7 +7,7 @@ const current_user = await getCurrentUser;
 export const createReportForm = (item) => {
     if (current_user !== null) {
         const reportForm = createElement('form',null, '');
-        const sendButton = createElement('button', null, 'Send');
+        const sendButton = createElement('button', null, 'Send Report');
         const textArea = createElement('textarea', null, '');
         textArea.name="content";
         reportForm.appendChild(textArea);

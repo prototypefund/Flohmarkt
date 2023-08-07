@@ -71,18 +71,6 @@ export function createItem(item, details=false, watching=[]) {
     wrapper.appendChild(createElement('p', null, item.description));
     element.appendChild(wrapper);
     
-    const watch_button = createSVG('eye' + (watching.includes(item.id) ? '-off' : ''));
-    watch_button.classList.add('watch_button');
-    watch_button.addEventListener('click', async e => {
-        if (watch_button.classList.contains('eye')) {
-            await fetchJSON('item/'+item.id+'/watch');
-            replaceSVG(watch_button, 'eye', 'eye-off');
-        } else {
-            await fetchJSON('item/'+item.id+'/unwatch');
-            replaceSVG(watch_button, 'eye-off', 'eye');
-        }
-    });
-    container.appendChild(watch_button);
 
     return element;
 }

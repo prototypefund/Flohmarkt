@@ -2,6 +2,7 @@ import { fetchJSON, postJSON, deleteCall } from "./utils.js";
 import { createItem } from "./create/item.js";
 import { createElement } from "./create/element.js";
 import { createImage } from "./create/image.js";
+import { createSVG, replaceSVG } from "./create/svg.js";
 import { createMessage, createConversation, getUser } from "./create/message.js";
 import { createAvatar, createSmallAvatar } from "./create/avatar.js";
 import { getCurrentUser } from "./current_user.js";
@@ -34,35 +35,66 @@ avalink.append(createAvatar(user));
 heading.prepend(avalink);
 
 const itemFragment = document.createDocumentFragment();
-itemFragment.appendChild(createItem(item, true, watching));
-const itemOperationContainer = createElement('div',null, '');
-const deleteButton = createElement('button', null, 'Delete');
-deleteButton.addEventListener('click', async event=> {
+
+const controls_container = createElement('div','card-toolbar','');
+itemFragment.appendChild(controls_container);
+
+const watch_button = createSVG('eye' + (watching.includes(item.id) ? '-off' : ''));
+watch_button.style.zIndex = "22";
+watch_button.classList.add('toolbar_button');
+watch_button.addEventListener('click', async e => {
+    if (watch_button.classList.contains('eye')) {
+        await fetchJSON('item/'+item.id+'/watch');
+        replaceSVG(watch_button, 'eye', 'eye-off');
+    } else {
+        await fetchJSON('item/'+item.id+'/unwatch');
+        replaceSVG(watch_button, 'eye-off', 'eye');
+    }
+});
+const report_button = createSVG('message-report');
+report_button.classList.add('toolbar_button');
+const delete_button = createSVG('trash');
+delete_button.classList.add('toolbar_button');
+delete_button.addEventListener('click', async event=> {
     if (confirm("Do you really want to delete " + item.name + "?")) {
         await deleteCall('/api/v1/item/' + item.id);
         window.location.pathname = '/~' + user.name;
     }
 });
+const edit_button = createSVG('edit');
+edit_button.classList.add('toolbar_button');
+controls_container.appendChild(watch_button);
+controls_container.appendChild(report_button);
+if (item.user == currentUser.id) {
+    controls_container.appendChild(delete_button);
+    controls_container.appendChild(edit_button);
+}
+
 const reportForm = createReportForm(item);
 reportForm.style.display = "none";
-const reportButton = createElement('button', null, 'Report');
-reportButton.addEventListener('click', e => {
-    reportForm.style.display = reportForm.style.display == "none" ? "block" : "none";
-});
+
 const editItemForm = createEditItemForm(item);
 editItemForm.style.display = "none";
-const editItemButton = createElement('button', null, 'Edit');
-editItemButton.addEventListener('click', e => {
-    editItemForm.style.display = editItemForm.style.display == "none" ? "block" : "none";
+
+
+const textbox_container = createElement('div','card-toolbar','');
+textbox_container.style.display="none";
+textbox_container.appendChild(reportForm);
+textbox_container.appendChild(editItemForm);
+itemFragment.appendChild(textbox_container);
+
+report_button.addEventListener('click', e => {
+    reportForm.style.display = reportForm.style.display == "none" ? "block" : "none";
+    textbox_container.style.display = textbox_container.style.display == "none" ? "block" : "none";
 });
-if (item.user == currentUser.id) {
-    itemOperationContainer.appendChild(editItemButton);
-    itemOperationContainer.appendChild(deleteButton);
-}
-itemOperationContainer.appendChild(reportButton);
-itemFragment.appendChild(itemOperationContainer);
-itemFragment.appendChild(reportForm);
-itemFragment.appendChild(editItemForm);
+
+edit_button.addEventListener('click', e => {
+    editItemForm.style.display = editItemForm.style.display == "none" ? "block" : "none";
+    textbox_container.style.display = textbox_container.style.display == "none" ? "block" : "none";
+});
+
+itemFragment.appendChild(createItem(item, true, watching));
+const itemOperationContainer = createElement('div',null, '');
 
 const conversationsFragment = document.createDocumentFragment();
 const conversationIndicatorContainer = createElement('div','conv_indicator', '');
