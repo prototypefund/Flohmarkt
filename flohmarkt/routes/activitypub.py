@@ -387,7 +387,7 @@ async def inbox_process_create(req: Request, msg: dict):
     else:
         await Socketpool.send_message(msg["object"])
 
-    return Response(content="0", status_code=202)
+    return Response(content="", status_code=202)
 
 async def inbox_process_update(req: Request, msg: dict):
     hostname = cfg["General"]["ExternalURL"]
