@@ -257,8 +257,6 @@ async def websocket_endpoint(websocket: WebSocket):
                 else:
                     authenticated = True
                     Socketpool.add_socket(user, websocket)
-                    #await websocket.send_json({"msg":"Welcome to the server","head":"Authenticated!"})
         except (WebSocketDisconnect, RuntimeError):
-            print("Websocket connection closed")
             break
                 
