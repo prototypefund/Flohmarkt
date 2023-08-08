@@ -5,8 +5,8 @@ const registerBtn = registerForm.querySelector('button');
 registerBtn.addEventListener('click', async event => {
     event.preventDefault();
 
+    event.target.disabled = true;
     var data = await postForm(registerForm);
-    console.log(data);
     window.location.pathname = '/registered';
 });
 
