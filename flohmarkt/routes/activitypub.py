@@ -517,9 +517,10 @@ async def inbox(req : Request, msg : dict = Body(...) ):
 
     print(json.dumps(msg))
     user = await UserSchema.retrieve_single_remote_url(msg["actor"])
+    if user is None and msg["actor"] == msg["object"] and msg["type"] == "Delete":
+        return Response(status_code=410)
+
     if not await verify(req, user):
-        if msg["actor"] == msg["object"] and msg["type"] == "Delete":
-            return Response(status_code=410)
         raise HTTPException(status_code=401, detail="request signature could not be validated")
 
     if msg["actor"] == msg["object"] and msg["type"] == "Delete":
