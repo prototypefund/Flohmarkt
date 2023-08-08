@@ -244,7 +244,7 @@ async def create_new_item(msg: dict):
         raise HTTPException(status_code=422, detail="Does not seem to be a flohmarkt item")
 
     tasks = []
-    for attachment in msg["object"]["attachment"]:
+    for attachment in msg["object"].get("attachment",[]):
         tasks.append(replicate_image(attachment["url"]))
     url_id_map = await asyncio.gather(*tasks)
     url_id_dict = {k: v for k,v in url_id_map}
