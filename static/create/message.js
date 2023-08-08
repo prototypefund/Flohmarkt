@@ -100,6 +100,8 @@ export const createConversation = async conversation => {
         sendButton.addEventListener('click', async event => {
             event.preventDefault();
 
+	    event.target.disabled = true;
+
             const formData = new FormData(conversationFormContainer);
             postJSON("/api/v1/conversation/to_item/"+conversation.item_id, {
                 text: formData.get('content'),
@@ -111,6 +113,7 @@ export const createConversation = async conversation => {
                 conversationMessagesContainer.appendChild(m);
                 textArea.value = "";
                 textArea.focus();
+		event.target.disabled = false;
             });
         });
         assignButton.addEventListener('click', async event=> {
