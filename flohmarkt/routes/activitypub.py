@@ -240,6 +240,9 @@ async def replicate_user(user_url: str) -> str:
 async def create_new_item(msg: dict):
     hostname = cfg["General"]["ExternalURL"]
 
+    if not "flohmarkt:data" in msg["object"]:
+        raise HTTPException(status_code=422, detail="Does not seem to be a flohmarkt item")
+
     tasks = []
     for attachment in msg["object"]["attachment"]:
         tasks.append(replicate_image(attachment["url"]))
