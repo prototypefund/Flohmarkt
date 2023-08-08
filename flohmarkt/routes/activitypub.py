@@ -272,11 +272,11 @@ async def create_new_item(msg: dict):
         "description":msg["object"]["flohmarkt:data"]["description"],
         "price":msg["object"]["flohmarkt:data"]["price"],
         "creation_date ": msg["object"]["published"],
-        "user": new_user["id"],
+        "user": user["id"],
         "url": msg["object"]["url"],
         "images": images
     }
-    item = await ItemSchema.add(item, new_user)
+    item = await ItemSchema.add(item, user)
     return item
 
 async def send_blocked_user_message(msg):
