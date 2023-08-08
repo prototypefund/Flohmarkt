@@ -88,6 +88,8 @@ class Database:
             async with HttpClient().get(url, headers = {"Content-type": "application/json"}) as resp:
                 res = await resp.json()
                 if resp.status == 404:
+                    if res["error"] == "not_found" and res["reason"] == "deleted":
+                        return
                     print(res)
                     return
                 else:
