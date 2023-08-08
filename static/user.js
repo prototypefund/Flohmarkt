@@ -30,15 +30,6 @@ const userFragment = document.createDocumentFragment();
 const token = JSON.parse(window.sessionStorage.getItem('parsedToken'));
 var watched_items = [];
 const watchedFragment = document.createDocumentFragment();
-if (token != null  && token != "null" && token.username == user.name) {
-    document.getElementById('profile-form').style.display="block";
-    watched_items = await fetchJSON('item/get_watched');
-    watched_items.forEach(async item => {
-        watchedFragment.appendChild(createItem(item, false, watching));
-    });
-} else {
-    document.getElementById('profile').style.display="block";
-}
 
 const gridUserItems = document.querySelector('.grid__user-items'),
       colAbout = document.querySelector('.col__about');

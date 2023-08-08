@@ -13,6 +13,10 @@
         <section class="grid grid__user-items"></section>
     </div>
     <div class="col-md-6 col__about">
+        <div id="profile">
+            <img src="/api/v1/image/{{user.avatar}}" alt="avatar of {{user.name}}">
+            <p> {{ user.bio }} </p>
+        </div>
     </div>
 </div>
 {% endblock %}

@@ -196,9 +196,9 @@ async def other(request: Request):
 
 #Settings 
 @app.get("/settings")
-async def settings(request: Request, current_user : UserSchema = Depends(get_current_user)):
+async def settings(request: Request):
     settings = await InstanceSettingsSchema.retrieve()
-    return templates.TemplateResponse("usersettings.html", {"request": request, "user": user})
+    return templates.TemplateResponse("usersettings.html", {"request": request, "settings": settings})
 
 #Messaging
 @app.get("/messages")
