@@ -365,6 +365,11 @@ async def inbox_process_create(req: Request, msg: dict):
             "messages" : []
         }
         conversation = await ConversationSchema.add(conversation)
+    else:
+        for message in conversation["messages"]:
+            if message["id"] == msg["object"]["id"]:
+                # message is already in conversation
+                return Response(content="", status_code=202)
 
     conversation["messages"].append(msg["object"])
 
