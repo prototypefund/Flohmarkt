@@ -36,13 +36,13 @@ def to_rfc_2616(date: datetime.datetime) -> str:
         12 : "Dec"
     }
     days = {
-        0 : "Sun",
-        1 : "Mon",
-        2 : "Tue",
-        3 : "Wed",
-        4 : "Thu",
-        5 : "Fri",
-        6 : "Sat"
+        0 : "Mon",
+        1 : "Tue",
+        2 : "Wed",
+        3 : "Thu",
+        4 : "Fri",
+        5 : "Sat",
+        6 : "Sun"
     }
     weekday = days[date.weekday()]
     month = months[date.month]
