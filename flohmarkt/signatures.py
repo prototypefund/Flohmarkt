@@ -99,7 +99,11 @@ class Signature:
                 raise AlreadyDeletedError("User has been deleted")
             if resp.status == 404:
                 raise AlreadyDeletedError("User has been deleted")
-            data = await resp.json()
+            try:
+                data = await resp.json()
+            except aiohttp.client_exceptions.ContentTypeError:
+                print ("DATA INSTEAD OF JSON:")
+                print (await resp.read())
             return RSA.importKey(data['publicKey']['publicKeyPem'])
         raise Exception("Key could not be obtaineD")
 
