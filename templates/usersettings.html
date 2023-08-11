@@ -13,12 +13,12 @@
     <div class="tabpage tab_default" name="settings">
         <h1>Edit user profile</h1>
         <div id="profile-form" >
-            <form id="create-form" action="/api/v1/user" method="put" type="multipart/form-data" id="form">
+            <form id="save-form" action="/api/v1/user" method="put" type="multipart/form-data" id="form">
                 <uploader-element id="image_uploader" max-width="128" max-height="128"></uploader-element>
-                <label for="description">Bio</label>
+                <label for="bio">Bio</label>
                 <input type="hidden" name="avatar" id="avatar" value="">
-                <textarea id="description" name="bio" > blobb </textarea>
-                <button type="submit" class="w-100" id="create-btn">Save</button>
+                <textarea id="bio" name="bio"></textarea>
+                <button type="submit" class="w-100" id="save-btn">Save</button>
             </form>
             <button type="submit" class="w-100 danger" id="delete-btn">Lösch dich!</button>
             <button type="submit" class="w-100 danger" id="notification-btn">Activate Desktop notifications</button>
