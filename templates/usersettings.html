@@ -11,7 +11,7 @@
         <li class="tab" name="blocking"> Blocking </li>
     </ul>
     <div class="tabpage tab_default" name="settings">
-        <h1>blobb's profile</h1>
+        <h1>Edit user profile</h1>
         <div id="profile-form" >
             <form id="create-form" action="/api/v1/user" method="put" type="multipart/form-data" id="form">
                 <uploader-element id="image_uploader" max-width="128" max-height="128"></uploader-element>
@@ -25,7 +25,7 @@
         </div>
     </div>
     <div class="tabpage" name="blocking">
-        <input id="blockUserInput" style="width:80%;display:inline;" placeholder="https://some.flohmarkt.instance.nil"><button id="blockUserButton">Block User</button>
+        <input id="blockUserInput" style="width:80%;display:inline;" placeholder="someuser@someinstance.nil"><button id="blockUserButton">Block User</button>
         <table id="blockUserTable" style="width: 100%">
             <thead>
                 <td style="width: 99%;">Blocked Users</td>
