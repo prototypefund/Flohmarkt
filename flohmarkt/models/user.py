@@ -167,15 +167,23 @@ class UserSchema(BaseModel):
             return True
 
     @staticmethod
-    async def filter(user):
+    async def filter(user, current_user = {}):
         if user is None:
             return {}
-        fields_to_ignore = (
+        
+        # Fields that never leave towards the UI
+        fields_to_ignore = {
             "email",
             "private_key",
             "pwhash",
             "activation_code"
-        )
+        }
+
+        # Fields that only go to UI when they belong to the current user
+        if current_user is None or not user["id"] == current_user.get("id",None):
+            fields_to_ignore.add("blocked_users")
+            fields_to_ignore.add("blocked_instances")
+
         for fti in fields_to_ignore:
             if fti in user:
                 del(user[fti])
