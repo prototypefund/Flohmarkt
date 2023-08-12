@@ -95,3 +95,37 @@ async def delete_user(ident: str, current_user : UserSchema = Depends(get_curren
         return user
     else:
         raise HTTPException(status_code=500, detail="Something went wrong while updating")
+
+@router.get("/{ident}/block_user", response_description="current list of blocked instances")
+async def block_instance(user : str, block: bool, current_user: UserSchema = Depends(get_current_user)):
+    blocked_users = current_user.get("blocked_users",[])
+
+    if block:
+        actor = ""
+        name, host = user.split("@")
+        name = name.lstrip("@") # for mastodon
+        webfinger_url = "https://"+host+"/.well-known/webfinger?resource=acct:"+user
+        async with HttpClient().get(webfinger_url) as r:
+            json = await r.json()
+            print(json)
+            if not "links" in json:
+                raise HTTPException(status_code=403, detail="Remote instance does not supply actorurl")
+            found = False
+            for link in json['links']:
+                if link["rel"] == "self":
+                    actor = link["href"]
+                    found = True
+                    break
+            if not found:
+                raise HTTPException(status_code=403, detail="Remote instance doesn't supply actorurl")
+        if actor not in blocked_users:
+            blocked_users.append(actor)
+    else:
+        if user in blocked_users:
+            blocked_users.remove(user)
+
+    current_user["blocked_users"] = blocked_users
+
+    await UserSchema.update(current_user["id"], current_user)
+
+    return blocked_users

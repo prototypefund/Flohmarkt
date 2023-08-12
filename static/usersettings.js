@@ -2,6 +2,7 @@ import { fetchJSON, putJSON, deleteCall } from "./utils.js";
 import { initTabs } from "./tabs.js";
 import { getCurrentUser } from "./current_user.js";
 import { updateAvatar } from "./app.js";
+import { createElement } from "./create/element.js";
 import "./create/image_uploader.js";
 
 const imageUploader = document.getElementById('image_uploader');
@@ -60,4 +61,40 @@ notificationButton.addEventListener('click', ()=>{
     if (Notification.permission !== "granted") {
         Notification.requestPermission();
     }
+});
+
+const blockUsersInput = document.getElementById('blockUserInput');
+const blockUsersButton = document.getElementById('blockUserButton');
+const blockUsersTable = document.getElementById('blockUserTable');
+
+blockUsersButton.addEventListener('click', async e => {
+    const inp = encodeURIComponent(blockUsersInput.value);
+    const response = await fetchJSON("user/"+currentUser.id+"/block_user?block=true&user="+inp).catch(error=>console.error(error));
+    const row = createElement('tr','');
+    const nameCell = createElement('td', null, blockUsersInput.value);
+    const commandCell = createElement('td', null, '');
+    const unfollowButton = createElement('button', null, 'Unblock');
+    unfollowButton.addEventListener('click', async e => {
+        const response = await fetchJSON("user/"+currentUser.id+"/block_user?block=false&user="+inp).catch(error=>console.error(error));
+        row.remove();
+    });
+    commandCell.appendChild(unfollowButton);
+    row.appendChild(nameCell);
+    row.appendChild(commandCell);
+    blockUsersTable.appendChild(row);
+});
+console.log(currentUser);
+(currentUser.blocked_users ?? []).forEach(e => {
+    const row = createElement('tr','');
+    const nameCell = createElement('td', null, e);
+    const commandCell = createElement('td', null, '');
+    const unblockButton = createElement('button', null, 'Unblock');
+    unblockButton.addEventListener('click', async f => {
+        const response = await fetchJSON("user/"+currentUser.id+"/block_user?block=false&user="+e).catch(error=>console.error(error));
+        row.remove();
+    });
+    commandCell.appendChild(unblockButton);
+    row.appendChild(nameCell);
+    row.appendChild(commandCell);
+    blockUsersTable.appendChild(row);
 });
