@@ -532,6 +532,11 @@ async def inbox(req : Request, msg : dict = Body(...) ):
     if msg["actor"]  in blocked_users:
         await send_blocked_user_message(msg)
         raise HTTPException(status_code=403, detail="User is blocked")
+
+    if "to" in msg and len(msg["to"]) == 1: 
+        target_user = await UserSchema.retrieve_single_remote_url(msg["to"][0])
+        if msg["actor"] in target_user["blocked_users"]:
+            raise HTTPException(status_code=403, detail="User is blocked")
         
     blocked_instances = instance_settings.get("blocked_instances",[])
     parsed = urlparse(msg["actor"])
@@ -592,6 +597,10 @@ async def following():
 @router.post("/users/{name}/inbox")
 async def user_inbox(req: Request, name: str, msg : dict = Body(...) ):
     print(msg)
+    target_user = await UserSchema.retrieve_single_name(name)
+    if msg["actor"] in target_user["blocked_users"]:
+        raise HTTPException(status_code=403, detail="User is blocked")
+        
 
     if not await verify(req):
         raise HTTPException(status_code=401, detail="request signature could not be validated")
