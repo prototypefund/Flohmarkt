@@ -10,6 +10,7 @@ from flohmarkt.config import cfg
 from flohmarkt.models.user import UserSchema
 
 oauth2 = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_optional = OAuth2PasswordBearer(tokenUrl="token", auto_error=False)
 
 token_blacklist = []
 blacklistpath = os.path.join(cfg["General"]["DataPath"], "tokenblacklist.json")
@@ -40,6 +41,16 @@ async def get_current_user(token : str = Depends(oauth2)):
             raise HTTPException(status_code=401, detail="Token blacklisted due to logout")
     except Exception as e:
         raise HTTPException(status_code=401, detail=str(e))
+    else:
+        return await UserSchema.retrieve_single_id(dec["user_id"])
+
+async def get_optional_current_user(token : str = Depends(oauth2_optional)):
+    try:
+        dec = jwt.decode(token, cfg["General"]["JwtSecret"], algorithms=["HS512"])
+        if dec in token_blacklist:
+            raise HTTPException(status_code=401, detail="Token blacklisted due to logout")
+    except Exception as e:
+        return None
     else:
         return await UserSchema.retrieve_single_id(dec["user_id"])
 
