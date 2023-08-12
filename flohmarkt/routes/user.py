@@ -3,7 +3,8 @@ from fastapi.encoders import jsonable_encoder
 
 from flohmarkt.models.user import UserSchema, UpdateUserModel
 from flohmarkt.models.item import ItemSchema
-from flohmarkt.auth import oauth2, get_current_user
+from flohmarkt.auth import oauth2, get_current_user, get_optional_current_user
+from flohmarkt.http import HttpClient
 
 router = APIRouter()
 
@@ -13,15 +14,15 @@ async def get_users(skip: int = 0, current_user : UserSchema = Depends(get_curre
         raise HTTPException(status_code=403, detail="Only admins/mods :(")
     users = await UserSchema.retrieve_local(skip)
     for user in users:
-        await UserSchema.filter(user)
+        await UserSchema.filter(user, current_user)
     return users
 
 @router.get("/{ident}", response_description="A single user if any")
-async def get_user(ident:str):
+async def get_user(ident:str,current_user : UserSchema = Depends(get_optional_current_user)):
     user = await UserSchema.retrieve_single_id(ident)
     if user is None:
         raise HTTPException(status_code=404, detail="User is not here :(")
-    await UserSchema.filter(user)
+    await UserSchema.filter(user, current_user)
     return user
 
 @router.put("/{ident}", response_description="Update stuff")
