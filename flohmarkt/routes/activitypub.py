@@ -533,7 +533,8 @@ async def inbox(req : Request, msg : dict = Body(...) ):
         await send_blocked_user_message(msg)
         raise HTTPException(status_code=403, detail="User is blocked")
 
-    if "to" in msg and len(msg["to"]) == 1: 
+    if "to" in msg and len(msg["to"]) == 1 \
+          and msg["to"] != ["https://www.w3.org/ns/activitystreams#Public"]: 
         target_user = await UserSchema.retrieve_single_remote_url(msg["to"][0])
         if msg["actor"] in target_user.get("blocked_users",[]):
             raise HTTPException(status_code=403, detail="User is blocked")
