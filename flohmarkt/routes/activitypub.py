@@ -535,7 +535,7 @@ async def inbox(req : Request, msg : dict = Body(...) ):
 
     if "to" in msg and len(msg["to"]) == 1: 
         target_user = await UserSchema.retrieve_single_remote_url(msg["to"][0])
-        if msg["actor"] in target_user["blocked_users"]:
+        if msg["actor"] in target_user.get("blocked_users",[]):
             raise HTTPException(status_code=403, detail="User is blocked")
         
     blocked_instances = instance_settings.get("blocked_instances",[])
@@ -598,7 +598,7 @@ async def following():
 async def user_inbox(req: Request, name: str, msg : dict = Body(...) ):
     print(msg)
     target_user = await UserSchema.retrieve_single_name(name)
-    if msg["actor"] in target_user["blocked_users"]:
+    if msg["actor"] in target_user.get("blocked_users",[]):
         raise HTTPException(status_code=403, detail="User is blocked")
         
 
