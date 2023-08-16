@@ -65,8 +65,10 @@ const edit_button = createSVG('edit');
 edit_button.classList.add('toolbar_button');
 controls_container.appendChild(watch_button);
 controls_container.appendChild(report_button);
-if (item.user == currentUser.id) {
+if (item.user == currentUser.id || currentUser.admin == true) {
     controls_container.appendChild(delete_button);
+}
+if (item.user == currentUser.id) {
     controls_container.appendChild(edit_button);
 }
 
