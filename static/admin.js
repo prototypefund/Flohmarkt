@@ -88,7 +88,7 @@ const renderUserList = async user => {
 
 users.forEach(renderUserList);
 
-if (users.length == 10) {
+if (users.length == 25) {
     nextButton.style.display="inline-block";
 }
 
