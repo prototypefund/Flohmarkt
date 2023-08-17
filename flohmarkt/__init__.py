@@ -155,7 +155,7 @@ async def other(request: Request, user: str, item: str):
 
 @app.get("/~{user}")
 async def other(request: Request, user: str):
-    if "application/activity+json" in request.headers["accept"]:
+    if "accept" in request.headers and "application/activity+json" in request.headers["accept"]:
         userdata = await user_route(user)
         headers = {"Content-type":"application/activity+json"}
         return JSONResponse(content=userdata, headers=headers)
