@@ -56,7 +56,7 @@ USERNAME_BLACKLIST = [
 ]
 
 #Registration
-@router.get("/register")
+@router.get("/registerform")
 async def _(request: Request):
     settings = await InstanceSettingsSchema.retrieve()
     return templates.TemplateResponse("register.html", {"request": request, "settings": settings})

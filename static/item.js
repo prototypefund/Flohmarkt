@@ -107,7 +107,7 @@ const conversationLoginHintContainer = createElement('div',null, '');
 const conversationLoginHintText = createElement('p',null, '');
 conversationLoginHintText.innerHTML = `
 
-To answer this offer please <a href="/login">log in</a> or <a href="/register">create an account</a>.
+To answer this offer please <a href="/login">log in</a> or <a href="/registerform">create an account</a>.
 
 OR
 
