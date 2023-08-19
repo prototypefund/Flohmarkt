@@ -244,7 +244,7 @@ async def give_item(ident: str, msg: dict = Body(...), current_user: UserSchema 
 
         print(message)
 
-        if message["actor"] == convo["remote_user"]:
+        if message["attributedTo"] == convo["remote_user"]:
             receiver = await UserSchema.retrieve_single_id(convo["user_id"])
         else:
             receiver = await UserSchema.retrieve_single_remote_url(convo["remote_user"])
