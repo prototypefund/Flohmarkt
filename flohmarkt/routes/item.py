@@ -224,6 +224,8 @@ async def give_item(ident: str, msg: dict = Body(...), current_user: UserSchema 
     denied_message = "This item has found a new home with another user."
 
     tasks = []
+
+    assign_convo = None
     for convo in conversations:
         if conversation_with_target == convo:
             msg["text"] = final_message
@@ -231,9 +233,16 @@ async def give_item(ident: str, msg: dict = Body(...), current_user: UserSchema 
             msg["text"] = denied_message
 
         last_message = await get_last_message(convo, current_user)
+
+        print(msg, current_user, last_message, item)
+
         message = await convert_to_activitypub_message(msg, current_user,parent=last_message, item=item)
+        if conversation_with_target == convo:
+            assign_convo = convo
         convo["messages"].append(message)
         await ConversationSchema.update(convo['id'], convo)
+
+        print(message)
 
         if message["actor"] == convo["remote_user"]:
             receiver = await UserSchema.retrieve_single_id(convo["user_id"])
@@ -247,6 +256,7 @@ async def give_item(ident: str, msg: dict = Body(...), current_user: UserSchema 
         tasks.append(Socketpool.send_message(message))
 
     await asyncio.gather(*tasks)
+    return assign_convo
 
 @router.delete("/{ident}", response_description="Marked Item for subsequent deletion")
 async def delete_item(ident: str, current_user: UserSchema = Depends(get_current_user)):
