@@ -36,7 +36,48 @@ Client Applications
 
 ## Run
 
-`uvicorn flohmarkt:app`
+### Nix
+
+Use the nix flake and the contained flohmarkt nixos module in order to set up your service
+
+### Docker
+
+Just run
+
+```shell
+$ docker-compose up
+```
+
+You will be able to reach your flohmarkt instance at `http://localhost:8000`. Any mails
+that the system sends will be dumped to a mailhog at `http://localhost:8024`.
+
+### Plain
+
+0. Install the dependencies
+1. Make sure a couchdb server is ready and you have the admin password
+2. Make sure you have access to a SMTP server and the credentials to a user account on it.
+3. Copy the `flohmarkt.conf.example` to `flohmarkt.conf` and edit it to fit your environment.
+4. Run the database initialization script ` $python3 initialize_couchdb.py
+   <couchdb_admin_pw> <couchdb_user_pw>`
+5. Run the webserver `uvicorn --host 127.0.0.1 --port 8000 --reload`
+
+You will be able to reach your flohmarkt instance at `http://localhost:8000`.
+
+## Initial Setup
+
+Whichever setup method you choose, you will have to setup your instance after running it for
+the first time. On the console, the application will print a link to the instance setup.
+E.g. under docker-compose it will look like this:
+
+```
+flohmarkt-web-1       | INFO:     Application startup complete.
+flohmarkt-web-1       | Flohmarkt is not initialized yet. Please go to
+flohmarkt-web-1       |             http://localhost:8000/setup/23196062-8b7d-4b3f-a89d-aef2ff58ec63
+flohmarkt-web-1       |             in order to complete the setup process
+```
+
+Follow the link and set up your admin account and instance.
+
 
 ## Installing on Ubuntu / Debian
 
