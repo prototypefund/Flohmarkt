@@ -83,6 +83,14 @@ flohmarkt-web-1       |             in order to complete the setup process
 
 Follow the link and set up your admin account and instance.
 
+## Troubleshooting
+
+  * Registration route is hanging
+    Your Mailserver settings are most likely incorrect 
+  * I can't access my admin account
+    Maybe the Initial Setup process failed. Forgot to click a point on the map maybe?
+    You can always restart your instance and click the setup link again.
+
 ## License
 
 This project is licensed under the GNU Affero General Public License 3.
