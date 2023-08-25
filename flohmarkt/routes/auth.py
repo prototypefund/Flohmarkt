@@ -169,7 +169,7 @@ async def _(request: Request, code : str):
 @router.post("/resetpassword")
 async def _(request: Request, code : str = Form(), password : str = Form()):
     user = await UserSchema.retrieve_single_resetcode(code)
-    user["pwhash"] = crypt.crypt(password, crypt.mksalt(method=crypt.METHOD_SHA512,rounds=10000))
+    user["pwhash"] = crypt.crypt(password, crypt.mksalt(method=crypt.METHOD_SHA512,rounds=200000))
     user["reset_token"] = ""
     await UserSchema.update(user["id"], user)
 

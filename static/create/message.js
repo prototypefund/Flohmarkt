@@ -119,6 +119,8 @@ export const createConversation = async conversation => {
         assignButton.addEventListener('click', async event=> {
             event.preventDefault();
 
+	    event.target.disabled = true;
+
             const formData = new FormData(conversationFormContainer);
             postJSON("/api/v1/item/"+conversation.item_id+"/give", {
                 text: formData.get('content'),
@@ -128,6 +130,9 @@ export const createConversation = async conversation => {
             .then(async data => {
                 const m = await createMessage(data["messages"].at(-1));
                 conversationMessagesContainer.appendChild(m);
+                textArea.value = "";
+                textArea.focus();
+		event.target.disabled = false;
             });
         });
 
