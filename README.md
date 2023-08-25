@@ -48,7 +48,7 @@ Use the nix flake and the contained flohmarkt nixos module in order to set up yo
 Just run
 
 ```shell
-$ docker-compose up
+$ docker compose up
 ```
 
 You will be able to reach your flohmarkt instance at `http://localhost:8000`. Any mails
