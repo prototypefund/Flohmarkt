@@ -52,7 +52,7 @@ $ docker-compose up
 ```
 
 You will be able to reach your flohmarkt instance at `http://localhost:8000`. Any mails
-that the system sends will be dumped to a mailhog at `http://localhost:8024`.
+that the system sends will be dumped to a mailhog at `http://localhost:8025`.
 
 ### Plain
 
@@ -62,7 +62,7 @@ that the system sends will be dumped to a mailhog at `http://localhost:8024`.
    https://www.vultr.com/docs/install-an-apache-couchdb-database-server-on-ubuntu-20-04/
 2. Make sure you have access to a SMTP server and the credentials to a user account on it.
 3. Copy the `flohmarkt.conf.example` to `flohmarkt.conf` and edit it to fit your environment.
-4. Run the database initialization script ` $python3 initialize_couchdb.py
+4. Run the database initialization script `$ python3 initialize_couchdb.py
    <couchdb_admin_pw> <couchdb_user_pw>`
 5. Run the webserver `uvicorn --host 127.0.0.1 --port 8000 --reload`
 
