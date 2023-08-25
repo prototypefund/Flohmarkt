@@ -11,7 +11,6 @@
       p.pyjwt
       p.pycryptodome
       p.email-validator
-      p.slowapi
       p.haversine
       p.magic
     ];

@@ -7,11 +7,7 @@ from fastapi.templating import Jinja2Templates
 
 from starlette.websockets import WebSocketDisconnect
 
-from slowapi import _rate_limit_exceeded_handler
-from slowapi.errors import RateLimitExceeded
-
 from flohmarkt.backgroundjobs import clean_images
-from flohmarkt.ratelimit import limiter
 from flohmarkt.config import cfg
 from flohmarkt.routes.activitypub import item_to_note, user_route, append_context
 from flohmarkt.models.user import UserSchema
@@ -34,8 +30,6 @@ from flohmarkt.socketpool import Socketpool
 templates = Jinja2Templates(directory="templates")
 
 app = FastAPI()
-app.state.limiter = limiter
-app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 api_prefix = "/api/v1"

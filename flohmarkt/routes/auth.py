@@ -12,7 +12,6 @@ from fastapi import APIRouter, Body, Request, Depends, Form, HTTPException
 from fastapi.templating import Jinja2Templates
 from fastapi.encoders import jsonable_encoder
 
-from flohmarkt.ratelimit import limiter
 from flohmarkt.config import cfg
 from flohmarkt.auth import blacklist_token
 from flohmarkt.ssl import ssl_context
@@ -93,7 +92,6 @@ async def send_registration_mail(new_user, instance_name, email):
     )
 
 @router.post("/register")
-#@limiter.limit("1/minute")
 async def _(request: Request,
                 email:str=Form(),
                 username:str=Form(),
@@ -186,7 +184,6 @@ async def _(request: Request):
     return templates.TemplateResponse("reset.html", {"request": request, "settings":settings})
 
 @router.post("/forgotpassword")
-#@limiter.limit("1/day")
 async def _(request: Request, email: str = Form()):
     instance_name = await get_instance_name()
     user = await UserSchema.retrieve_single_email(email)
@@ -221,7 +218,6 @@ async def _(request: Request, email: str = Form()):
 
 
 @router.get("/activation/{activation_code}")
-#@limiter.limit("6/minute")
 async def _(request : Request, activation_code : str):
     if await UserSchema.activate(activation_code):
         settings = await InstanceSettingsSchema.retrieve()
@@ -231,7 +227,6 @@ async def _(request : Request, activation_code : str):
 
 #Login
 @router.post("/token")
-#@limiter.limit("3/minute")
 async def _(request: Request, username: str = Form(), password: str = Form()):
     found_user = await UserSchema.retrieve_single_name(username)
     if found_user is None or not found_user["active"]:

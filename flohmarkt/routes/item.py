@@ -7,7 +7,6 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.responses import Response
 
 from flohmarkt.config import cfg
-from flohmarkt.ratelimit import limiter
 from flohmarkt.socketpool import Socketpool
 from flohmarkt.models.user import UserSchema
 from flohmarkt.models.item import ItemSchema, UpdateItemModel
@@ -19,7 +18,6 @@ from flohmarkt.routes.conversation import get_last_message
 router = APIRouter()
 
 @router.post("/", response_description="Added")
-#@limiter.limit("6/minute")
 async def add_item(request: Request, item: ItemSchema = Body(...), 
                    current_user: UserSchema = Depends(get_current_user)):
     if current_user.get("banned",False):
@@ -55,7 +53,6 @@ async def get_items():
     return await ItemSchema.retrieve_newest()
 
 @router.get("/search", response_description="Search results")
-#@limiter.limit("6/minute") # limit needed to avoid enabling DDOS other services via fetch_remote_item
 async def get_items(req: Request, q: str, skip: int = 0):
     searchterm = q
     if searchterm.startswith(("http://","https://")):
