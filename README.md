@@ -45,7 +45,7 @@ Use the nix flake and the contained flohmarkt nixos module in order to set up yo
 
 ### Docker
 
-1 find a good location and clone the repo
+1. find a good location and clone the repo
 
 ```shell
 git clone https://codeberg.org/grindhold/flohmarkt.git
