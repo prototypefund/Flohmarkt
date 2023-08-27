@@ -3,3 +3,4 @@ flohmarkt.conf
 *.pem
 result
 .env
+docker-compose.yaml

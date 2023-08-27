@@ -70,7 +70,7 @@ docker compose up
 2. rename env file
 
 ```shell
-mv example.env .env
+cp example.env .env
 ```
 
 3. create secret
@@ -88,7 +88,7 @@ nano .env
 5. rename the docker-compose.yml
 
 ```shell
-mv docker-compose_prod.yaml docker-compose.yaml
+cp docker-compose_prod.yaml docker-compose.yaml
 ```
 
 6. start the docker container
