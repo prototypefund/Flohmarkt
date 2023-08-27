@@ -1,0 +1,80 @@
+version: '3.0'
+
+services:
+  database:
+    image: docker.io/library/couchdb:3.3
+    environment:
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=couchdb-password
+    volumes:
+      - couchdb_data:/opt/couchdb/data
+    healthcheck:
+      test: curl http://localhost:5984
+      timeout: 10s
+      retries: 6
+
+  init:
+    command: initdb
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    environment:
+      - FLOHMARKT_DB_HOST=database
+      - FLOHMARKT_DB_PORT=5984
+      - FLOHMARKT_DB_SCHEME=http
+      - FLOHMARKT_DEBUG_MODE=1
+      - FLOHMARKT_EXTERNAL_URL=http://localhost:8000
+      - FLOHMARKT_INSTANCE_NAME=devinstance
+      - FLOHMARKT_JWT_SECRET=aimai0xaphei1ahroh4aiweepee0uaYe
+      - FLOHMARKT_SMTP_FROM=devinstance@flohmarkt.example.com
+      - FLOHMARKT_SMTP_SERVER=mailhog
+      - FLOHMARKT_SMTP_PORT=25
+      - FLOHMARKT_SMTP_USER=test
+      - FLOHMARKT_SMTP_PASSWORD=test
+      - FLOHMARKT_DB_USER=admin
+      - FLOHMARKT_DB_PASSWORD=couchdb-password
+    volumes:
+      - flohmarkt_data:/var/lib/flohmarkt
+    depends_on:
+      database:
+        condition: service_started
+
+
+  web:
+    command: web
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    environment:
+      - FLOHMARKT_DB_HOST=database
+      - FLOHMARKT_DB_PORT=5984
+      - FLOHMARKT_DB_SCHEME=http
+      - FLOHMARKT_DEBUG_MODE=1
+      - FLOHMARKT_EXTERNAL_URL=http://localhost:8000
+      - FLOHMARKT_INSTANCE_NAME=devinstance
+      - FLOHMARKT_JWT_SECRET=aimai0xaphei1ahroh4aiweepee0uaYe
+      - FLOHMARKT_SMTP_FROM=devinstance@flohmarkt.example.com
+      - FLOHMARKT_SMTP_SERVER=mailhog
+      - FLOHMARKT_SMTP_PORT=1025
+      - FLOHMARKT_SMTP_USER=test
+      - FLOHMARKT_SMTP_PASSWORD=test
+      - FLOHMARKT_DB_USER=admin
+      - FLOHMARKT_DB_PASSWORD=couchdb-password
+    volumes:
+      - flohmarkt_data:/var/lib/flohmarkt
+    ports:
+      - "8000:8000"
+    depends_on:
+      init:
+        condition: service_completed_successfully
+      mailhog:
+        condition: service_started
+
+  mailhog:
+    image: docker.io/mailhog/mailhog
+    ports:
+      - "8025:8025"
+
+volumes:
+  couchdb_data:
+  flohmarkt_data:
