@@ -76,7 +76,7 @@ cp example.env .env
 3. create secret
 
 ```shell
-echo "FLOHMARKT_JWT_SECRET=$(openssl rand -base64 32)" >> .env
+echo "FLOHMARKT_JWT_SECRET=$(openssl rand -base64 256)" >> .env
 ```
 
 4. edit the other variables in .env
