@@ -1,0 +1,72 @@
+version: '3.0'
+
+services:
+  database:
+    image: docker.io/library/couchdb:3.3
+    environment:
+      - COUCHDB_USER=${COUCHDB_USER}
+      - COUCHDB_PASSWORD=${COUCHDB_PASSWORD}
+    volumes:
+      - ./couchdb_data:/opt/couchdb/data
+    healthcheck:
+      test: curl http://localhost:5984
+      timeout: 10s
+      retries: 6
+
+  init:
+    command: initdb
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    environment:
+      - FLOHMARKT_DB_HOST=database
+      - FLOHMARKT_DB_PORT=5984
+      - FLOHMARKT_DB_SCHEME=http
+      - FLOHMARKT_DEBUG_MODE=1
+      - FLOHMARKT_EXTERNAL_URL=${FLOHMARKT_INSTANCE_URL}
+      - FLOHMARKT_INSTANCE_NAME=${FLOHMARKT_INSTANCE_NAME}
+      - FLOHMARKT_JWT_SECRET=${FLOHMARKT_JWT_SECRET}
+      - FLOHMARKT_SMTP_FROM=${FLOHMARKT_SMTP_FROM}
+      - FLOHMARKT_SMTP_SERVER=${FLOHMARKT_SMTP_SERVER}
+      - FLOHMARKT_SMTP_PORT=${FLOHMARKT_SMTP_PORT}
+      - FLOHMARKT_SMTP_USER=${FLOHMARKT_SMTP_USER}
+      - FLOHMARKT_SMTP_PASSWORD=${FLOHMARKT_SMTP_PASSWORD}
+      - FLOHMARKT_DB_USER=${COUCHDB_USER}
+      - FLOHMARKT_DB_PASSWORD=${COUCHDB_PASSWORD}
+    volumes:
+      - ./flohmarkt_data:/var/lib/flohmarkt
+    depends_on:
+      database:
+        condition: service_started
+
+  web:
+    command: web
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    environment:
+      - FLOHMARKT_DB_HOST=database
+      - FLOHMARKT_DB_PORT=5984
+      - FLOHMARKT_DB_SCHEME=http
+      - FLOHMARKT_DEBUG_MODE=1
+      - FLOHMARKT_EXTERNAL_URL=${FLOHMARKT_INSTANCE_URL}
+      - FLOHMARKT_INSTANCE_NAME=${FLOHMARKT_INSTANCE_NAME}
+      - FLOHMARKT_JWT_SECRET=${FLOHMARKT_JWT_SECRET}
+      - FLOHMARKT_SMTP_FROM=${FLOHMARKT_SMTP_FROM}
+      - FLOHMARKT_SMTP_SERVER=${FLOHMARKT_SMTP_SERVER}
+      - FLOHMARKT_SMTP_PORT=${FLOHMARKT_SMTP_PORT}
+      - FLOHMARKT_SMTP_USER=${FLOHMARKT_SMTP_USER}
+      - FLOHMARKT_SMTP_PASSWORD=${FLOHMARKT_SMTP_PASSWORD}
+      - FLOHMARKT_DB_USER=${COUCHDB_USER}
+      - FLOHMARKT_DB_PASSWORD=${COUCHDB_PASSWORD}
+    volumes:
+      - ./flohmarkt_data:/var/lib/flohmarkt
+    ports:
+      - "8000:8000"
+    depends_on:
+      init:
+        condition: service_completed_successfully
+
+volumes:
+  couchdb_data:
+  flohmarkt_data:

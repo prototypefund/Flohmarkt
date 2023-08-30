@@ -2,3 +2,5 @@ __pycache__
 flohmarkt.conf
 *.pem
 result
+.env
+docker-compose.yaml

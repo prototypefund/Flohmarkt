@@ -11,7 +11,7 @@ Server Applications
 | Firefish     | 1.0.4-beta          | [x]                    | [x]         |     [x]      | [x]        |            |
 | Calckey       |  14.0.0-rc3           | [?]                    | [? ]         |     [x ]      | [?]        |   |
 | Misskey       |  N/A           | [ x ]                    | [ x ]         |     [x ]      | [ x ]        | cant load avatars from flohmarkt side  |
-| Pixelfed       |  ???              | [ ]                    | [x]         |     [ ]      | [x]        | The software does not supply oauth url template for remote-interact. also cannot send private messages, so no conversations  | 
+| Pixelfed       |  ???              | [ ]                    | [x]         |     [ ]      | [x]        | The software does not supply oauth url template for remote-interact. also cannot send private messages, so no conversations  |
 | Lemmy          |  0.18.2           | [ ]                    | [ ]         |     [ ]      | [ ]        | Doesnt work at all. I don't even see requests from lemmy at my side. |
 | Peertube       |  5.2.0           | [ ]                    | [ ]         |     [ ]      | [ ]        | Can't display Notes. |
 | Friendica       |  N/A           | [ ]                    | [x]         |     [x]      | [x]        | Works only wirth 3rd party clients. The webapp itself can't send direct messages. |
@@ -45,10 +45,56 @@ Use the nix flake and the contained flohmarkt nixos module in order to set up yo
 
 ### Docker
 
-Just run
+1. find a good location and clone the repo
 
 ```shell
-$ docker compose up
+git clone https://codeberg.org/grindhold/flohmarkt.git
+```
+
+#### Development
+
+2. rename the docker-compose.yml
+
+```shell
+mv docker-compose_dev.yaml docker-compose.yaml
+```
+
+3. start the docker container
+
+```shell
+docker compose up
+```
+
+#### Productive
+
+2. rename env file
+
+```shell
+cp example.env .env
+```
+
+3. create secret
+
+```shell
+echo "FLOHMARKT_JWT_SECRET=$(openssl rand -base64 32)" >> .env
+```
+
+4. edit the other variables in .env
+
+```shell
+nano .env
+```
+
+5. rename the docker-compose.yml
+
+```shell
+cp docker-compose_prod.yaml docker-compose.yaml
+```
+
+6. start the docker container
+
+```shell
+docker compose up
 ```
 
 You will be able to reach your flohmarkt instance at `http://localhost:8000`. Any mails
@@ -86,7 +132,7 @@ Follow the link and set up your admin account and instance.
 ## Troubleshooting
 
   * Registration route is hanging
-    Your Mailserver settings are most likely incorrect 
+    Your Mailserver settings are most likely incorrect
   * I can't access my admin account
     Maybe the Initial Setup process failed. Forgot to click a point on the map maybe?
     You can always restart your instance and click the setup link again.
