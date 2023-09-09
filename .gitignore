@@ -4,3 +4,5 @@ flohmarkt.conf
 result
 .env
 docker-compose.yaml
+couchdb_data
+flohmarkt_data
