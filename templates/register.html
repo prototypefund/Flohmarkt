@@ -11,10 +11,6 @@
             <pre>
                 {{ settings.rules }}
             </pre>
-            <h3> Privacy Policy </h3>
-            <pre>
-                {{ settings.privacy }}
-            </pre>
         </div>
         <div class="col-md-6">
             {% if settings.registrations == "open" %}
@@ -31,9 +27,7 @@
                 <label for="password-repeat">Repeat password</label>
                 <input type="password" name="password-repeat" autocomplete="new-password">
                 <label for="accept">Accept rules</label>
-		<input type="checkbox" name="accept"></input>
-                <label for="accept_p">Accept privacy policy</label>
-                <input type="checkbox" name="accept_p"></input>
+                <input type="checkbox" name="accept">
                 <button type="submit" class="w-100" disabled>Register</button>
             </form>
             {% else %}
