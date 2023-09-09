@@ -52,10 +52,8 @@ createForm.querySelectorAll('input, textarea').forEach((input, index) => {
                 valid = true;
                 break;
         }
-        console.log("GIBE INFO");
         const mask = 1 << index;
         inputValid = valid ? inputValid | mask : inputValid & ~mask;
-        console.log(inputValid);
         createBtn.disabled = inputValid !== 7; // 1111
     });
 });

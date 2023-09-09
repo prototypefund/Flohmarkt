@@ -11,7 +11,7 @@ export function createItem(item, details=false, watching=[]) {
         image = createImage("/api/v1/image/"+item.images[0]["image_id"], item.name, 'card-img-top w-100');
         image.alt = item.images[0]["description"];
         image["image_idx"] = 0;
-        if (details) {
+        if (details && item.images.length > 1) {
             const g_left = createElement("div", "galery_left", "");
             g_left.appendChild(createElement("span", null, "<"));
             g_left.addEventListener('click', e => {

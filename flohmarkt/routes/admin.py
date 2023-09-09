@@ -318,7 +318,7 @@ async def setup_execute(request: Request, initkey : str,
     if found_for_name is not None or found_for_email is not None:
         return {"error": "user already exists"}
 
-    pwhash = crypt.crypt(password, crypt.mksalt(method=crypt.METHOD_SHA512,rounds=10000))
+    pwhash = crypt.crypt(password, crypt.mksalt(method=crypt.METHOD_SHA512,rounds=200000))
 
     new_user = {
         "email":email,

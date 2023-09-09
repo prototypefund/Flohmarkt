@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 
+{% block metatags %}
+<meta name="description" content="Get yourself a {{ item.name }}: {{ item.description }}">
+{% endblock %}
+
 {% block scripts %}
 <script defer type="module" src="/static/item.js"></script>
 {% endblock %}

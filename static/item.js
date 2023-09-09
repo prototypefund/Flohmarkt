@@ -42,6 +42,7 @@ itemFragment.appendChild(controls_container);
 const watch_button = createSVG('eye' + (watching.includes(item.id) ? '-off' : ''));
 watch_button.style.zIndex = "22";
 watch_button.classList.add('toolbar_button');
+watch_button.classList.add('eye' + (watching.includes(item.id) ? '-off' : ''));
 watch_button.addEventListener('click', async e => {
     if (watch_button.classList.contains('eye')) {
         await fetchJSON('item/'+item.id+'/watch');
@@ -63,8 +64,10 @@ delete_button.addEventListener('click', async event=> {
 });
 const edit_button = createSVG('edit');
 edit_button.classList.add('toolbar_button');
-controls_container.appendChild(watch_button);
-controls_container.appendChild(report_button);
+if (typeof(currentUser) != "function") {
+    controls_container.appendChild(watch_button);
+    controls_container.appendChild(report_button);
+}
 if (item.user == currentUser.id || currentUser.admin == true) {
     controls_container.appendChild(delete_button);
 }
@@ -150,7 +153,6 @@ conversations.forEach(async conversation => {
 });
 
 incoming.addEventListener('conversation', async msg=>{
-    console.log(msg);
     let found = false;
     if (item.id != msg.item_id) {
         return;

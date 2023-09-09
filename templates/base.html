@@ -3,6 +3,9 @@
 <head>
     {% include 'head.html' %}
     {% block scripts %}{% endblock %}
+    {% block metatags %}
+    <meta name="description" content="A flohmarkt instance, sell and buy 2nd hand items from other users">
+    {% endblock %}
     <script defer type="module" src="/static/app.js"></script>
     <script defer type="module" src="/static/message_icon.js"></script>
 </head>

@@ -14,7 +14,7 @@ Server Applications
 | Pixelfed       |  ???              | [ ]                    | [x]         |     [ ]      | [x]        | The software does not supply oauth url template for remote-interact. also cannot send private messages, so no conversations  |
 | Lemmy          |  0.18.2           | [ ]                    | [ ]         |     [ ]      | [ ]        | Doesnt work at all. I don't even see requests from lemmy at my side. |
 | Peertube       |  5.2.0           | [ ]                    | [ ]         |     [ ]      | [ ]        | Can't display Notes. |
-| Friendica       |  N/A           | [ ]                    | [x]         |     [ ]      | [x]        | Cannot write private messages :( otherwise would work |
+| Friendica       |  N/A           | [ ]                    | [x]         |     [x]      | [x]        | Works only wirth 3rd party clients. The webapp itself can't send direct messages. |
 | Pleroma      | 2.5.2    | [  ]                    | [ ]         |     [x ]      | [x ]        |            |
 | Mammuthus      | ?????  | [ ]                    | [ ]         |     [ ]      | [ ]        |         problems getting pubkeys from users   |
 | Mitra      | ?????  | [ ]                    | [ ]         |     [ ]      | [ ]        |             |
