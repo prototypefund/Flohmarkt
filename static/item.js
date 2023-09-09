@@ -153,7 +153,6 @@ conversations.forEach(async conversation => {
 });
 
 incoming.addEventListener('conversation', async msg=>{
-    console.log(msg);
     let found = false;
     if (item.id != msg.item_id) {
         return;
