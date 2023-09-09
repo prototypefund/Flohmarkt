@@ -29,10 +29,14 @@ export class Incoming {
                 this.#triggerEvent("message", msg);
                 notify({
                     "head": "Flohmarkt - New message",
-                    "msg": "On: "+ msg["url"]
+                    "msg":  msg["content"]
                 });
             } else if (msg["type"] == "conversation"){
                 this.#triggerEvent("conversation", msg);
+                notify({
+                    "head": "Flohmarkt - New message",
+                    "msg": "On: "+ msg["messages"][0]["content"]
+                });
             } else {
                 notify(msg);
             }
