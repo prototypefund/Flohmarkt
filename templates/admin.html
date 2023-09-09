@@ -57,7 +57,13 @@
         <button style="display:none;" id="user_next_button"> Next </button>
     </div>
     <div class="tabpage" name="federation">
-        <h2>Follow new Instance</h2>
+        <h2>Instance following</h2>
+        <p>
+            Use this to replicate the items of other instances onto your
+            instance. You can request replication of other servers by using
+            <i>Follow Instance</i>. Under <i>Following instance</i>, you
+            can answer requests from other instances to follow your instance.
+        </p>
         <input id="followingInput" style="width:80%;display:inline;" placeholder="https://some.flohmarkt.instance.nil"><button id="followingButton">Follow Instance</button>
         <table id="followerTable" style="width: 100%">
             <thead>
@@ -73,7 +79,14 @@
         </table>
     </div>
     <div class="tabpage" name="blocking">
-        <h2>Follow new Instance</h2>
+        <h2>Blocking</h2>
+        <p>
+            Use this to block users or entire instances from communicating
+            with your instance. It is wise to whenever possible only block
+            single users instance-wide. A valid reason for blocking a whole
+            instance might be jurisdiction-wise incompatibilities with another
+            instance.
+        </p>
         <input id="blockInstanceInput" style="width:80%;display:inline;" placeholder="https://some.flohmarkt.instance.nil"><button id="blockInstanceButton">Block Instance</button>
         <table id="blockInstanceTable" style="width: 100%">
             <thead>
