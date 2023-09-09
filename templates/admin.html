@@ -31,9 +31,9 @@
             <textarea name="instance_privacy" id="instance_privacy"></textarea>
             <label for="registrations">Registrations</label>
             <select name="registrations">
-                <option value="open">Open</option>
-                <option value="invite" disabled>Invite Only</option>
-                <option value="closed">Closed</option>
+                <option value="open" {% if settings.registrations == "open" %}selected{% endif %}>Open</option>
+                <option value="invite" {% if settings.registrations == "invite" %}selected{% endif %} disabled>Invite Only</option>
+                <option value="closed" {% if settings.registrations == "closed" %}selected{% endif %}>Closed</option>
             </select>
             <label for="displayed_admin">Displayed Admin</label>
             <select name="displayed_admin">
