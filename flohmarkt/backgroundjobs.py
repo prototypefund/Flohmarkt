@@ -41,7 +41,7 @@ async def clean_images():
         avatar_images.extend(avatar_image_batch)
 
     item_images = [i["images"] for i in item_images]
-    avatar_images = [a["avatar"] for a in avatar_images]
+    avatar_images = [a["avatar"] for a in avatar_images if a is not None]
 
     imagelist = []
     for i in item_images:
@@ -61,4 +61,4 @@ async def clean_images():
 
     await asyncio.sleep(1*60*60)
     mainloop = asyncio.get_running_loop()
-    mainloop.create_task(background_task())
+    mainloop.create_task(clean_images())
