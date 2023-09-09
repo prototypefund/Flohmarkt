@@ -87,13 +87,19 @@ export const createConversation = async conversation => {
     if (current_user !== null && (current_user.banned ?? false) == false) {
         const conversationFormContainer = createElement('form',null, '');
         const sendButton = createElement('button', null, 'Send');
+	sendButton.disabled = true;
         const assignButton = createElement('button', null, 'Assign');
+	assignButton.disabled = true;
         assignButton.style.display="none";
         if (current_user.id == conversation.user_id) {
             assignButton.style.display="inline";
         }
         const textArea = createElement('textarea', null, '');
         textArea.name="content";
+        textArea.addEventListener("input", (e)=>{
+           sendButton.disabled = (e.target.value == "");
+           assignButton.disabled = (e.target.value == "");
+        });
         conversationFormContainer.appendChild(textArea);
         conversationFormContainer.appendChild(sendButton);
         conversationFormContainer.appendChild(assignButton);
