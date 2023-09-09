@@ -64,8 +64,10 @@ delete_button.addEventListener('click', async event=> {
 });
 const edit_button = createSVG('edit');
 edit_button.classList.add('toolbar_button');
-controls_container.appendChild(watch_button);
-controls_container.appendChild(report_button);
+if (typeof(currentUser) != "function") {
+    controls_container.appendChild(watch_button);
+    controls_container.appendChild(report_button);
+}
 if (item.user == currentUser.id || currentUser.admin == true) {
     controls_container.appendChild(delete_button);
 }
