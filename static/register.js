@@ -32,11 +32,14 @@ registerForm.querySelectorAll('input').forEach((input, index) => {
                 valid = this.value === password;
                 break;
             case 'accept':
-                valid = this.value;
+                valid = this.checked;
+                break;
+            case 'accept_p':
+                valid = this.checked;
                 break;
         }
         const mask = 1 << index;
         inputValid = valid ? inputValid | mask : inputValid & ~mask;
-        registerBtn.disabled = inputValid !== 31; // 1111
+        registerBtn.disabled = inputValid !== 63; // 111111
     });
 });
