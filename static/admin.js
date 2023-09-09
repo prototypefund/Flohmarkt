@@ -297,9 +297,9 @@ blockInstanceButton.addEventListener('click', async e => {
     blockInstanceTable.appendChild(row);
 });
 
-const blockUsersInput = document.getElementById('blockUsersInput');
-const blockUsersButton = document.getElementById('blockUsersButton');
-const blockUsersTable = document.getElementById('blockUsersTable');
+const blockUsersInput = document.getElementById('blockUserInput');
+const blockUsersButton = document.getElementById('blockUserButton');
+const blockUsersTable = document.getElementById('blockUserTable');
 
 blockUsersButton.addEventListener('click', async e => {
     const inp = encodeURIComponent(blockUsersInput.value);
