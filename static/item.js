@@ -42,6 +42,7 @@ itemFragment.appendChild(controls_container);
 const watch_button = createSVG('eye' + (watching.includes(item.id) ? '-off' : ''));
 watch_button.style.zIndex = "22";
 watch_button.classList.add('toolbar_button');
+watch_button.classList.add('eye' + (watching.includes(item.id) ? '-off' : ''));
 watch_button.addEventListener('click', async e => {
     if (watch_button.classList.contains('eye')) {
         await fetchJSON('item/'+item.id+'/watch');
