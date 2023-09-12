@@ -23,6 +23,8 @@ export const createReportForm = (item) => {
             })
             .then(async data => {
                 alert("Your report has been submitted");
+                textArea.value = "";
+                reportForm.style.display = 'none';
             });
         });
 

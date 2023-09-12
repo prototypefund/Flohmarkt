@@ -90,12 +90,12 @@ itemFragment.appendChild(textbox_container);
 
 report_button.addEventListener('click', e => {
     reportForm.style.display = reportForm.style.display == "none" ? "block" : "none";
-    textbox_container.style.display = textbox_container.style.display == "none" ? "block" : "none";
+    textbox_container.style.display = reportForm.style.display;
 });
 
 edit_button.addEventListener('click', e => {
     editItemForm.style.display = editItemForm.style.display == "none" ? "block" : "none";
-    textbox_container.style.display = textbox_container.style.display == "none" ? "block" : "none";
+    textbox_container.style.display = editItemForm.style.display;
 });
 
 itemFragment.appendChild(createItem(item, true, watching));
