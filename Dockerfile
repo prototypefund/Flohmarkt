@@ -5,7 +5,7 @@ ENV PYTHONUNBUFFERED 1
 WORKDIR /app
 
 COPY requirements.txt .
-RUN pip install -r requirements.txt
+RUN apt update && apt install -y libmagic1 && rm -rf /var/lib/apt/lists/* && pip install -r requirements.txt
 RUN rm requirements.txt
 
 ADD flohmarkt ./flohmarkt
