@@ -40,6 +40,10 @@ async def delete_user(ident: str, current_user : UserSchema = Depends(get_curren
     if ident != current_user["id"]:
         if not current_user["admin"] and not current_user["moderator"]:
             raise HTTPException(status_code=403, detail="Only owners, admins or moderators may delete item")
+    else:
+        if current_user["admin"]:
+            raise HTTPException(status_code=400, detail="Admins cant delete themselves. Resign first!")
+
 
     items = await ItemSchema.retrieve_by_user(ident)
     for item in items:

@@ -67,7 +67,9 @@ const renderUserList = async user => {
             }
         }
     });
-    controlsContainer.appendChild(banButton);
+    if (currentUser.name != user.name ^ user.banned) {
+        controlsContainer.appendChild(banButton);
+    }
 
     const deleteButton = createElement('button', null, 'Delete');
     deleteButton.addEventListener('click', async e => {
@@ -76,7 +78,10 @@ const renderUserList = async user => {
             window.location = window.location;
         }
     });
-    controlsContainer.appendChild(deleteButton);
+    if (currentUser.name != user.name) {
+        controlsContainer.appendChild(deleteButton);
+    }
+
 
     ctrlCell.appendChild(controlsContainer);
     row.appendChild(ctrlCell);
