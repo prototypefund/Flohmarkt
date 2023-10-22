@@ -24,7 +24,6 @@ saveBtn.addEventListener('click', event => {
     };
 
     const imagedata = imageUploader.getData();
-    console.log(imagedata);
     if (imagedata.length == 1) {
         sendData.avatar = imagedata[0].image_id;
     }
@@ -41,8 +40,8 @@ bio_entry.value = currentUser.bio;
 
 const deleteButton = document.getElementById('delete-btn');
 deleteButton.addEventListener('click', async e => {
-    if (prompt("Please enter your username to confirm account deletion!") == user.name) {
-        const res = await deleteCall('/api/v1/user/'+user.id);
+    if (prompt("Please enter your username to confirm account deletion!") == currentUser.name) {
+        const res = await deleteCall('/api/v1/user/'+currentUser.id);
         if (res == true) {
             window.sessionStorage.setItem('token',null);
             window.sessionStorage.setItem('parsedToken',null);

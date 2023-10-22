@@ -2,10 +2,14 @@ import { fetchJSON, postJSON, deleteCall } from "./utils.js";
 import { initTabs } from "./tabs.js";
 import { createElement } from "./create/element.js";
 import { createSmallAvatar } from "./create/avatar.js";
+import { getCurrentUser } from "./current_user.js";
 
 initTabs();
 
-const users = await fetchJSON('user/');
+const [users, currentUser] = await Promise.all([
+    fetchJSON('user/'),
+    getCurrentUser
+]);
 
 const instance_settings = await fetchJSON('admin/');
 
