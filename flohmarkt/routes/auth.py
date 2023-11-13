@@ -84,6 +84,7 @@ async def send_registration_mail(new_user, instance_name, email):
             instance_name
         )
     message = MIMEText(text.encode('utf-8'), _charset='utf-8')
+    message["To"] = email
     message["Subject"] = "Registration with {}".format(instance_name)
     await server.sendmail(
         cfg["SMTP"]["From"],
@@ -208,6 +209,7 @@ async def _(request: Request, email: str = Form()):
                 instance_name
             )
         message = MIMEText(text.encode('utf-8'), _charset='utf-8')
+        message["To"] = email
         message["Subject"] = "Password reset on {}".format(instance_name)
         await server.sendmail(
             cfg["SMTP"]["From"],
