@@ -97,8 +97,8 @@ export const createConversation = async conversation => {
         const textArea = createElement('textarea', null, '');
         textArea.name="content";
         textArea.addEventListener("input", (e)=>{
-           sendButton.disabled = (e.target.value == "");
-           assignButton.disabled = (e.target.value == "");
+           sendButton.disabled = (e.target.value.trim() == "");
+           assignButton.disabled = (e.target.value.trim() == "");
         });
         conversationFormContainer.appendChild(textArea);
         conversationFormContainer.appendChild(sendButton);

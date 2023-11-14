@@ -57,7 +57,7 @@ async def create_message(item_id: str, msg: dict = Body(...), current_user: User
     if item is None:
         raise HTTPException(status_code=404, detail="Item is not here :(")
 
-    if msg["text"] == "":
+    if msg["text"].strip() == "":
         raise HTTPException(status_code=400, detail="Please provide text :(")
 
     conversation = await ConversationSchema.retrieve_for_id(msg["conversation_id"])

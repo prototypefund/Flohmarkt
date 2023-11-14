@@ -218,6 +218,9 @@ async def give_item(ident: str, msg: dict = Body(...), current_user: UserSchema 
     if item["user"] != current_user["id"]:
         raise HTTPException(status_code=403, detail="Only owners may give item to a user")
 
+    if msg["text"].strip() == "":
+        raise HTTPException(status_code=400, detail="Please provide text :(")
+
     conversations = await ConversationSchema.retrieve_for_item(item["id"])
     conversation_with_target = await ConversationSchema.retrieve_for_id(msg["conversation_id"])
 
