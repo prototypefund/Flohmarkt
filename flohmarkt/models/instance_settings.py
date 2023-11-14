@@ -77,3 +77,9 @@ async def get_instance_name():
         return settings["name"]
     else:
         return cfg["General"]["InstanceName"]
+
+
+class BlockInstancesCSVModel(BaseModel):
+    csv: str
+    block: bool = True
+

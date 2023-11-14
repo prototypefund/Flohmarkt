@@ -1,3 +1,4 @@
+import csv
 import json
 import crypt
 import email_validator
@@ -7,7 +8,7 @@ from fastapi.encoders import jsonable_encoder
 
 from flohmarkt.config import cfg
 from flohmarkt.auth import get_current_user
-from flohmarkt.models.instance_settings import InstanceSettingsSchema, UpdateInstanceSettingsModel, Coordinates
+from flohmarkt.models.instance_settings import InstanceSettingsSchema, UpdateInstanceSettingsModel, Coordinates, BlockInstancesCSVModel
 from flohmarkt.models.user import UserSchema
 from flohmarkt.models.follow import FollowSchema, AcceptSchema
 from flohmarkt.http import HttpClient
@@ -213,6 +214,35 @@ async def block_instance(url : str, block: bool, current_user: UserSchema = Depe
     await InstanceSettingsSchema.set(instance_settings)
 
     return blocked_instances
+
+@router.post("/block_many_instances_cvs", response_description = "current list of blocked instances")
+async def block_many_instances(request: Request, data: BlockInstancesCSVModel = Body(), current_user: UserSchema = Depends(get_current_user)):
+    if not current_user["admin"]:
+        raise HTTPException(status_code=403, detail="Only admins may do this")
+
+    instance_settings = await InstanceSettingsSchema.retrieve()
+
+    blocked_instances = instance_settings.get("blocked_instances",[])
+    
+    reader = csv.reader(data.csv.strip().split("\n"))
+    for entry in reader:
+        url = entry[0]
+        if not url.startswith("https://"):
+            url = "https://"+url
+        if data.block:
+            if url not in blocked_instances:
+                blocked_instances.append(url)
+        else:
+            if url in blocked_instances:
+                blocked_instances.remove(url)
+
+    instance_settings["blocked_instances"] = blocked_instances
+
+    await InstanceSettingsSchema.set(instance_settings)
+
+    return blocked_instances
+
+
 
 @router.get("/block_user", response_description="current list of blocked instances")
 async def block_instance(user : str, block: bool, current_user: UserSchema = Depends(get_current_user)):

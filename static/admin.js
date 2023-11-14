@@ -270,9 +270,12 @@ instance_settings.pending_followers.forEach(e => {
 });
 
 
+const blockManyInstancesInput = document.getElementById('blockManyInstancesInput');
+const blockManyInstancesButton = document.getElementById('blockManyInstancesButton');
 const blockInstanceInput = document.getElementById('blockInstanceInput');
 const blockInstanceButton = document.getElementById('blockInstanceButton');
 const blockInstanceTable = document.getElementById('blockInstanceTable');
+
 
 blockInstanceButton.addEventListener('click', async e => {
     const inp = encodeURIComponent(blockInstanceInput.value);
@@ -289,6 +292,21 @@ blockInstanceButton.addEventListener('click', async e => {
     row.appendChild(nameCell);
     row.appendChild(commandCell);
     blockInstanceTable.appendChild(row);
+});
+
+blockManyInstancesButton.addEventListener('click', async e => {
+    const fileReader = new FileReader();
+    fileReader.onload = async fe => {
+        const data = fe.target.result;
+        postJSON("/api/v1/admin/block_many_instances_cvs/", {
+            csv: data,
+	    block: true,
+        })
+        .then(async data => {
+	    console.log(data);
+        });
+    }
+    fileReader.readAsText(blockManyInstancesInput.files[0]);
 });
 
 (instance_settings.blocked_instances ?? []).forEach(e => {
