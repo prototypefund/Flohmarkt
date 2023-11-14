@@ -92,6 +92,15 @@ class ItemSchema(BaseModel):
         return result
 
     @staticmethod
+    async def retrieve_any(skip:int=0)->dict:
+        result = await Database.find(
+            {"type":"item"},
+            [{"creation_date":"desc"}],
+            limit=50, skip=skip
+        )
+        return result
+
+    @staticmethod
     async def retrieve_newest()->dict:
         return await Database.find({"type":"item"},sort=[{"creation_date":"desc"}], limit=10)
     

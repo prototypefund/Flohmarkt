@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+<script defer type="module" src="/static/browse.js"></script>
+{% endblock %}
+
+{% block main %}
+<section>
+    <header>
+        <h1>Browsing</i></h1>
+    </header>
+    <div class="grid grid__results"></div>
+    <button style="display:none;" id="more_button"> More </button>
+</section>
+{% endblock %}
+

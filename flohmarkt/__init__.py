@@ -216,6 +216,15 @@ async def other(request: Request, q : str):
         "searchterm": q
     })
 
+#Browse
+@app.get("/browse")
+async def other(request: Request):
+    settings = await InstanceSettingsSchema.retrieve()
+    return templates.TemplateResponse("browse.html", {
+        "request": request,
+        "settings": settings
+    })
+
 @app.get("/rules")
 async def imprint(request: Request):
     settings = await InstanceSettingsSchema.retrieve()
