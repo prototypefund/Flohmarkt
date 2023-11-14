@@ -5,6 +5,7 @@ import crypt
 import email_validator
 import aiosmtplib
 import uuid
+import email.utils as emlutil
 
 from email.mime.text import MIMEText
 
@@ -85,6 +86,8 @@ async def send_registration_mail(new_user, instance_name, email):
         )
     message = MIMEText(text.encode('utf-8'), _charset='utf-8')
     message["To"] = email
+    message["From"] = cfg["SMTP"]["From"]
+    message["Date"] = emlutil.formatdate(emlutil.localtime().timestamp())
     message["Subject"] = "Registration with {}".format(instance_name)
     await server.sendmail(
         cfg["SMTP"]["From"],
@@ -210,6 +213,8 @@ async def _(request: Request, email: str = Form()):
             )
         message = MIMEText(text.encode('utf-8'), _charset='utf-8')
         message["To"] = email
+        message["From"] = cfg["SMTP"]["From"]
+        message["Date"] = emlutil.formatdate(emlutil.localtime().timestamp())
         message["Subject"] = "Password reset on {}".format(instance_name)
         await server.sendmail(
             cfg["SMTP"]["From"],
