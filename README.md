@@ -24,6 +24,11 @@ Client Applications
 | Service      | Version             | Remote-Interact button | URL copying | Conversation | Following | Comment         |
 |--------------|---------------------|------------------------|-------------|--------------|-----------|-------------------|
 | Akkoma       |  ????               | [ ]                    | [ ]         |     [ ]      | [x]        |            |
+
+## Public Instances
+
+Known public instances are listed in the [instances.md](instances.md) file
+
 ## Dependencies
 
 - python3-aiohttp
