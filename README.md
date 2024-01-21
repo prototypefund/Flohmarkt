@@ -27,7 +27,7 @@ Client Applications
 
 ## Public Instances
 
-Known public instances are listed in the [instances.md](instances.md) file
+Known public instances are listed in the [instances.md](src/branch/master/instances.md) file
 
 ## Dependencies
 
