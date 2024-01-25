@@ -18,6 +18,7 @@ Server Applications
 | Pleroma      | 2.5.2    | [  ]                    | [ ]         |     [x ]      | [x ]        |            |
 | Mammuthus      | ?????  | [ ]                    | [ ]         |     [ ]      | [ ]        |         problems getting pubkeys from users   |
 | Mitra      | ?????  | [ ]                    | [ ]         |     [ ]      | [ ]        |             |
+| [microblog.pub](https://docs.microblog.pub/) | 2.0.0+ynh1 | [ ]                    | [ ]         |     [ ]      | [ ]        | lookup for users and notes fails, [issue](https://codeberg.org/grindhold/flohmarkt/issues/109) |
 
 Client Applications
 (We don't support C2S. It's just about interacting through other services.)
