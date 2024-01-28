@@ -1,7 +1,7 @@
 import asyncio
 
 from fastapi import FastAPI, Request, Response, Depends, Form, HTTPException, WebSocket
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -249,14 +249,13 @@ async def privacy(request: Request):
         "settings": settings,
     })
 
-ROBOTSTXT = """
-User-agent: *
+ROBOTSTXT = """User-agent: *
 Allow: /~*/
 Disallow: /~*$
 Disallow: /api
 """
 
-@app.get("/robots.txt")
+@app.get("/robots.txt", response_class=PlainTextResponse)
 async def robots(request: Request):
     return ROBOTSTXT
 
