@@ -249,6 +249,17 @@ async def privacy(request: Request):
         "settings": settings,
     })
 
+ROBOTSTXT = """
+User-agent: *
+Allow: /~*/
+Disallow: /~*$
+Disallow: /api
+"""
+
+@app.get("/robots.txt")
+async def robots(request: Request):
+    return ROBOTSTXT
+
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
