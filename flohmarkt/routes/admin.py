@@ -85,9 +85,10 @@ async def unfollow_instance(url : str, current_user: UserSchema = Depends(get_cu
         instance_settings["pending_following"].remove(url)
         found = True
     if not found:
-        raise HTTPException(status_code=404, detail="This instance is not being followed")
+        raise HTTPException(status_code=404, detail="This instance is not being followed: "+url)
 
     await InstanceSettingsSchema.set(instance_settings)
+    await ItemSchema.delete_remote_items(url)
 
     return instance_settings["following"]
 

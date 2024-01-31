@@ -129,6 +129,15 @@ class ItemSchema(BaseModel):
             await Database.delete({"id":ident})
             return True
 
+    @staticmethod
+    async def delete_remote_items(url)
+        """
+        Deletes all items that came from a remote instance
+        """
+        await Database.delete({"type":"item",
+                               "url": {"$regex": "^"+url}
+        })
+
 
 class UpdateItemModel(BaseModel):
     description : Optional[str]
