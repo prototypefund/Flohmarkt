@@ -243,3 +243,31 @@ except urllib.error.HTTPError as e:
         print ("Instance settings already exist. skipping")
     else:
         print(e)
+
+print("Sanitize instance URLs")
+req = urllib.request.Request(f"{db_url.scheme}://{hostname}/flohmarkt/instance_settings")
+req.headers = {
+    "Content-type": "application/json",
+    "Authorization": "Basic "+credentials
+}
+res = urllib.request.urlopen(req, timeout=10)
+data = json.loads(res.decode('utf-8'))
+instance_fields = ["pending_followers", "pending_following", "blocked_instances", "followers", "following"]
+for field in instance_fields:
+    l = []
+    for entry in data[field]:
+        l.append(entry.rstrip("/"))
+    data[field] = l
+req = PutRequest(f"{db_url.scheme}://{hostname}/flohmarkt/instance_settings")
+req.data = json.dumps(data)
+req.headers = {
+    "Content-type": "application/json",
+    "Authorization": "Basic "+credentials
+}
+try:
+    res = urllib.request.urlopen(req, timeout=10)
+except urllib.error.HTTPError as e:
+    if "409" in str(e):
+        print ("Instance settings already exist. skipping")
+    else:
+        print(e)

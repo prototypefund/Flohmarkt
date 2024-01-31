@@ -37,6 +37,9 @@ async def get_instancesettings(current_user: UserSchema = Depends(get_current_us
 async def follow_instance(url : str, current_user: UserSchema = Depends(get_current_user)):
     if not current_user["admin"]:
         raise HTTPException(status_code=403, detail="Only admins may do this")
+
+    url = url.rstrip("/")
+
     instance_settings = await InstanceSettingsSchema.retrieve()
     for follow in instance_settings["pending_following"]:
         if follow == url:
@@ -75,7 +78,10 @@ async def follow_instance(url : str, current_user: UserSchema = Depends(get_curr
 async def unfollow_instance(url : str, current_user: UserSchema = Depends(get_current_user)):
     if not current_user["admin"]:
         raise HTTPException(status_code=403, detail="Only admins may do this")
+
     instance_settings = await InstanceSettingsSchema.retrieve()
+
+    url = url.rstrip("/")
 
     found = False
     if url in instance_settings["following"]:
@@ -97,6 +103,8 @@ async def unfollow_instance(url : str, current_user: UserSchema = Depends(get_cu
         raise HTTPException(status_code=403, detail="Only admins may do this")
     instance_settings = await InstanceSettingsSchema.retrieve()
 
+    url = url.rstrip("/")
+
     if url in instance_settings["followers"]:
         instance_settings["followers"].remove(url)
     else:
@@ -112,6 +120,8 @@ async def reject_instance(url : str, current_user: UserSchema = Depends(get_curr
     if not current_user["admin"]:
         raise HTTPException(status_code=403, detail="Only admins may do this")
     instance_settings = await InstanceSettingsSchema.retrieve()
+
+    url = url.rstrip("/")
 
     if url not in instance_settings["pending_followers"]:
         raise HTTPException(status_code=403, detail="This is not a follower candidate")
@@ -156,6 +166,8 @@ async def accept_instance(url : str, current_user: UserSchema = Depends(get_curr
         raise HTTPException(status_code=403, detail="Only admins may do this")
     instance_settings = await InstanceSettingsSchema.retrieve()
 
+    url = url.rstrip("/")
+
     if url not in instance_settings["pending_followers"]:
         raise HTTPException(status_code=403, detail="This is not a follower candidate")
 
@@ -198,6 +210,8 @@ async def accept_instance(url : str, current_user: UserSchema = Depends(get_curr
 async def block_instance(url : str, block: bool, current_user: UserSchema = Depends(get_current_user)):
     if not current_user["admin"]:
         raise HTTPException(status_code=403, detail="Only admins may do this")
+
+    url = url.rstrip("/")
     
     instance_settings = await InstanceSettingsSchema.retrieve()
 
@@ -226,7 +240,7 @@ async def block_many_instances(request: Request, data: BlockInstancesCSVModel = 
     
     reader = csv.reader(data.csv.strip().split("\n"))
     for entry in reader:
-        url = entry[0]
+        url = entry[0].rstrip("/")
         if not url.startswith("https://"):
             url = "https://"+url
         if data.block:
