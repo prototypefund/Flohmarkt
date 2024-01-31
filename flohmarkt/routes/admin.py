@@ -245,7 +245,7 @@ async def block_many_instances(request: Request, data: BlockInstancesCSVModel = 
 
 
 @router.get("/block_user", response_description="current list of blocked instances")
-async def block_instance(user : str, block: bool, current_user: UserSchema = Depends(get_current_user)):
+async def block_user(user : str, block: bool, current_user: UserSchema = Depends(get_current_user)):
     if not current_user["admin"]:
         raise HTTPException(status_code=403, detail="Only admins may do this")
     
