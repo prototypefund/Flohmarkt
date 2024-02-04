@@ -328,8 +328,12 @@ async def inbox_process_create(req: Request, msg: dict):
             await send_noreply_message(msg)
             return Response(content="0", status_code=202)
         else:
-            await create_new_item(msg)
-            return Response(content="0", status_code=202)
+            instance_settings = await InstanceSettingsSchema.retrieve()
+            if any([msg["id"].startswith(instance) for instance in instance_settings["following"]]):
+                await create_new_item(msg)
+                return Response(content="0", status_code=202)
+            else:
+                return Response(content="", status_code=403)
 
     if len(msg["to"]) != 1:
         raise HTTPException(status_code=400, detail="Can only accept private messages to 1 user")
