@@ -323,7 +323,8 @@ async def inbox_process_create(req: Request, msg: dict):
     if msg["id"].startswith(hostname):
         raise HTTPException(status_code=302, detail="Already exists")
 
-    if "https://www.w3.org/ns/activitystreams#Public" in msg["to"]:
+    if "https://www.w3.org/ns/activitystreams#Public" in msg["to"] or \
+    "https://www.w3.org/ns/activitystreams#Public" in msg["cc"]:
         if "object" in msg and "inReplyTo" in msg["object"] and msg["object"]["inReplyTo"] is not None:
             await send_noreply_message(msg)
             return Response(content="0", status_code=202)
